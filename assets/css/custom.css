@@ -965,7 +965,7 @@ html {
     background-color: #fff;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url(../../img/share.png);
+    background-image: url(../images/share.png);
     background-size: 24px 24px;
     border-radius: 18px;
     position: absolute;
@@ -984,7 +984,7 @@ html {
     background-color: #fff;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: url(../../img/love.png);
+    background-image: url(../images/love.png);
     background-size: 24px 24px;
     border-radius: 18px;
     position: absolute;
