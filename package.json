@@ -1,0 +1,16 @@
+{
+  "name": "filp-storefront",
+  "version": "1.0.0",
+  "description": "Filp - Kurtas and Suit Sets storefront",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "echo 'Static build complete'",
+    "lint": "echo 'No lint required'"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

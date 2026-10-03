@@ -1,0 +1,7 @@
+{
+  "name": "Filp - Kurtas and Suit Sets",
+  "description": "Explore kurtas and suit sets from Filp. A mobile-friendly e-commerce storefront for traditional Indian wear.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
