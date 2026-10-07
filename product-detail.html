@@ -4,342 +4,826 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#dceefa" id="themeColor">
+    <meta name="theme-color" content="#ffffff" id="themeColor">
     <title>Flipkart - Product Details</title>
     <meta name="description" content="Flipkart The Big Billion Days Sale Product Details">
     <link rel="stylesheet" href="./assets/css/custom.css">
     <style>
-        /* ================= Exact Screenshot Header ================= */
-        .pd-top-header {
-            background-color: #dceefa;
-            padding: 10px 12px;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f1f2f4;
+            color: #212121;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            justify-content: center;
+        }
+
+        #pd-app {
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.06);
+            padding-bottom: 75px;
+        }
+
+        /* Top Nav Header */
+        .pd-header {
             position: sticky;
             top: 0;
             z-index: 100;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .pd-back-btn {
-            background: none;
-            border: none;
-            color: #1f2937;
+        .pd-back-icon {
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2px;
-            flex-shrink: 0;
+            color: #212121;
         }
 
-        .pd-search-bar {
+        .pd-search-box {
             flex: 1;
-            height: 42px;
-            background: #ffffff;
-            border: 1px solid #b8d7ec;
-            border-radius: 8px;
             display: flex;
             align-items: center;
-            padding: 0 12px;
             gap: 8px;
+            background: #f0f5ff;
+            border: 1px solid #dbeafe;
+            border-radius: 8px;
+            padding: 7px 12px;
         }
 
         .pd-search-input {
-            width: 100%;
             border: none;
+            background: transparent;
             outline: none;
-            font-size: 14.5px;
-            color: #111827;
-            font-family: inherit;
+            width: 100%;
+            font-size: 13.5px;
+            color: #212121;
         }
 
         .pd-search-input::placeholder {
-            color: #6b7280;
-            font-weight: 400;
+            color: #717478;
         }
 
-        .pd-cart-btn {
-            background: none;
-            border: none;
-            color: #1f2937;
+        .pd-cart-icon-btn {
+            position: relative;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            position: relative;
-            flex-shrink: 0;
-            padding: 2px;
         }
 
-        .pd-cart-count {
+        .pd-cart-badge {
             position: absolute;
-            top: -5px;
-            right: -6px;
+            top: -6px;
+            right: -8px;
             background: #ff6128;
-            color: #ffffff;
+            color: #fff;
             font-size: 10px;
             font-weight: 800;
-            border-radius: 10px;
             padding: 1px 5px;
-            line-height: 1;
+            border-radius: 10px;
         }
 
-        /* ================= Top AD Strip ================= */
-        .pd-ad-strip {
-            background: #ffffff;
-            padding: 8px 12px;
-            border-bottom: 1px solid #f1f5f9;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .pd-ad-strip::-webkit-scrollbar {
-            display: none;
-        }
-
-        .pd-ad-card {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 6px 10px;
-            background: #ffffff;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .pd-ad-thumb {
-            width: 34px;
-            height: 34px;
-            object-fit: contain;
-            flex-shrink: 0;
-            border-radius: 4px;
-        }
-
-        .pd-ad-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .pd-ad-title {
-            font-size: 12px;
-            font-weight: 500;
-            color: #1f2937;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.3;
-        }
-
-        .pd-ad-pricing {
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-            font-size: 12px;
-            margin-top: 2px;
-        }
-
-        .pd-ad-discount {
-            color: #16a34a;
-            font-weight: 800;
-            font-size: 11.5px;
-        }
-
-        .pd-ad-mrp {
-            color: #9ca3af;
-            text-decoration: line-through;
-            font-size: 11px;
-        }
-
-        .pd-ad-price {
-            color: #111827;
-            font-weight: 800;
-            font-size: 12.5px;
-        }
-
-        .pd-ad-badge {
-            background: #e2e8f0;
-            color: #64748b;
-            font-size: 10px;
-            font-weight: 800;
-            padding: 2px 5px;
-            border-radius: 4px;
-            flex-shrink: 0;
-            letter-spacing: 0.5px;
-        }
-
-        /* ================= Blue Countdown Timer Container ================= */
-        .pd-countdown-container {
-            margin: 10px 14px 6px 14px;
-            background: #eef7fe;
-            border-radius: 12px;
-            padding: 10px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-size: 13.5px;
-            font-weight: 700;
-            color: #1e293b;
-        }
-
-        .time-box-pill {
-            background-color: #1d72eb;
-            color: #ffffff;
-            font-size: 13.5px;
-            font-weight: 800;
-            border-radius: 6px;
-            padding: 3px 8px;
-            display: inline-block;
-            min-width: 28px;
-            text-align: center;
-            box-shadow: 0 1px 2px rgba(29, 114, 235, 0.25);
-        }
-
-        /* ================= Product Hero Image & Action Floating Buttons ================= */
-        .pd-image-section {
+        /* Main Image Carousel Area */
+        .pd-image-wrapper {
             position: relative;
-            background: #ffffff;
-            padding: 16px 12px 12px 12px;
+            background: #f8fafc;
+            width: 100%;
+            height: 400px;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 380px;
+            overflow: hidden;
         }
 
-        .pd-main-image {
+        #pd-main-img {
             width: 100%;
-            max-width: 440px;
-            max-height: 380px;
-            object-fit: contain;
+            height: 100%;
+            object-fit: cover;
             display: block;
         }
 
-        .pd-floating-actions {
+        .pd-ad-tag {
             position: absolute;
-            top: 14px;
-            right: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            z-index: 15;
+            top: 12px;
+            left: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 10;
         }
 
-        .pd-circle-action-btn {
-            width: 40px;
-            height: 40px;
+        .pd-action-icons {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .pd-icon-circle {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            transition: transform 0.15s ease;
         }
 
-        .pd-circle-action-btn:active {
+        .pd-icon-circle:active {
             transform: scale(0.92);
         }
 
-        .pd-circle-action-btn.active svg {
+        .pd-icon-circle.active svg {
             fill: #ff3f6c;
             stroke: #ff3f6c;
         }
 
-        /* ================= Details Content Below Image ================= */
-        .pd-details-content {
-            padding: 14px 14px 90px 14px;
-            background: #ffffff;
-        }
-
-        .pd-brand-row {
+        .pd-rating-overlay {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(4px);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 6px;
+            gap: 4px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+            z-index: 10;
         }
 
-        .pd-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1f2937;
-            line-height: 1.4;
+        /* Fixed Brand Seller Shield Badge: Exactly 28px wide */
+        .pd-auth-seller-badge {
+            position: absolute !important;
+            bottom: 12px !important;
+            right: 12px !important;
+            width: 28px !important;
+            height: 32px !important;
+            max-width: 28px !important;
+            max-height: 32px !important;
+            object-fit: contain !important;
+            z-index: 15 !important;
+            display: none;
+            pointer-events: none;
+        }
+
+        .pd-carousel-dots {
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+            z-index: 10;
+        }
+
+        .pd-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #cbd5e1;
+        }
+
+        .pd-dot.active {
+            background: #2874f0;
+            width: 14px;
+            border-radius: 4px;
+        }
+
+        /* Product Content */
+        .pd-content {
+            padding: 14px 14px 20px 14px;
+        }
+
+        /* Size Selection Section */
+        .pd-size-section {
+            margin-bottom: 16px;
+        }
+
+        .pd-size-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .pd-size-title {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #212121;
+        }
+
+        .pd-size-chart-link {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #2874f0;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .pd-size-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+
+        .pd-size-pills::-webkit-scrollbar {
+            display: none;
+        }
+
+        .pd-size-pill {
+            min-width: 44px;
+            height: 42px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #212121;
+            cursor: pointer;
+            background: #ffffff;
+            transition: all 0.15s ease;
+            user-select: none;
+            flex-shrink: 0;
+            padding: 0 10px;
+        }
+
+        .pd-size-pill.active {
+            border-color: #2874f0;
+            background: #f0f6ff;
+            color: #2874f0;
+        }
+
+        .pd-size-pill.disabled {
+            border: 1.5px dashed #d1d5db;
+            color: #9ca3af;
+            background: #f9fafb;
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        /* Brand & Product Title */
+        .pd-brand-store-link {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2874f0;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        .pd-product-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #212121;
+            line-height: 1.35;
             margin-bottom: 8px;
         }
 
-        .pd-rating-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .pd-rating-green {
-            background: #16a34a;
+        .pd-bbd-price-tag {
+            background: #6a1b9a;
             color: #ffffff;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            padding: 2px 6px;
+            padding: 3px 8px;
             border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 2px;
+            display: inline-block;
+            margin-bottom: 8px;
         }
 
-        .pd-rating-text {
-            color: #6b7280;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .pd-price-card {
-            background: #f8fafc;
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 16px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .pd-price-row {
+        /* Price Row */
+        .pd-pricing-row {
             display: flex;
             align-items: baseline;
-            gap: 10px;
-            margin-bottom: 4px;
+            gap: 8px;
+            margin-bottom: 14px;
         }
 
-        .pd-discount-tag {
-            color: #16a34a;
+        .pd-discount-percent {
+            color: #108432;
             font-size: 18px;
             font-weight: 800;
         }
 
-        .pd-mrp {
-            color: #9ca3af;
+        .pd-mrp-strike {
+            color: #878787;
             text-decoration: line-through;
-            font-size: 15px;
+            font-size: 16px;
         }
 
         .pd-selling-price {
-            color: #111827;
+            color: #212121;
             font-size: 24px;
-            font-weight: 900;
+            font-weight: 800;
         }
 
-        .pd-delivery-tag {
+        /* WOW! DEAL Box */
+        .pd-deal-box {
+            border: 1.5px solid #2874f0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            background: #ffffff;
+        }
+
+        .pd-deal-header {
+            background: #0d47a1;
+            color: #ffffff;
+            padding: 9px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             font-size: 13px;
-            color: #1f2937;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .pd-deal-header-left {
             display: flex;
             align-items: center;
             gap: 6px;
-            margin-top: 4px;
         }
 
-        /* ================= Bottom Action Bar (Exact Screenshot) ================= */
-        .pd-bottom-bar {
+        .pd-deal-tag {
+            background: #ffe11b;
+            color: #0d47a1;
+            font-size: 11px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 4px;
+            letter-spacing: -0.2px;
+        }
+
+        .pd-deal-body {
+            padding: 12px;
+            background: #f8fbff;
+        }
+
+        .pd-deal-buy-at {
+            font-size: 17px;
+            font-weight: 800;
+            color: #212121;
+            margin-bottom: 8px;
+        }
+
+        .pd-deal-sub-label {
+            font-size: 12px;
+            color: #717478;
+            margin-bottom: 4px;
+        }
+
+        .pd-deal-offer-pill {
+            background: #fff8e1;
+            color: #b45309;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 10px;
+            border: 1px solid #fde68a;
+        }
+
+        .pd-bank-offers-row {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .pd-bank-card {
+            flex: 1;
+            min-width: 170px;
+            border: 1px solid #dbeafe;
+            border-radius: 8px;
+            padding: 10px;
+            background: #ffffff;
+        }
+
+        .pd-bank-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .pd-bank-name {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .pd-bank-apply-btn {
+            background: #2874f0;
+            color: #ffffff;
+            border: none;
+            padding: 3px 9px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .pd-bank-apply-btn.applied {
+            background: #108432;
+        }
+
+        .pd-bank-desc {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        /* Delivery Details */
+        .pd-section-card {
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #f0f0f0;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .pd-section-heading {
+            font-size: 15px;
+            font-weight: 700;
+            color: #212121;
+            margin-bottom: 10px;
+        }
+
+        .pd-location-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 10px;
+        }
+
+        .pd-location-link {
+            color: #2874f0;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .pd-delivery-date-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #212121;
+            margin-bottom: 4px;
+        }
+
+        .pd-delivery-cutoff {
+            color: #ef4444;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 24px;
+            margin-bottom: 10px;
+        }
+
+        .pd-seller-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12.5px;
+            color: #64748b;
+            padding-top: 8px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .pd-seller-name {
+            font-weight: 700;
+            color: #212121;
+        }
+
+        /* Assurance Strip */
+        .pd-assurance-strip {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 6px;
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 16px;
+            background: #fafafa;
+        }
+
+        .pd-assurance-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 4px;
+        }
+
+        .pd-assurance-icon {
+            width: 28px;
+            height: 28px;
+        }
+
+        .pd-assurance-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #212121;
+        }
+
+        /* Similar Products Strip */
+        .pd-similar-section {
+            margin-bottom: 16px;
+        }
+
+        .pd-similar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .pd-similar-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #212121;
+        }
+
+        .pd-similar-arrow {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #212121;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .pd-similar-grid {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding-bottom: 4px;
+        }
+
+        .pd-similar-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        .pd-similar-card {
+            min-width: 140px;
+            max-width: 140px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #ffffff;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .pd-similar-img-box {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            background: #f8fafc;
+        }
+
+        .pd-similar-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pd-similar-rating {
+            position: absolute;
+            bottom: 6px;
+            left: 6px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 10px;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        .pd-similar-info {
+            padding: 8px 6px;
+        }
+
+        .pd-similar-title-txt {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #212121;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 3px;
+        }
+
+        .pd-similar-price-row {
+            font-size: 12px;
+            display: flex;
+            gap: 4px;
+            align-items: baseline;
+        }
+
+        .pd-similar-discount {
+            color: #108432;
+            font-weight: 800;
+        }
+
+        .pd-similar-price {
+            font-weight: 800;
+            color: #212121;
+        }
+
+        /* Product Highlights (Collapsible) */
+        .pd-accordion {
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .pd-accordion-header {
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 15px;
+            font-weight: 700;
+            color: #212121;
+            cursor: pointer;
+            background: #ffffff;
+        }
+
+        .pd-accordion-body {
+            padding: 12px 14px;
+            border-top: 1px solid #f1f5f9;
+            background: #fafafa;
+        }
+
+        .pd-specs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            row-gap: 12px;
+            column-gap: 14px;
+        }
+
+        .pd-spec-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pd-spec-label {
+            font-size: 12px;
+            color: #717478;
+            margin-bottom: 2px;
+        }
+
+        .pd-spec-value {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #212121;
+        }
+
+        /* Ratings and Reviews */
+        .pd-reviews-header-block {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .pd-big-rating-tag {
+            background: #108432;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pd-rating-status {
+            font-size: 14px;
+            font-weight: 700;
+            color: #212121;
+        }
+
+        .pd-rating-verified {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
+        .pd-review-photos-strip {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .pd-rev-img {
+            width: 72px;
+            height: 72px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid #e2e8f0;
+        }
+
+        .pd-loved-features-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .pd-loved-tag {
+            background: #f1f5f9;
+            color: #334155;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 14px;
+        }
+
+        .pd-review-card {
+            border-top: 1px solid #f1f5f9;
+            padding: 10px 0;
+        }
+
+        .pd-rev-top {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .pd-rev-star {
+            background: #108432;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 3px;
+        }
+
+        .pd-rev-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #212121;
+        }
+
+        .pd-rev-time {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-left: auto;
+        }
+
+        .pd-rev-text {
+            font-size: 12.5px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        /* Sticky Bottom Action Bar */
+        .pd-sticky-bar {
             position: fixed;
             bottom: 0;
             left: 0;
@@ -347,276 +831,449 @@
             max-width: 480px;
             margin: 0 auto;
             background: #ffffff;
-            border-top: 1px solid #e5e7eb;
-            padding: 8px 12px;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            z-index: 200;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-        }
-
-        .btn-cart-icon-sq {
-            width: 48px;
-            height: 48px;
-            border: 1.5px solid #d1d5db;
-            border-radius: 10px;
-            background: #ffffff;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #374151;
-            flex-shrink: 0;
-            transition: all 0.15s ease;
+            padding: 8px 12px;
+            gap: 10px;
+            z-index: 100;
         }
 
-        .btn-cart-icon-sq:active {
-            background: #f3f4f6;
-            transform: scale(0.96);
-        }
-
-        .btn-buy-emi {
+        .pd-btn-cart {
             flex: 1;
             height: 48px;
+            border-radius: 8px;
             border: 1.5px solid #d1d5db;
-            border-radius: 10px;
             background: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            color: #212121;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            text-decoration: none;
             transition: all 0.15s ease;
         }
 
-        .btn-buy-emi:active {
-            background: #f9fafb;
+        .pd-btn-cart:active {
+            background: #f8fafc;
             transform: scale(0.98);
         }
 
-        .btn-buy-emi-title {
-            font-size: 14.5px;
-            font-weight: 800;
-            color: #111827;
-            line-height: 1.2;
-        }
-
-        .btn-buy-emi-sub {
-            font-size: 11px;
-            font-weight: 500;
-            color: #4b5563;
-        }
-
-        .btn-buy-now-yellow {
-            flex: 1.15;
+        .pd-btn-buy {
+            flex: 1;
             height: 48px;
+            border-radius: 8px;
             border: none;
-            border-radius: 10px;
             background: #ffcc00;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            color: #111827;
+            font-size: 15px;
+            font-weight: 800;
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(255, 204, 0, 0.4);
             transition: all 0.15s ease;
         }
 
-        .btn-buy-now-yellow:active {
-            background: #f5b800;
+        .pd-btn-buy:active {
+            background: #eab308;
             transform: scale(0.98);
         }
 
-        .btn-buy-now-title {
-            font-size: 14.5px;
-            font-weight: 800;
-            color: #111827;
-            line-height: 1.2;
+        /* Modal Sheet for Checkout / Pin Code */
+        .pd-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            align-items: flex-end;
+            justify-content: center;
         }
 
-        .btn-buy-now-sub {
-            font-size: 13px;
+        .pd-modal.show {
+            display: flex;
+        }
+
+        .pd-modal-content {
+            background: #ffffff;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 16px 16px 0 0;
+            padding: 20px;
+            animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .pd-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .pd-modal-title {
+            font-size: 17px;
             font-weight: 800;
-            color: #111827;
+            color: #212121;
+        }
+
+        .pd-modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #64748b;
         }
     </style>
 </head>
 
 <body>
-    <div id="app-container">
-        <!-- 1. Exact Top Pale Sky-Blue Header -->
-        <header class="pd-top-header">
-            <!-- Back Button -->
-            <button class="pd-back-btn" id="pd-back-btn" aria-label="Go Back">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+    <div id="pd-app">
+        <!-- 1. Header (Exact Match to Image 2 & 3) -->
+        <header class="pd-header">
+            <div class="pd-back-icon" id="pd-back-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="19" y1="12" x2="5" y2="12"></line>
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
-            </button>
-
-            <!-- Search Bar -->
-            <div class="pd-search-bar">
-                <img src="./assets/images/flipkart_f_logo.svg" alt="Flipkart" style="width: 18px; height: 18px; object-fit: contain; flex-shrink: 0;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            </div>
+            <div class="pd-search-box">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#717478" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
-                <input type="text" class="pd-search-input" id="pd-search-input" placeholder="Search for products">
+                <input type="text" class="pd-search-input" placeholder="Search for products" id="pd-search-input">
             </div>
-
-            <!-- Cart Icon -->
-            <button class="pd-cart-btn" id="pd-cart-btn" aria-label="Cart">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="9" cy="21" r="1"></circle>
-                    <circle cx="20" cy="21" r="1"></circle>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                </svg>
-                <span class="pd-cart-count" id="pd-cart-count">1</span>
-            </button>
-        </header>
-
-        <!-- 2. Top Sponsored AD Banner Strip -->
-        <div class="pd-ad-strip">
-            <div class="pd-ad-card">
-                <img src="./assets/images/motorola_thumb.svg" alt="Motorola Motobook" class="pd-ad-thumb">
-                <div class="pd-ad-info">
-                    <div class="pd-ad-title">MOTOROLA Motobook 60 Full Metal WUXGA OLED (i5 14th G...</div>
-                    <div class="pd-ad-pricing">
-                        <span class="pd-ad-discount">↓ 50%</span>
-                        <span class="pd-ad-mrp">1,35,000</span>
-                        <span class="pd-ad-price">₹66,990</span>
-                    </div>
-                </div>
-                <div class="pd-ad-badge">AD</div>
-            </div>
-        </div>
-
-        <!-- 3. Exact Blue Countdown Timer Container -->
-        <div class="pd-countdown-container">
-            <span>Sale starts in</span>
-            <span class="time-box-pill" id="cd-hrs">33</span>
-            <span>Hrs :</span>
-            <span class="time-box-pill" id="cd-min">53</span>
-            <span>Min :</span>
-            <span class="time-box-pill" id="cd-sec">37</span>
-            <span>Sec</span>
-        </div>
-
-        <!-- 4. Product Hero Image & Floating Wishlist / Share Buttons -->
-        <div class="pd-image-section">
-            <div class="pd-floating-actions">
-                <!-- Top: Wishlist Button -->
-                <button class="pd-circle-action-btn" id="btn-detail-wishlist" aria-label="Wishlist">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                </button>
-                <!-- Bottom: Share / Origami Airplane Button -->
-                <button class="pd-circle-action-btn" id="btn-detail-share" aria-label="Share">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Product Main Image -->
-            <img src="./assets/images/hp_victus_laptop.svg" alt="Product Image" id="pd-main-img" class="pd-main-image">
-        </div>
-
-        <!-- 5. Product Details Information -->
-        <main class="pd-details-content">
-            <!-- Brand & Flipkart Assured Logo -->
-            <div class="pd-brand-row">
-                <img src="./assets/images/f_assured.svg" alt="Flipkart Assured" style="height: 18px;">
-                <span id="pd-brand-name" style="font-weight: 800; font-size: 14px; text-transform: uppercase; color: #111827;">HP</span>
-            </div>
-
-            <!-- Title -->
-            <h1 class="pd-title" id="pd-title">HP Victus Intel Core i7 14th Gen 14700HX - (16 GB/1 TB SSD/Windows 11 Home/6 GB Graphics/NVIDIA GeForce RTX 4050/144 Hz) 16-r1080TX Gaming Laptop</h1>
-
-            <!-- Ratings Row -->
-            <div class="pd-rating-row">
-                <div class="pd-rating-green">
-                    <span id="pd-rating-val">4.5</span>
-                    <span>★</span>
-                </div>
-                <span class="pd-rating-text" id="pd-review-val">1,280 Ratings &amp; 340 Reviews</span>
-            </div>
-
-            <!-- Price Card -->
-            <div class="pd-price-card">
-                <div class="pd-price-row">
-                    <span class="pd-discount-tag" id="pd-discount-tag">↓ 23%</span>
-                    <span class="pd-mrp" id="pd-mrp-val">₹1,99,990</span>
-                    <span class="pd-selling-price" id="pd-price-val">₹1,53,990</span>
-                </div>
-                <div class="pd-delivery-tag">
-                    <span>🚚</span>
-                    <span id="pd-delivery-val">Get it by <b>10 Oct</b> | <span style="color: #16a34a; font-weight: 700;">FREE Delivery</span></span>
-                </div>
-            </div>
-
-            <!-- Big Billion Days Bank Offers Card -->
-            <div style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 16px; background: #f8fafc;">
-                <div style="font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-                    <span>🏷️</span>
-                    <span>Available Offers</span>
-                </div>
-                <div style="font-size: 12.5px; color: #334155; margin-bottom: 6px; line-height: 1.4;">• <b>Bank Offer:</b> <img src="./assets/images/flipkart_f_logo.svg" alt="Flipkart" style="height: 14px; vertical-align: -2px;"> 10% Instant Savings with <b>Flipkart Axis Bank Credit Card</b>.</div>
-                <div style="font-size: 12.5px; color: #334155; margin-bottom: 6px; line-height: 1.4;">• <b>No Cost EMI:</b> Avail No Cost EMI from ₹52,704/month on leading bank cards.</div>
-                <div style="font-size: 12.5px; color: #334155; line-height: 1.4;">• <b>Special Price:</b> Get extra ₹15,000 off with <img src="./assets/images/flipkart_wordmark.svg" alt="Flipkart" style="height: 12px; vertical-align: -1px;"> Big Billion Days coupon.</div>
-            </div>
-
-            <!-- Flipkart Trust & Authenticity Badge -->
-            <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin-bottom: 16px; background: #f0f7ff; border-radius: 8px; border: 1px solid #cce3fe;">
-                <img src="./assets/images/flipkart_f_logo.svg" alt="Flipkart" style="width: 22px; height: 22px; object-fit: contain;">
-                <div style="font-size: 12.5px; font-weight: 700; color: #0348b5;">100% Authentic Products · Flipkart Assured Guaranteed</div>
-            </div>
-
-            <!-- Variants (Color/RAM/Storage) -->
-            <div id="pd-variant-wrap" style="margin-bottom: 16px;">
-                <div style="font-size: 14px; font-weight: 700; color: #111827; margin-bottom: 8px;">Select Configuration</div>
-                <div id="pd-variant-chips" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
-            </div>
-
-            <!-- Specifications -->
-            <div style="border-top: 1px solid #f1f5f9; padding-top: 16px;">
-                <h2 style="font-size: 16px; font-weight: 800; color: #111827; margin-bottom: 10px;">Product Specifications</h2>
-                <div id="pd-specs-container" style="font-size: 13.5px; color: #475569; line-height: 1.6;"></div>
-            </div>
-        </main>
-
-        <!-- 6. Exact Screenshot Sticky Bottom Action Bar -->
-        <footer class="pd-bottom-bar">
-            <!-- Left: Cart+ Button -->
-            <button class="btn-cart-icon-sq" id="btn-add-cart-icon" aria-label="Add to Cart">
+            <div class="pd-cart-icon-btn" id="pd-cart-btn">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1"></circle>
                     <circle cx="20" cy="21" r="1"></circle>
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                    <line x1="12" y1="9" x2="18" y2="9"></line>
-                    <line x1="15" y1="6" x2="15" y2="12"></line>
                 </svg>
-            </button>
+                <span class="pd-cart-badge" id="pd-cart-count">1</span>
+            </div>
+        </header>
 
-            <!-- Middle: Buy with EMI -->
-            <button class="btn-buy-emi" id="btn-buy-emi">
-                <span class="btn-buy-emi-title">Buy with EMI</span>
-                <span class="btn-buy-emi-sub" id="btn-emi-sub">From ₹52,704/m</span>
-            </button>
+        <!-- 2. Product Main Image -->
+        <div class="pd-image-wrapper">
+            <span class="pd-ad-tag" id="pd-ad-tag">AD</span>
+            <div class="pd-action-icons">
+                <button class="pd-icon-circle" id="pd-wishlist-btn" aria-label="Wishlist">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#212121" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </button>
+                <button class="pd-icon-circle" id="pd-share-btn" aria-label="Share">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#212121" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                </button>
+            </div>
+            <img src="./assets/images/mufti_check_shirt.jpg" alt="Product" id="pd-main-img" onerror="this.src='./assets/images/cat_men.jpg';">
+            <div class="pd-rating-overlay">
+                <span id="pd-rating-val">4</span>
+                <span style="color: #212121;">★</span>
+                <span style="color: #9e9e9e;">|</span>
+                <span id="pd-review-val">221</span>
+            </div>
+            <!-- Golden Shield (strictly 28px width, only for authorized sellers) -->
+            <img src="./assets/images/brand_seller.svg" alt="Brand Authorized Seller" class="pd-auth-seller-badge" id="pd-auth-badge">
+            <div class="pd-carousel-dots">
+                <span class="pd-dot active"></span>
+                <span class="pd-dot"></span>
+                <span class="pd-dot"></span>
+                <span class="pd-dot"></span>
+            </div>
+        </div>
 
-            <!-- Right: Buy now at price -->
-            <button class="btn-buy-now-yellow" id="btn-buy-now-yellow">
-                <span class="btn-buy-now-title">Buy now</span>
-                <span class="btn-buy-now-sub" id="btn-buynow-sub">at ₹1,53,990</span>
-            </button>
-        </footer>
+        <!-- 3. Product Info Content -->
+        <div class="pd-content">
+            <!-- Select Size Section -->
+            <div class="pd-size-section">
+                <div class="pd-size-header">
+                    <span class="pd-size-title">Select Size</span>
+                    <a class="pd-size-chart-link" id="btn-size-chart">Size Chart</a>
+                </div>
+                <div class="pd-size-pills" id="pd-size-pills">
+                    <div class="pd-size-pill active" data-size="38">38</div>
+                    <div class="pd-size-pill" data-size="40">40</div>
+                    <div class="pd-size-pill" data-size="42">42</div>
+                    <div class="pd-size-pill" data-size="44">44</div>
+                    <div class="pd-size-pill" data-size="46">46</div>
+                    <div class="pd-size-pill disabled" data-size="48">48</div>
+                    <div class="pd-size-pill disabled" data-size="50">50</div>
+                </div>
+            </div>
+
+            <!-- Brand Store Link & Title -->
+            <a class="pd-brand-store-link" id="pd-brand-store">Visit brand store</a>
+            <h1 class="pd-product-title" id="pd-title">MUFTI Men Slim Fit Checkered Spread Collar Casual Shirt</h1>
+            <div>
+                <span class="pd-bbd-price-tag" id="pd-badge">Big Billion Days Price</span>
+            </div>
+
+            <!-- Price Row -->
+            <div class="pd-pricing-row">
+                <span class="pd-discount-percent" id="pd-discount">↓ 67%</span>
+                <span class="pd-mrp-strike" id="pd-mrp">₹2,999</span>
+                <span class="pd-selling-price" id="pd-price">₹999</span>
+            </div>
+
+            <!-- WOW! DEAL Box -->
+            <div class="pd-deal-box">
+                <div class="pd-deal-header" id="pd-deal-toggle">
+                    <div class="pd-deal-header-left">
+                        <span class="pd-deal-tag">WOW! DEAL</span>
+                        <span>Apply offers for maximum savings</span>
+                    </div>
+                    <span>▲</span>
+                </div>
+                <div class="pd-deal-body" id="pd-deal-body">
+                    <div class="pd-deal-buy-at" id="pd-deal-price-text">Buy at ₹949</div>
+                    <div class="pd-deal-sub-label">Bank offers</div>
+                    <span class="pd-deal-offer-pill">Best value for you</span>
+                    <div class="pd-bank-offers-row">
+                        <div class="pd-bank-card">
+                            <div class="pd-bank-card-top">
+                                <span class="pd-bank-name">Flipkart Axis</span>
+                                <button class="pd-bank-apply-btn" id="btn-apply-axis">Apply</button>
+                            </div>
+                            <div style="font-weight: 800; font-size: 13px; color: #1e293b; margin-bottom: 2px;">₹50 off</div>
+                            <div class="pd-bank-desc">Credit Card • Cashback &gt;</div>
+                        </div>
+                        <div class="pd-bank-card">
+                            <div class="pd-bank-card-top">
+                                <span class="pd-bank-name">Flipkart SBI</span>
+                                <button class="pd-bank-apply-btn" id="btn-apply-sbi">Apply</button>
+                            </div>
+                            <div style="font-weight: 800; font-size: 13px; color: #1e293b; margin-bottom: 2px;">₹50 off</div>
+                            <div class="pd-bank-desc">Credit Card • Cashback &gt;</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delivery Details -->
+            <div class="pd-section-card">
+                <div class="pd-section-heading">Delivery details</div>
+                <div class="pd-location-row">
+                    <span>📍 <span id="pd-current-location">Location not set</span></span>
+                    <a class="pd-location-link" id="btn-select-location">Select delivery location &gt;</a>
+                </div>
+                <div class="pd-delivery-date-row">
+                    <span>🚚</span>
+                    <span id="pd-delivery-text">Delivery by 10 Oct, Sat</span>
+                </div>
+                <div class="pd-delivery-cutoff" id="pd-order-timer">Order in 01h 59m 25s</div>
+                <div class="pd-seller-row">
+                    <div>
+                        <span>🏪 Fulfilled by </span>
+                        <span class="pd-seller-name" id="pd-seller-name">HSAtlastradeFashion</span>
+                        <div style="font-size: 11px; color: #64748b;" id="pd-seller-rating">4.3 ★ • 4 years with Flipkart</div>
+                    </div>
+                    <a class="pd-location-link" style="font-size: 12px;">See other sellers</a>
+                </div>
+            </div>
+
+            <!-- Assurance Strip -->
+            <div class="pd-assurance-strip">
+                <div class="pd-assurance-item">
+                    <svg class="pd-assurance-icon" viewBox="0 0 24 24" fill="none" stroke="#2874f0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                    </svg>
+                    <span class="pd-assurance-label">7-Day Return</span>
+                </div>
+                <div class="pd-assurance-item">
+                    <svg class="pd-assurance-icon" viewBox="0 0 24 24" fill="none" stroke="#108432" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                        <circle cx="12" cy="12" r="2"></circle>
+                        <path d="M6 12h.01M18 12h.01"></path>
+                    </svg>
+                    <span class="pd-assurance-label">Cash on Delivery</span>
+                </div>
+                <div class="pd-assurance-item">
+                    <svg class="pd-assurance-icon" viewBox="0 0 24 24" fill="none" stroke="#2874f0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <polyline points="9 12 11 14 15 10"></polyline>
+                    </svg>
+                    <span class="pd-assurance-label">Flipkart Assured</span>
+                </div>
+            </div>
+
+            <!-- Similar Products -->
+            <div class="pd-similar-section">
+                <div class="pd-similar-header">
+                    <span class="pd-similar-title">Similar Products</span>
+                    <div class="pd-similar-arrow">➔</div>
+                </div>
+                <div class="pd-similar-grid" id="pd-similar-grid">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Product Highlights Accordion -->
+            <div class="pd-accordion">
+                <div class="pd-accordion-header" id="pd-highlights-toggle">
+                    <span>Product highlights</span>
+                    <span id="pd-highlights-arrow">▲</span>
+                </div>
+                <div class="pd-accordion-body" id="pd-highlights-body">
+                    <div class="pd-specs-grid" id="pd-specs-grid">
+                        <div class="pd-spec-item">
+                            <span class="pd-spec-label">Pack of</span>
+                            <span class="pd-spec-value">1</span>
+                        </div>
+                        <div class="pd-spec-item">
+                            <span class="pd-spec-label">Fabric</span>
+                            <span class="pd-spec-value">Pure Cotton</span>
+                        </div>
+                        <div class="pd-spec-item">
+                            <span class="pd-spec-label">Sleeve</span>
+                            <span class="pd-spec-value">Full Sleeve</span>
+                        </div>
+                        <div class="pd-spec-item">
+                            <span class="pd-spec-label">Pattern</span>
+                            <span class="pd-spec-value">Checkered</span>
+                        </div>
+                        <div class="pd-spec-item">
+                            <span class="pd-spec-label">Collar</span>
+                            <span class="pd-spec-value">Spread</span>
+                        </div>
+                        <div class="pd-spec-item">
+                            <span class="pd-spec-label">Color</span>
+                            <span class="pd-spec-value">Blue, White, Yellow</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All details Accordion -->
+            <div class="pd-accordion">
+                <div class="pd-accordion-header" id="pd-details-toggle">
+                    <div>
+                        <div style="font-weight: 700;">All details</div>
+                        <div style="font-size: 12px; color: #717478; font-weight: 400;">Features, description and more</div>
+                    </div>
+                    <span>▼</span>
+                </div>
+                <div class="pd-accordion-body" id="pd-details-body" style="display: none;">
+                    <div id="pd-full-description" style="font-size: 13.5px; line-height: 1.5; color: #334155;">
+                        <!-- Full description -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ratings and Reviews Accordion -->
+            <div class="pd-accordion">
+                <div class="pd-accordion-header" id="pd-reviews-toggle">
+                    <span>Ratings and reviews</span>
+                    <span>▲</span>
+                </div>
+                <div class="pd-accordion-body" id="pd-reviews-body">
+                    <div class="pd-reviews-header-block">
+                        <span class="pd-big-rating-tag">4 ★</span>
+                        <span class="pd-rating-status">Good</span>
+                    </div>
+                    <div class="pd-rating-verified">based on 221 ratings by ✓ Verified Buyers</div>
+
+                    <!-- Customer Review Photos -->
+                    <div class="pd-review-photos-strip">
+                        <img src="./assets/images/rev_photo1.jpg" alt="Customer review" class="pd-rev-img" onerror="this.src='./assets/images/cat_men.jpg';">
+                        <img src="./assets/images/rev_photo2.jpg" alt="Customer review" class="pd-rev-img" onerror="this.src='./assets/images/cat_men.jpg';">
+                        <img src="./assets/images/rev_photo3.jpg" alt="Customer review" class="pd-rev-img" onerror="this.src='./assets/images/cat_men.jpg';">
+                    </div>
+
+                    <!-- Features loved -->
+                    <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">Features customers loved</div>
+                    <div class="pd-loved-features-row">
+                        <span class="pd-loved-tag">Fabric Quality</span>
+                        <span class="pd-loved-tag">Colour</span>
+                        <span class="pd-loved-tag">Style</span>
+                        <span class="pd-loved-tag">Comfort</span>
+                    </div>
+
+                    <!-- Verified review list -->
+                    <div class="pd-review-card">
+                        <div class="pd-rev-top">
+                            <span class="pd-rev-star">2 ★</span>
+                            <span class="pd-rev-title">Not good</span>
+                            <span class="pd-rev-time">8 months ago</span>
+                        </div>
+                        <div class="pd-rev-text">The quality is not the same as in the stores.</div>
+                    </div>
+                    <div class="pd-review-card">
+                        <div class="pd-rev-top">
+                            <span class="pd-rev-star">2 ★</span>
+                            <span class="pd-rev-title">Expected better</span>
+                            <span class="pd-rev-time">6 months ago</span>
+                        </div>
+                        <div class="pd-rev-text">After very first wash shirt color faded slightly, fit is decent though... <a style="color: #2874f0; font-weight: 700; cursor: pointer;">more</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sticky Bottom Bar -->
+        <div class="pd-sticky-bar">
+            <button class="pd-btn-cart" id="pd-btn-add-cart">Add to cart</button>
+            <button class="pd-btn-buy" id="pd-btn-buy-now">Buy at ₹999</button>
+        </div>
+
+        <!-- Location Pin Modal -->
+        <div class="pd-modal" id="location-modal">
+            <div class="pd-modal-content">
+                <div class="pd-modal-header">
+                    <span class="pd-modal-title">Select Delivery Location</span>
+                    <button class="pd-modal-close" id="btn-close-location">✕</button>
+                </div>
+                <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">Enter your pincode to check delivery time &amp; pay on delivery availability.</p>
+                <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                    <input type="text" id="input-pincode" placeholder="Enter 6-digit Pincode" style="flex: 1; height: 42px; border: 1.5px solid #d1d5db; border-radius: 8px; padding: 0 12px; font-size: 14px; outline: none;">
+                    <button id="btn-apply-pincode" style="background: #2874f0; color: #fff; border: none; padding: 0 16px; border-radius: 8px; font-weight: 700; cursor: pointer;">Check</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order / Checkout Modal -->
+        <div class="pd-modal" id="checkout-modal">
+            <div class="pd-modal-content">
+                <div class="pd-modal-header">
+                    <span class="pd-modal-title">Complete Your Order 🛍️</span>
+                    <button class="pd-modal-close" id="btn-close-checkout">✕</button>
+                </div>
+                <div style="display: flex; gap: 12px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9;">
+                    <img src="./assets/images/mufti_check_shirt.jpg" id="checkout-thumb" style="width: 50px; height: 60px; object-fit: cover; border-radius: 6px;">
+                    <div>
+                        <div style="font-size: 13.5px; font-weight: 700;" id="checkout-title">MUFTI Men Slim Fit Checkered Shirt</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 2px;">Size: <span id="checkout-size">38</span> | Qty: 1</div>
+                        <div style="font-size: 15px; font-weight: 800; color: #212121; margin-top: 4px;" id="checkout-total">Total: ₹999</div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 13px; font-weight: 700; margin-bottom: 8px;">Delivery Address:</div>
+                    <input type="text" value="Flat 402, Green Avenue, Mumbai - 400001" style="width: 100%; height: 38px; border: 1px solid #d1d5db; border-radius: 6px; padding: 0 10px; font-size: 13px; margin-bottom: 8px;">
+                    <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">Payment Method:</div>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; margin-bottom: 6px; cursor: pointer;">
+                        <input type="radio" name="payment" checked> Cash on Delivery (COD)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; cursor: pointer;">
+                        <input type="radio" name="payment"> UPI / Credit Card (₹50 Extra Off)
+                    </label>
+                </div>
+                <button id="btn-confirm-order" style="width: 100%; height: 46px; background: #fb641b; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer;">Place Order Now</button>
+            </div>
+        </div>
 
         <!-- Toast Notice -->
-        <div id="toast" class="toast-notice">Action complete</div>
+        <div id="toast" class="toast-notice">Added to Cart 🛒</div>
     </div>
 
     <script defer src="./preview-detail.js"></script>

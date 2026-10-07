@@ -454,6 +454,48 @@ body {
   z-index: 5;
 }
 
+.card-ad-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 3px;
+  z-index: 5;
+}
+
+.card-auth-shield {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 24px;
+  height: 26px;
+  z-index: 5;
+}
+
+.card-event-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 3px;
+  align-self: flex-start;
+}
+
+.card-event-badge.bbd-price {
+  background: #6a1b9a;
+  color: #ffffff;
+}
+
+.card-event-badge.lowest-price {
+  background: #e8f7ec;
+  color: #15803d;
+}
+
 .rating-star-icon {
   color: #212121;
   font-size: 11px;

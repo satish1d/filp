@@ -1,23 +1,60 @@
 const currencyFormatter = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
 
+// DOM Elements
 const backBtn = document.getElementById('pd-back-btn');
 const toastElement = document.getElementById('toast');
 const cartBadge = document.getElementById('pd-cart-count');
 const cartBtn = document.getElementById('pd-cart-btn');
-const btnAddCartIcon = document.getElementById('btn-add-cart-icon');
-const btnBuyEmi = document.getElementById('btn-buy-emi');
-const btnBuyNowYellow = document.getElementById('btn-buy-now-yellow');
-const wishlistBtn = document.getElementById('btn-detail-wishlist');
-const shareBtn = document.getElementById('btn-detail-share');
+const wishlistBtn = document.getElementById('pd-wishlist-btn');
+const shareBtn = document.getElementById('pd-share-btn');
+const btnAddCart = document.getElementById('pd-btn-add-cart');
+const btnBuyNow = document.getElementById('pd-btn-buy-now');
 
-// Toast Notification
+// Size Pills
+const sizePillsContainer = document.getElementById('pd-size-pills');
+let selectedSize = '38';
+
+// WOW! DEAL Elements
+const dealToggle = document.getElementById('pd-deal-toggle');
+const dealBody = document.getElementById('pd-deal-body');
+const btnApplyAxis = document.getElementById('btn-apply-axis');
+const btnApplySbi = document.getElementById('btn-apply-sbi');
+
+// Location & Checkout Modals
+const locationModal = document.getElementById('location-modal');
+const btnSelectLocation = document.getElementById('btn-select-location');
+const btnCloseLocation = document.getElementById('btn-close-location');
+const btnApplyPincode = document.getElementById('btn-apply-pincode');
+const inputPincode = document.getElementById('input-pincode');
+const currentLocation = document.getElementById('pd-current-location');
+
+const checkoutModal = document.getElementById('checkout-modal');
+const btnCloseCheckout = document.getElementById('btn-close-checkout');
+const btnConfirmOrder = document.getElementById('btn-confirm-order');
+
+// Accordion Toggles
+const highlightsToggle = document.getElementById('pd-highlights-toggle');
+const highlightsBody = document.getElementById('pd-highlights-body');
+const highlightsArrow = document.getElementById('pd-highlights-arrow');
+
+const detailsToggle = document.getElementById('pd-details-toggle');
+const detailsBody = document.getElementById('pd-details-body');
+
+const reviewsToggle = document.getElementById('pd-reviews-toggle');
+const reviewsBody = document.getElementById('pd-reviews-body');
+
+let currentProduct = null;
+let currentSellingPrice = 999;
+let isBankDiscountApplied = false;
+
+// Toast Function
 function showToast(message) {
   if (!toastElement) return;
   toastElement.textContent = message;
   toastElement.classList.add('show');
   setTimeout(() => {
     toastElement.classList.remove('show');
-  }, 2200);
+  }, 2300);
 }
 
 // 1. Back Navigation
@@ -31,225 +68,337 @@ if (backBtn) {
   });
 }
 
-// 2. Real-time Countdown Timer (Sale starts in [ 33 ] Hrs : [ 53 ] Min : [ 37 ] Sec)
-const hrsEl = document.getElementById('cd-hrs');
-const minEl = document.getElementById('cd-min');
-const secEl = document.getElementById('cd-sec');
+// 2. Wishlist State
+if (wishlistBtn) {
+  const isWishlisted = localStorage.getItem('wishlist_mufti') === 'true';
+  if (isWishlisted) wishlistBtn.classList.add('active');
 
-let totalCountdownSecs = 33 * 3600 + 53 * 60 + 37;
-
-function updateCountdown() {
-  if (totalCountdownSecs <= 0) {
-    totalCountdownSecs = 34 * 3600; // Reset loop
-  }
-  const hrs = Math.floor(totalCountdownSecs / 3600);
-  const mins = Math.floor((totalCountdownSecs % 3600) / 60);
-  const secs = totalCountdownSecs % 60;
-
-  if (hrsEl) hrsEl.textContent = hrs;
-  if (minEl) minEl.textContent = mins < 10 ? `0${mins}` : mins;
-  if (secEl) secEl.textContent = secs < 10 ? `0${secs}` : secs;
-
-  totalCountdownSecs--;
+  wishlistBtn.addEventListener('click', () => {
+    const active = wishlistBtn.classList.toggle('active');
+    localStorage.setItem('wishlist_mufti', active ? 'true' : 'false');
+    showToast(active ? 'Added to Wishlist ❤️' : 'Removed from Wishlist');
+  });
 }
-setInterval(updateCountdown, 1000);
-updateCountdown();
 
-// 3. Cart Badge Count
-function updateCartCount() {
+// 3. Share Button
+if (shareBtn) {
+  shareBtn.addEventListener('click', () => {
+    if (navigator.share) {
+      navigator.share({
+        title: document.title,
+        url: window.location.href,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard?.writeText(window.location.href);
+      showToast('Product link copied to clipboard! 📋');
+    }
+  });
+}
+
+// 4. Cart Count & Add to Cart
+function updateCartBadge() {
   const cart = JSON.parse(localStorage.getItem('flipkart_cart') || '[]');
   if (cartBadge) {
     cartBadge.textContent = cart.length || '1';
   }
 }
-updateCartCount();
+updateCartBadge();
 
 if (cartBtn) {
   cartBtn.addEventListener('click', () => {
-    showToast(`You have ${cartBadge.textContent} item(s) in your Flipkart Cart 🛒`);
+    showToast(`Flipkart Cart: ${cartBadge.textContent} item(s)`);
   });
 }
 
-// 4. Product Loader from URL param
-const urlParams = new URLSearchParams(window.location.search);
-const productIdParam = urlParams.get('id');
+if (btnAddCart) {
+  btnAddCart.addEventListener('click', () => {
+    const cart = JSON.parse(localStorage.getItem('flipkart_cart') || '[]');
+    cart.push({
+      id: currentProduct?.id || 1,
+      name: currentProduct?.name || 'MUFTI Shirt',
+      size: selectedSize,
+      price: currentSellingPrice,
+      img: currentProduct?.img1 || 'assets/images/mufti_check_shirt.jpg',
+    });
+    localStorage.setItem('flipkart_cart', JSON.stringify(cart));
+    updateCartBadge();
+    showToast(`Added Size ${selectedSize} to Cart 🛒`);
+  });
+}
 
-async function loadProductDetails() {
+// 5. Size Selection
+if (sizePillsContainer) {
+  sizePillsContainer.querySelectorAll('.pd-size-pill').forEach((pill) => {
+    pill.addEventListener('click', () => {
+      if (pill.classList.contains('disabled')) {
+        showToast(`Size ${pill.dataset.size} is currently out of stock`);
+        return;
+      }
+      sizePillsContainer.querySelectorAll('.pd-size-pill').forEach((p) => p.classList.remove('active'));
+      pill.classList.add('active');
+      selectedSize = pill.dataset.size;
+      showToast(`Selected Size: ${selectedSize}`);
+    });
+  });
+}
+
+// 6. WOW! DEAL Coupon Toggle & Application
+if (dealToggle && dealBody) {
+  dealToggle.addEventListener('click', () => {
+    const isClosed = dealBody.style.display === 'none';
+    dealBody.style.display = isClosed ? 'block' : 'none';
+    dealToggle.querySelector('span:last-child').textContent = isClosed ? '▲' : '▼';
+  });
+}
+
+function handleApplyCoupon(btn, bankName) {
+  if (isBankDiscountApplied) {
+    // Remove discount
+    isBankDiscountApplied = false;
+    currentSellingPrice = currentProduct?.selling_price || 999;
+    btn.textContent = 'Apply';
+    btn.classList.remove('applied');
+    btnBuyNow.textContent = `Buy at ₹${currencyFormatter.format(currentSellingPrice)}`;
+    showToast(`Removed ${bankName} discount`);
+  } else {
+    // Apply discount
+    isBankDiscountApplied = true;
+    currentSellingPrice = (currentProduct?.selling_price || 999) - 50;
+    btn.textContent = 'Applied ✓';
+    btn.classList.add('applied');
+    btnBuyNow.textContent = `Buy at ₹${currencyFormatter.format(currentSellingPrice)}`;
+    showToast(`₹50 Instant Discount Applied with ${bankName}! 🎉`);
+  }
+}
+
+if (btnApplyAxis) {
+  btnApplyAxis.addEventListener('click', () => handleApplyCoupon(btnApplyAxis, 'Flipkart Axis'));
+}
+if (btnApplySbi) {
+  btnApplySbi.addEventListener('click', () => handleApplyCoupon(btnApplySbi, 'Flipkart SBI'));
+}
+
+// 7. Live Cutoff Timer (Order in 01h 59m 25s)
+let cutoffSeconds = 1 * 3600 + 59 * 60 + 25;
+const orderTimerEl = document.getElementById('pd-order-timer');
+
+function updateCutoffTimer() {
+  if (!orderTimerEl) return;
+  if (cutoffSeconds <= 0) cutoffSeconds = 2 * 3600;
+  const h = Math.floor(cutoffSeconds / 3600);
+  const m = Math.floor((cutoffSeconds % 3600) / 60);
+  const s = cutoffSeconds % 60;
+  orderTimerEl.textContent = `Order in ${h < 10 ? '0' : ''}${h}h ${m < 10 ? '0' : ''}${m}m ${s < 10 ? '0' : ''}${s}s`;
+  cutoffSeconds--;
+}
+setInterval(updateCutoffTimer, 1000);
+updateCutoffTimer();
+
+// 8. Location Modal
+if (btnSelectLocation && locationModal) {
+  btnSelectLocation.addEventListener('click', () => {
+    locationModal.classList.add('show');
+  });
+}
+if (btnCloseLocation && locationModal) {
+  btnCloseLocation.addEventListener('click', () => {
+    locationModal.classList.remove('show');
+  });
+}
+if (btnApplyPincode && inputPincode && currentLocation) {
+  btnApplyPincode.addEventListener('click', () => {
+    const val = inputPincode.value.trim();
+    if (val.length === 6 && /^\d+$/.test(val)) {
+      currentLocation.textContent = `Delivering to ${val}`;
+      locationModal.classList.remove('show');
+      showToast(`Pincode ${val} Verified! Next Day Delivery Available 🚚`);
+    } else {
+      showToast('Please enter a valid 6-digit Pincode');
+    }
+  });
+}
+
+// 9. Accordion Collapses
+if (highlightsToggle && highlightsBody) {
+  highlightsToggle.addEventListener('click', () => {
+    const isHidden = highlightsBody.style.display === 'none';
+    highlightsBody.style.display = isHidden ? 'block' : 'none';
+    highlightsArrow.textContent = isHidden ? '▲' : '▼';
+  });
+}
+
+if (detailsToggle && detailsBody) {
+  detailsToggle.addEventListener('click', () => {
+    const isHidden = detailsBody.style.display === 'none';
+    detailsBody.style.display = isHidden ? 'block' : 'none';
+    detailsToggle.querySelector('span:last-child').textContent = isHidden ? '▲' : '▼';
+  });
+}
+
+if (reviewsToggle && reviewsBody) {
+  reviewsToggle.addEventListener('click', () => {
+    const isHidden = reviewsBody.style.display === 'none';
+    reviewsBody.style.display = isHidden ? 'block' : 'none';
+    reviewsToggle.querySelector('span:last-child').textContent = isHidden ? '▲' : '▼';
+  });
+}
+
+// 10. Buy Now Modal Flow
+if (btnBuyNow && checkoutModal) {
+  btnBuyNow.addEventListener('click', () => {
+    document.getElementById('checkout-size').textContent = selectedSize;
+    document.getElementById('checkout-total').textContent = `Total: ₹${currencyFormatter.format(currentSellingPrice)}`;
+    checkoutModal.classList.add('show');
+  });
+}
+
+if (btnCloseCheckout && checkoutModal) {
+  btnCloseCheckout.addEventListener('click', () => {
+    checkoutModal.classList.remove('show');
+  });
+}
+
+if (btnConfirmOrder && checkoutModal) {
+  btnConfirmOrder.addEventListener('click', () => {
+    checkoutModal.classList.remove('show');
+    showToast(`Order Placed Successfully! Arriving by 10 Oct, Sat 📦`);
+  });
+}
+
+// 11. Load Product Data from products.json
+async function loadProduct() {
   try {
     const res = await fetch('./data/products.json');
     if (!res.ok) throw new Error('Catalog failed to load');
     const data = await res.json();
     const products = data.products || [];
-    const variants = data.variants || [];
+    const similarProducts = data.similar_products || [];
 
-    // Default to HP Victus laptop (matching screenshot) or find by ID
-    let product;
-    if (productIdParam) {
-      product = products.find(
-        (p) => String(p.md5_id) === String(productIdParam) || String(p.id) === String(productIdParam)
-      );
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramId = urlParams.get('id');
+
+    let prod = null;
+    if (paramId) {
+      prod = products.find((p) => String(p.md5_id) === String(paramId) || String(p.id) === String(paramId));
     }
-
-    if (!product) {
-      // Find HP Victus or fallback to first product
-      product = products.find((p) => p.md5_id === 'hp-victus-14th-gen-rtx-4050') || products[0];
+    // Default to MUFTI shirt (product id 1) matching screenshots
+    if (!prod) {
+      prod = products.find((p) => p.brand === 'MUFTI') || products[0];
     }
+    currentProduct = prod;
+    currentSellingPrice = Number(prod.selling_price) || 999;
 
-    // Update Page Elements
-    document.title = `${product.name} - Flipkart`;
+    // Populate Page Elements
+    document.title = `${prod.name} - Flipkart`;
+    const titleEl = document.getElementById('pd-title');
+    if (titleEl) titleEl.textContent = prod.name;
+
+    const brandStoreEl = document.getElementById('pd-brand-store');
+    if (brandStoreEl) brandStoreEl.textContent = `Visit ${prod.brand || 'brand'} store`;
 
     const mainImg = document.getElementById('pd-main-img');
     if (mainImg) {
-      mainImg.src = product.img1 || './assets/images/hp_victus_opt.jpg';
-      mainImg.alt = product.name;
-      mainImg.onerror = function() {
-        if (!this._retried) {
-          this._retried = true;
-          if (this.src.indexOf('/real/') === -1) {
-            this.src = (product.img1 || '').replace('assets/images/', 'assets/images/real/');
-          } else {
-            this.src = (product.img1 || '').replace('assets/images/real/', 'assets/images/');
-          }
-        } else {
-          this.src = './assets/images/hp_victus_laptop.svg';
-        }
-      };
+      mainImg.src = prod.img1 || './assets/images/mufti_check_shirt.jpg';
+      mainImg.alt = prod.name;
     }
 
-    const brandEl = document.getElementById('pd-brand-name');
-    if (brandEl) {
-      if ((product.brand || '').toUpperCase() === 'FLIPKART') {
-        brandEl.innerHTML = `<img src="./assets/images/flipkart_full_logo.svg" alt="Flipkart" style="height: 18px; width: auto; vertical-align: middle;">`;
-      } else {
-        brandEl.textContent = product.brand || 'HP';
-      }
-    }
-    document.getElementById('pd-title').textContent = product.name || '';
-    document.getElementById('pd-rating-val').textContent = product.rating || '4.5';
-    document.getElementById('pd-review-val').textContent = `${product.review_count || '1,280'} Ratings & 340 Reviews`;
+    const ratingVal = document.getElementById('pd-rating-val');
+    if (ratingVal) ratingVal.textContent = prod.rating || '4';
 
-    const mrp = Number(product.mrp) || 0;
-    const price = Number(product.selling_price) || 0;
-    const discountRate = mrp > 0 ? Math.round(((mrp - price) / mrp) * 100) : product.discount_percent || 23;
+    const reviewVal = document.getElementById('pd-review-val');
+    if (reviewVal) reviewVal.textContent = prod.review_count || '221';
 
-    document.getElementById('pd-discount-tag').textContent = `↓ ${discountRate}%`;
-    document.getElementById('pd-mrp-val').textContent = `₹${currencyFormatter.format(mrp)}`;
-    document.getElementById('pd-price-val').textContent = `₹${currencyFormatter.format(price)}`;
+    const discountEl = document.getElementById('pd-discount');
+    if (discountEl) discountEl.textContent = prod.discount_label || `↓ ${prod.discount_percent}%`;
 
-    const deliveryText = product.delivery_text || 'Get it by 10 Oct';
-    document.getElementById('pd-delivery-val').innerHTML = `Get it by <b>${deliveryText.replace('Get it by ', '')}</b> | <span style="color: #16a34a; font-weight: 700;">FREE Delivery</span>`;
+    const mrpEl = document.getElementById('pd-mrp');
+    if (mrpEl) mrpEl.textContent = `₹${currencyFormatter.format(prod.mrp || 2999)}`;
 
-    document.getElementById('pd-specs-container').innerHTML =
-      product.features || '<p>High performance gaming machine with official manufacturer warranty.</p>';
+    const priceEl = document.getElementById('pd-price');
+    if (priceEl) priceEl.textContent = `₹${currencyFormatter.format(currentSellingPrice)}`;
 
-    // Update Bottom Buttons
-    const emiText = product.emi_price || `From ₹${currencyFormatter.format(Math.round(price / 3))}/m`;
-    const btnEmiSub = document.getElementById('btn-emi-sub');
-    if (btnEmiSub) btnEmiSub.textContent = emiText;
-
-    const btnBuyNowSub = document.getElementById('btn-buynow-sub');
-    if (btnBuyNowSub) btnBuyNowSub.textContent = `at ₹${currencyFormatter.format(price)}`;
-
-    // Wishlist Toggle
-    const savedWishlist = JSON.parse(localStorage.getItem('flipkart_wishlist') || '[]');
-    if (savedWishlist.includes(product.id) && wishlistBtn) {
-      wishlistBtn.classList.add('active');
+    if (btnBuyNow) {
+      btnBuyNow.textContent = `Buy at ₹${currencyFormatter.format(currentSellingPrice)}`;
     }
 
-    if (wishlistBtn) {
-      wishlistBtn.addEventListener('click', () => {
-        const list = JSON.parse(localStorage.getItem('flipkart_wishlist') || '[]');
-        const idx = list.indexOf(product.id);
-        if (idx > -1) {
-          list.splice(idx, 1);
-          wishlistBtn.classList.remove('active');
-          showToast('Removed from Wishlist');
-        } else {
-          list.push(product.id);
-          wishlistBtn.classList.add('active');
-          showToast('Added to Wishlist ❤️');
-        }
-        localStorage.setItem('flipkart_wishlist', JSON.stringify(list));
-      });
+    const badgeEl = document.getElementById('pd-badge');
+    if (badgeEl) {
+      badgeEl.textContent = prod.badge || 'Big Billion Days Price';
     }
 
-    // Share Button
-    if (shareBtn) {
-      shareBtn.addEventListener('click', () => {
-        if (navigator.share) {
-          navigator.share({
-            title: product.name,
-            text: `Check out ${product.name} on Flipkart Big Billion Days!`,
-            url: window.location.href,
-          }).catch(() => {});
-        } else {
-          navigator.clipboard?.writeText(window.location.href);
-          showToast('Link copied to clipboard! 📋');
-        }
-      });
+    const deliveryEl = document.getElementById('pd-delivery-text');
+    if (deliveryEl) {
+      deliveryEl.textContent = prod.delivery_text || 'Delivery by 10 Oct, Sat';
     }
 
-    // Variants (if available)
-    const prodVariants = variants.filter((v) => v.product_id === product.id);
-    const variantWrap = document.getElementById('pd-variant-wrap');
-    const variantChips = document.getElementById('pd-variant-chips');
+    const sellerNameEl = document.getElementById('pd-seller-name');
+    if (sellerNameEl) sellerNameEl.textContent = prod.seller_name || 'HSAtlastradeFashion';
 
-    if (prodVariants.length > 0 && variantWrap && variantChips) {
-      variantWrap.style.display = 'block';
-      variantChips.innerHTML = '';
-      prodVariants.forEach((v, i) => {
-        const chip = document.createElement('button');
-        chip.className = `variant-chip ${i === 0 ? 'active' : ''}`;
-        chip.textContent = v.storage || v.size || v.color;
-        chip.addEventListener('click', () => {
-          variantChips.querySelectorAll('.variant-chip').forEach((c) => c.classList.remove('active'));
-          chip.classList.add('active');
-          const vPrice = Number(v.selling_price) || price;
-          document.getElementById('pd-price-val').textContent = `₹${currencyFormatter.format(vPrice)}`;
-          if (btnBuyNowSub) btnBuyNowSub.textContent = `at ₹${currencyFormatter.format(vPrice)}`;
-          showToast(`Selected: ${chip.textContent}`);
+    const fullDescEl = document.getElementById('pd-full-description');
+    if (fullDescEl) {
+      fullDescEl.innerHTML = prod.features || `<p>${prod.name} crafted from pure cotton with standard regular/slim fit.</p>`;
+    }
+
+    // AD tag & Authorized Seller Shield visibility
+    const adTagEl = document.getElementById('pd-ad-tag');
+    if (adTagEl) {
+      adTagEl.style.display = prod.ad ? 'block' : 'none';
+    }
+
+    const authBadgeEl = document.getElementById('pd-auth-badge');
+    if (authBadgeEl) {
+      authBadgeEl.style.display = prod.authorized_seller ? 'block' : 'none';
+    }
+
+    const dealPriceText = document.getElementById('pd-deal-price-text');
+    if (dealPriceText) {
+      const dealVal = prod.deal_price || (currentSellingPrice - 50);
+      dealPriceText.textContent = `Buy at ₹${currencyFormatter.format(dealVal)}`;
+    }
+
+    // Populate Specs
+    const specsGrid = document.getElementById('pd-specs-grid');
+    if (specsGrid && prod.fabric) {
+      specsGrid.innerHTML = `
+        <div class="pd-spec-item"><span class="pd-spec-label">Pack of</span><span class="pd-spec-value">${prod.pack_of || '1'}</span></div>
+        <div class="pd-spec-item"><span class="pd-spec-label">Fabric</span><span class="pd-spec-value">${prod.fabric || 'Pure Cotton'}</span></div>
+        <div class="pd-spec-item"><span class="pd-spec-label">Sleeve</span><span class="pd-spec-value">${prod.sleeve || 'Full Sleeve'}</span></div>
+        <div class="pd-spec-item"><span class="pd-spec-label">Pattern</span><span class="pd-spec-value">${prod.pattern || 'Checkered'}</span></div>
+        <div class="pd-spec-item"><span class="pd-spec-label">Collar</span><span class="pd-spec-value">${prod.collar || 'Spread'}</span></div>
+        <div class="pd-spec-item"><span class="pd-spec-label">Color</span><span class="pd-spec-value">${prod.color || 'Blue, White, Yellow'}</span></div>
+      `;
+    }
+
+    // Populate Similar Products
+    const similarGrid = document.getElementById('pd-similar-grid');
+    if (similarGrid && similarProducts.length > 0) {
+      similarGrid.innerHTML = '';
+      similarProducts.forEach((item) => {
+        const itemCard = document.createElement('div');
+        itemCard.className = 'pd-similar-card';
+        itemCard.innerHTML = `
+          <div class="pd-similar-img-box">
+            <img src="${item.img1}" alt="${item.name}" onerror="this.src='./assets/images/cat_men.jpg';">
+            <span class="pd-similar-rating">${item.rating} ★</span>
+          </div>
+          <div class="pd-similar-info">
+            <div class="pd-similar-title-txt">${item.short_name || item.name}</div>
+            <div class="pd-similar-price-row">
+              <span class="pd-similar-discount">${item.discount_label}</span>
+              <span class="pd-similar-price">₹${currencyFormatter.format(item.selling_price)}</span>
+            </div>
+            ${item.badge ? `<div style="background: #6a1b9a; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; margin-top: 4px; display: inline-block;">${item.badge}</div>` : ''}
+          </div>
+        `;
+        itemCard.addEventListener('click', () => {
+          window.location.href = `product-detail.html?id=${item.id}`;
         });
-        variantChips.appendChild(chip);
-      });
-    } else if (variantWrap) {
-      variantWrap.style.display = 'none';
-    }
-
-    // Bottom Action Handlers
-    if (btnAddCartIcon) {
-      btnAddCartIcon.addEventListener('click', () => {
-        const cart = JSON.parse(localStorage.getItem('flipkart_cart') || '[]');
-        cart.push(product.id);
-        localStorage.setItem('flipkart_cart', JSON.stringify(cart));
-        updateCartCount();
-        showToast('Added to Cart 🛒');
-      });
-    }
-
-    if (btnBuyEmi) {
-      btnBuyEmi.addEventListener('click', () => {
-        showToast('Select EMI Option: No Cost EMI starting at ₹52,704/month');
-      });
-    }
-
-    if (btnBuyNowYellow) {
-      btnBuyNowYellow.addEventListener('click', () => {
-        showToast(`Proceeding to Buy ${product.short_name || 'Product'} at ₹${currencyFormatter.format(price)}!`);
+        similarGrid.appendChild(itemCard);
       });
     }
   } catch (err) {
-    console.error('Error loading product detail:', err);
+    console.error('Failed to load product details:', err);
   }
 }
 
-// Search input inside product page
-const searchInput = document.getElementById('pd-search-input');
-if (searchInput) {
-  searchInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      window.location.href = `index.html?q=${encodeURIComponent(searchInput.value)}`;
-    }
-  });
-}
-
-loadProductDetails();
+loadProduct();

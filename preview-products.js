@@ -116,6 +116,23 @@ function createProductCard(product) {
     }
   };
 
+  // AD tag (Image 1 top left)
+  if (product.ad) {
+    const adTag = document.createElement('span');
+    adTag.className = 'card-ad-tag';
+    adTag.textContent = 'AD';
+    imageBox.appendChild(adTag);
+  }
+
+  // Brand Authorized Seller Shield (Image 1 bottom right)
+  if (product.authorized_seller) {
+    const shield = document.createElement('img');
+    shield.src = './assets/images/brand_seller.svg';
+    shield.alt = 'Brand Authorized Seller';
+    shield.className = 'card-auth-shield';
+    imageBox.appendChild(shield);
+  }
+
   imageBox.appendChild(wishlistBtn);
   imageBox.appendChild(img);
   imageBox.appendChild(ratingBadge);
@@ -132,9 +149,12 @@ function createProductCard(product) {
       <img src="./assets/images/f_assured.svg" alt="Flipkart Assured" class="assured-badge-img">
       <img src="./assets/images/flipkart_full_logo.svg" alt="Flipkart" style="height: 16px; width: auto; display: inline-block;">
     `;
+  } else if (product.assured) {
+    brandRow.innerHTML = `
+      <span class="brand-name">${escapeHtml(product.brand || '')}</span>
+    `;
   } else {
     brandRow.innerHTML = `
-      <img src="./assets/images/f_assured.svg" alt="Flipkart Assured" class="assured-badge-img">
       <span class="brand-name">${escapeHtml(product.brand || '')}</span>
     `;
   }
@@ -148,7 +168,7 @@ function createProductCard(product) {
   const priceRow = document.createElement('div');
   priceRow.className = 'pricing-row';
 
-  const discountLabel = product.discount_label || `↓ ${product.discount_percent || 90}`;
+  const discountLabel = product.discount_label || `↓ ${product.discount_percent || 90}%`;
   const mrpValue = Number(product.mrp) || 0;
   const sellingValue = Number(product.selling_price) || 0;
 
@@ -167,7 +187,16 @@ function createProductCard(product) {
   infoBox.appendChild(brandRow);
   infoBox.appendChild(title);
   infoBox.appendChild(priceRow);
-  infoBox.appendChild(deliveryLine);
+
+  // Big Billion Days / Event Price Badge (Image 1)
+  if (product.badge) {
+    const badgeEl = document.createElement('div');
+    badgeEl.className = `card-event-badge ${product.badge.includes('Lowest') ? 'lowest-price' : 'bbd-price'}`;
+    badgeEl.textContent = product.badge;
+    infoBox.appendChild(badgeEl);
+  } else {
+    infoBox.appendChild(deliveryLine);
+  }
 
   card.appendChild(imageBox);
   card.appendChild(infoBox);
