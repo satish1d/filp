@@ -100,11 +100,22 @@ async function loadProductDetails() {
 
     const mainImg = document.getElementById('pd-main-img');
     if (mainImg) {
-      mainImg.src = product.img1 || './assets/images/hp_victus_laptop.svg';
+      mainImg.src = product.img1 || './assets/images/real/hp_victus_opt.jpg';
       mainImg.alt = product.name;
+      mainImg.onerror = function() {
+        this.onerror = null;
+        this.src = './assets/images/hp_victus_laptop.svg';
+      };
     }
 
-    document.getElementById('pd-brand-name').textContent = product.brand || 'HP';
+    const brandEl = document.getElementById('pd-brand-name');
+    if (brandEl) {
+      if ((product.brand || '').toUpperCase() === 'FLIPKART') {
+        brandEl.innerHTML = `<img src="./assets/images/flipkart_full_logo.svg" alt="Flipkart" style="height: 18px; width: auto; vertical-align: middle;">`;
+      } else {
+        brandEl.textContent = product.brand || 'HP';
+      }
+    }
     document.getElementById('pd-title').textContent = product.name || '';
     document.getElementById('pd-rating-val').textContent = product.rating || '4.5';
     document.getElementById('pd-review-val').textContent = `${product.review_count || '1,280'} Ratings & 340 Reviews`;

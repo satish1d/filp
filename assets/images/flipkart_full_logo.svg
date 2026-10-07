@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 44" width="100%" height="100%">
+  <!-- Combined Logo: Blue Speed 'f' + Bold Italic 'Flipkart' Wordmark -->
+  <defs>
+    <linearGradient id="fullFkBlueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0459d8"/>
+      <stop offset="100%" stop-color="#0142b3"/>
+    </linearGradient>
+    <linearGradient id="fullStreakFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0459d8" stop-opacity="0.1"/>
+      <stop offset="60%" stop-color="#0459d8" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#0459d8" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Left: Speed 'f' Icon -->
+  <g transform="translate(0, 3) scale(0.32)">
+    <!-- Speed streaks on left crossbar -->
+    <path d="M 8 62 L 46 62 L 46 66 L 14 66 Z" fill="url(#fullStreakFade)"/>
+    <path d="M 16 67.5 L 46 67.5 L 46 72 L 20 72 Z" fill="url(#fullStreakFade)"/>
+    <path d="M 0 73.5 L 45 73.5 L 45 78 L 6 78 Z" fill="url(#fullStreakFade)"/>
+
+    <!-- Main Italic 'f' Shape -->
+    <path d="
+      M 42 108
+      L 58 108
+      L 66 68
+      L 88 68
+      C 93 68, 96 65, 96 60
+      C 96 55, 93 52, 88 52
+      L 70 52
+      L 73 38
+      C 76 22, 85 18, 98 18
+      C 102 18, 104 16, 104 12
+      C 104 8, 100 6, 94 6
+      C 73 6, 60 15, 54 36
+      L 51 52
+      L 30 52
+      C 26 52, 24 55, 24 60
+      C 24 65, 26 68, 30 68
+      L 47 68
+      Z
+    " fill="url(#fullFkBlueGrad)"/>
+  </g>
+
+  <!-- Right: Bold Italic 'Flipkart' Wordmark -->
+  <text x="42" y="31" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-style="italic" font-size="28" fill="#181c20" letter-spacing="-0.8">Flipkart</text>
+</svg>

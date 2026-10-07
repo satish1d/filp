@@ -1,12 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 24" width="75" height="18">
-  <!-- F Assured Badge -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 105 24" width="78" height="18">
+  <!-- Flipkart Assured Badge with speed 'f' -->
   <g>
     <!-- Assured background capsule -->
-    <rect x="0" y="2" width="75" height="20" rx="10" fill="#2874f0"/>
-    <!-- Yellow F Circle -->
-    <circle cx="10" cy="12" r="8.5" fill="#ffe11b"/>
-    <text x="10" y="16.5" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-style="italic" font-size="12" fill="#2874f0" text-anchor="middle">f</text>
-    <!-- Assured text -->
-    <text x="21" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-style="italic" font-size="11" fill="#ffffff">Assured</text>
+    <rect x="0" y="2" width="105" height="20" rx="10" fill="#2874f0"/>
+    
+    <!-- Yellow circle for 'f' icon -->
+    <circle cx="11" cy="12" r="8.5" fill="#ffe11b"/>
+    
+    <!-- Blue 'f' with speed lines inside yellow circle -->
+    <g transform="translate(4, 5.5) scale(0.14)">
+      <!-- Speed line -->
+      <path d="M 6 54 L 40 54 L 40 58 L 10 58 Z" fill="#0555cf"/>
+      <path d="M 0 63 L 38 63 L 38 66 L 4 66 Z" fill="#0555cf"/>
+      <!-- 'f' body -->
+      <path d="
+        M 34 92 
+        L 50 92 
+        L 58 55 
+        L 78 55 
+        C 82 55, 84 52, 84 48 
+        C 84 44, 82 42, 77 42 
+        L 61 42 
+        L 64 29 
+        C 67 16, 75 12, 88 12 
+        C 91 12, 93 11, 93 7 
+        C 93 3, 90 2, 84 2 
+        C 64 2, 51 10, 46 29 
+        L 44 42 
+        L 22 42 
+        C 20 42, 19 44, 19 48 
+        C 19 52, 21 55, 26 55 
+        L 41 55 
+        Z
+      " fill="#0555cf"/>
+    </g>
+
+    <!-- Assured italic text -->
+    <text x="24" y="16" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-style="italic" font-size="12" fill="#ffffff" letter-spacing="-0.3">Assured</text>
   </g>
 </svg>

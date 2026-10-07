@@ -100,9 +100,13 @@ function createProductCard(product) {
   // Product Image
   const img = document.createElement('img');
   img.className = 'product-img';
-  img.src = product.img1 || './assets/images/chair.svg';
+  img.src = product.img1 || './assets/images/real/chair_opt.jpg';
   img.alt = product.name || 'Product Image';
   img.loading = 'lazy';
+  img.onerror = function() {
+    this.onerror = null;
+    this.src = './assets/images/chair.svg';
+  };
 
   imageBox.appendChild(wishlistBtn);
   imageBox.appendChild(img);
@@ -115,10 +119,17 @@ function createProductCard(product) {
   // Assured + Brand Row
   const brandRow = document.createElement('div');
   brandRow.className = 'brand-assured-row';
-  brandRow.innerHTML = `
-    <img src="./assets/images/f_assured.svg" alt="Flipkart Assured" class="assured-badge-img">
-    <span class="brand-name">${escapeHtml(product.brand || 'FLIPKART')}</span>
-  `;
+  if ((product.brand || '').toUpperCase() === 'FLIPKART') {
+    brandRow.innerHTML = `
+      <img src="./assets/images/f_assured.svg" alt="Flipkart Assured" class="assured-badge-img">
+      <img src="./assets/images/flipkart_full_logo.svg" alt="Flipkart" style="height: 16px; width: auto; display: inline-block;">
+    `;
+  } else {
+    brandRow.innerHTML = `
+      <img src="./assets/images/f_assured.svg" alt="Flipkart Assured" class="assured-badge-img">
+      <span class="brand-name">${escapeHtml(product.brand || '')}</span>
+    `;
+  }
 
   // Truncated Product Title
   const title = document.createElement('div');
@@ -198,9 +209,15 @@ function filterProducts() {
   let filtered = allProducts;
 
   if (currentCategory !== 'all') {
-    filtered = filtered.filter(
-      (p) => (p.category || '').toLowerCase() === currentCategory.toLowerCase()
-    );
+    if (currentCategory.toLowerCase() === 'fashion') {
+      filtered = filtered.filter(
+        (p) => ['fashion', 'men', 'women', 'kids'].includes((p.category || '').toLowerCase())
+      );
+    } else {
+      filtered = filtered.filter(
+        (p) => (p.category || '').toLowerCase() === currentCategory.toLowerCase()
+      );
+    }
   }
 
   if (query) {
@@ -208,7 +225,8 @@ function filterProducts() {
       (p) =>
         (p.name || '').toLowerCase().includes(query) ||
         (p.brand || '').toLowerCase().includes(query) ||
-        (p.short_name || '').toLowerCase().includes(query)
+        (p.short_name || '').toLowerCase().includes(query) ||
+        (p.category || '').toLowerCase().includes(query)
     );
   }
 
@@ -220,8 +238,46 @@ if (categoryNav) {
   categoryNav.querySelectorAll('.category-item').forEach((item) => {
     item.addEventListener('click', () => {
       categoryNav.querySelectorAll('.category-item').forEach((c) => c.classList.remove('active'));
+      // Remove active state from fashion strip cards
+      document.querySelectorAll('.fashion-cat-card').forEach((fc) => fc.classList.remove('active'));
       item.classList.add('active');
       currentCategory = item.dataset.category || 'all';
+      filterProducts();
+    });
+  });
+}
+
+// 6b. Fashion Strip (Men, Women, Kids) Click Handler
+const fashionStrip = document.getElementById('fashion-strip');
+if (fashionStrip) {
+  fashionStrip.querySelectorAll('.fashion-cat-card').forEach((card) => {
+    card.addEventListener('click', () => {
+      const selectedCat = card.dataset.category;
+      const isAlreadyActive = card.classList.contains('active');
+
+      fashionStrip.querySelectorAll('.fashion-cat-card').forEach((fc) => fc.classList.remove('active'));
+
+      if (isAlreadyActive) {
+        currentCategory = 'all';
+        const forYouTab = categoryNav?.querySelector('[data-category="all"]');
+        if (forYouTab) {
+          categoryNav?.querySelectorAll('.category-item').forEach((c) => c.classList.remove('active'));
+          forYouTab.classList.add('active');
+        }
+        showToast('Showing all deals');
+      } else {
+        card.classList.add('active');
+        currentCategory = selectedCat;
+        categoryNav?.querySelectorAll('.category-item').forEach((c) => c.classList.remove('active'));
+        showToast(`Showing ${selectedCat}'s Deals 🛍️`);
+        
+        // Scroll to products
+        const liveSection = document.querySelector('.live-sale-section');
+        if (liveSection) {
+          liveSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+
       filterProducts();
     });
   });
