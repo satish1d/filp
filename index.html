@@ -118,11 +118,12 @@
         <section class="hero-banner-container">
             <div class="hero-banner-card">
                 <img src="./assets/images/bbd_banner_official.jpg" 
-                     srcset="./assets/images/bbd_banner_official.jpg 1x, ./assets/images/real/bbd_banner_real.jpg 2x"
+                     srcset="./assets/images/bbd_banner_official.jpg 1x, ./assets/images/bbd_banner_real.jpg 2x"
                      alt="The Big Billion Days - Starts 9th Oct" 
                      class="hero-banner-img"
                      loading="eager"
-                     onerror="this.onerror=null; this.src='./assets/images/real/bbd_banner_real.jpg';">
+                     decoding="async"
+                     onerror="if(!this._tried){this._tried=1; this.src='./assets/images/j2.jpg';}else{this.src='./assets/images/bbd_banner.svg';}">
             </div>
         </section>
 
@@ -130,21 +131,33 @@
         <section class="fashion-categories-strip" id="fashion-strip">
             <div class="fashion-cat-card" data-category="Men">
                 <div class="fashion-cat-avatar">
-                    <img src="./assets/images/real/cat_men.jpg" alt="Men" loading="lazy">
+                    <img src="./assets/images/cat_men.jpg" 
+                         alt="Men" 
+                         loading="eager"
+                         decoding="async"
+                         onerror="if(!this._tried){this._tried=1; this.src='./assets/images/real/cat_men.jpg';}">
                 </div>
                 <span class="fashion-cat-title">Men</span>
                 <span class="fashion-cat-offer">Min. 70% Off</span>
             </div>
             <div class="fashion-cat-card" data-category="Women">
                 <div class="fashion-cat-avatar">
-                    <img src="./assets/images/real/cat_women.jpg" alt="Women" loading="lazy">
+                    <img src="./assets/images/cat_women.jpg" 
+                         alt="Women" 
+                         loading="eager"
+                         decoding="async"
+                         onerror="if(!this._tried){this._tried=1; this.src='./assets/images/real/cat_women.jpg';}">
                 </div>
                 <span class="fashion-cat-title">Women</span>
                 <span class="fashion-cat-offer">Min. 80% Off</span>
             </div>
             <div class="fashion-cat-card" data-category="Kids">
                 <div class="fashion-cat-avatar">
-                    <img src="./assets/images/real/cat_kids.jpg" alt="Kids" loading="lazy">
+                    <img src="./assets/images/cat_kids.jpg" 
+                         alt="Kids" 
+                         loading="eager"
+                         decoding="async"
+                         onerror="if(!this._tried){this._tried=1; this.src='./assets/images/real/cat_kids.jpg';}">
                 </div>
                 <span class="fashion-cat-title">Kids</span>
                 <span class="fashion-cat-offer">Under ₹299</span>

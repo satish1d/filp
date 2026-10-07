@@ -100,12 +100,20 @@ function createProductCard(product) {
   // Product Image
   const img = document.createElement('img');
   img.className = 'product-img';
-  img.src = product.img1 || './assets/images/real/chair_opt.jpg';
+  img.src = product.img1 || './assets/images/chair_opt.jpg';
   img.alt = product.name || 'Product Image';
   img.loading = 'lazy';
   img.onerror = function() {
-    this.onerror = null;
-    this.src = './assets/images/chair.svg';
+    if (!this._retried) {
+      this._retried = true;
+      if (this.src.indexOf('/real/') === -1) {
+        this.src = (product.img1 || '').replace('assets/images/', 'assets/images/real/');
+      } else {
+        this.src = (product.img1 || '').replace('assets/images/real/', 'assets/images/');
+      }
+    } else {
+      this.src = './assets/images/chair.svg';
+    }
   };
 
   imageBox.appendChild(wishlistBtn);

@@ -260,12 +260,19 @@ body {
 .fashion-cat-avatar {
   width: 66px;
   height: 66px;
+  min-width: 66px;
+  min-height: 66px;
   border-radius: 50%;
+  -webkit-border-radius: 50%;
   overflow: hidden;
   border: 2.5px solid #2874f0;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
   margin-bottom: 7px;
-  background: #ffffff;
+  background: #f0f6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 .fashion-cat-avatar img {
@@ -273,6 +280,10 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  font-size: 0;
+  color: transparent;
   transition: transform 0.25s ease;
 }
 

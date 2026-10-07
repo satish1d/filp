@@ -100,11 +100,19 @@ async function loadProductDetails() {
 
     const mainImg = document.getElementById('pd-main-img');
     if (mainImg) {
-      mainImg.src = product.img1 || './assets/images/real/hp_victus_opt.jpg';
+      mainImg.src = product.img1 || './assets/images/hp_victus_opt.jpg';
       mainImg.alt = product.name;
       mainImg.onerror = function() {
-        this.onerror = null;
-        this.src = './assets/images/hp_victus_laptop.svg';
+        if (!this._retried) {
+          this._retried = true;
+          if (this.src.indexOf('/real/') === -1) {
+            this.src = (product.img1 || '').replace('assets/images/', 'assets/images/real/');
+          } else {
+            this.src = (product.img1 || '').replace('assets/images/real/', 'assets/images/');
+          }
+        } else {
+          this.src = './assets/images/hp_victus_laptop.svg';
+        }
       };
     }
 
