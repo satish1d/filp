@@ -1,0 +1,223 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 562" width="100%" height="100%">
+  <defs>
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070e38"/>
+      <stop offset="40%" stop-color="#121858"/>
+      <stop offset="80%" stop-color="#1e1868"/>
+      <stop offset="100%" stop-color="#0b1035"/>
+    </linearGradient>
+    <radialGradient id="clockGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffe875" stop-opacity="0.9"/>
+      <stop offset="40%" stop-color="#f5a623" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#121858" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffe98a"/>
+      <stop offset="50%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#aa7c11"/>
+    </linearGradient>
+    <linearGradient id="bbdBadgeGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffe000"/>
+      <stop offset="100%" stop-color="#f2994a"/>
+    </linearGradient>
+    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="562" fill="url(#skyGrad)"/>
+
+  <!-- Twinkling stars -->
+  <g fill="#ffffff" opacity="0.8">
+    <circle cx="50" cy="40" r="2"/>
+    <circle cx="120" cy="80" r="1.5"/>
+    <circle cx="180" cy="30" r="2.5"/>
+    <circle cx="280" cy="90" r="2"/>
+    <circle cx="340" cy="40" r="1.5"/>
+    <circle cx="420" cy="60" r="2"/>
+    <circle cx="680" cy="50" r="2"/>
+    <circle cx="750" cy="110" r="2.5"/>
+    <circle cx="890" cy="40" r="1.5"/>
+    <circle cx="940" cy="90" r="2"/>
+    <circle cx="90" cy="180" r="1.5"/>
+    <circle cx="40" cy="260" r="2"/>
+    <circle cx="950" cy="220" r="2"/>
+    <polygon points="180,25 183,30 188,30 184,33 186,38 180,35 174,38 176,33 172,30 177,30" fill="#fff" opacity="0.9"/>
+    <polygon points="920,75 922,79 926,79 923,82 924,86 920,83 916,86 917,82 914,79 918,79" fill="#fff" opacity="0.9"/>
+    <polygon points="410,50 412,54 416,54 413,57 414,61 410,58 406,61 407,57 404,54 408,54" fill="#fff" opacity="0.9"/>
+  </g>
+
+  <!-- Top Badges / Sponsors -->
+  <g transform="translate(240, 180)">
+    <rect x="0" y="0" width="185" height="36" rx="4" fill="#000000" opacity="0.85" stroke="#4a5568" stroke-width="1"/>
+    <text x="10" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" fill="#a0aec0">Powered by</text>
+    <text x="10" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-weight="bold" font-size="11" fill="#ffffff">SAMSUNG <tspan fill="#63b3ed">Galaxy</tspan></text>
+    <line x1="105" y1="6" x2="105" y2="30" stroke="#4a5568" stroke-width="1"/>
+    <text x="112" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-weight="bold" font-size="11" fill="#ffffff">intel <tspan font-size="9" fill="#90cdf4">CORE</tspan></text>
+    <rect x="156" y="13" width="22" height="13" rx="2" fill="#3182ce"/>
+    <text x="158" y="22" font-family="sans-serif" font-size="8" font-weight="bold" fill="#fff">ULTRA</text>
+  </g>
+
+  <!-- The Big Billion Days Badge -->
+  <g transform="translate(60, 175)">
+    <!-- Yellow Ribbon Emblem -->
+    <path d="M 40 -10 L 150 -10 L 165 40 L 150 90 L 40 90 L 25 40 Z" fill="#e53e3e" opacity="0.9"/>
+    <circle cx="95" cy="40" r="62" fill="url(#bbdBadgeGrad)" filter="url(#dropShadow)" stroke="#d69e2e" stroke-width="3"/>
+    <circle cx="95" cy="40" r="54" fill="#0d1b3e"/>
+    <circle cx="95" cy="40" r="51" fill="#ffd700"/>
+    
+    <text x="95" y="24" font-family="Arial Black, Impact, sans-serif" font-size="12" font-weight="900" fill="#0c1840" text-anchor="middle">★ THE ★</text>
+    <text x="95" y="44" font-family="Arial Black, Impact, sans-serif" font-size="19" font-weight="900" fill="#0c1840" text-anchor="middle" letter-spacing="-0.5">BIG</text>
+    <text x="95" y="62" font-family="Arial Black, Impact, sans-serif" font-size="15" font-weight="900" fill="#0c1840" text-anchor="middle">BILLION</text>
+    <text x="95" y="77" font-family="Arial Black, Impact, sans-serif" font-size="12" font-weight="900" fill="#c53030" text-anchor="middle">DAYS</text>
+  </g>
+
+  <!-- Big Sale Text -->
+  <g transform="translate(60, 310)">
+    <text x="0" y="0" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="28" fill="#ffffff" letter-spacing="1">STARTS</text>
+    <text x="0" y="55" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="58" fill="#ffffff" letter-spacing="-1">9<tspan font-size="34">TH</tspan> OCT</text>
+    
+    <text x="0" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="15" fill="#ffffff">
+      Early Access on <tspan fill="#ffe066" font-weight="bold">8th Oct</tspan> for Plus, <tspan fill="#e2e8f0" font-weight="bold">BLACK</tspan>
+    </text>
+    <text x="0" y="105" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="14" fill="#ffffff">
+      &amp; Flipkart credit card members
+    </text>
+  </g>
+
+  <!-- Tower Clock Centerpiece -->
+  <g transform="translate(560, 260)">
+    <!-- Back Glow -->
+    <circle cx="0" cy="0" r="170" fill="url(#clockGlow)"/>
+
+    <!-- Clock Palace / Pavilion Structure -->
+    <!-- Roof Dome -->
+    <path d="M -110 -110 C -110 -200 -20 -230 0 -240 C 20 -230 110 -200 110 -110 Z" fill="#1b2568" stroke="url(#goldGrad)" stroke-width="4"/>
+    <path d="M -10 -240 L 0 -270 L 10 -240 Z" fill="url(#goldGrad)"/>
+    <circle cx="0" cy="-275" r="7" fill="#ffd700"/>
+
+    <!-- Arch Pillars -->
+    <rect x="-105" y="-110" width="20" height="230" fill="#182055" stroke="url(#goldGrad)" stroke-width="2"/>
+    <rect x="85" y="-110" width="20" height="230" fill="#182055" stroke="url(#goldGrad)" stroke-width="2"/>
+    <path d="M -105 -110 Q 0 -160 105 -110" fill="none" stroke="url(#goldGrad)" stroke-width="6"/>
+
+    <!-- Clock Outer Rim -->
+    <circle cx="0" cy="0" r="105" fill="#1a225a" stroke="url(#goldGrad)" stroke-width="8" filter="url(#dropShadow)"/>
+    <!-- Clock Dial Face -->
+    <circle cx="0" cy="0" r="92" fill="#fff5b8" stroke="#d4af37" stroke-width="3"/>
+    
+    <!-- Clock Roman / Arabic Numerals -->
+    <g font-family="'Times New Roman', Georgia, serif" font-size="16" font-weight="bold" fill="#332211" text-anchor="middle">
+      <text x="0" y="-70">12</text>
+      <text x="38" y="-60">1</text>
+      <text x="68" y="-34">2</text>
+      <text x="78" y="6">3</text>
+      <text x="68" y="46">4</text>
+      <text x="38" y="72">5</text>
+      <text x="0" y="80">6</text>
+      <text x="-38" y="72">7</text>
+      <text x="-68" y="46">8</text>
+      <text x="-78" y="6">9</text>
+      <text x="-68" y="-34">10</text>
+      <text x="-38" y="-60">11</text>
+    </g>
+
+    <!-- Minute ticks -->
+    <circle cx="0" cy="0" r="88" fill="none" stroke="#6d5420" stroke-width="1.5" stroke-dasharray="2, 7.2"/>
+
+    <!-- Hands -->
+    <!-- Hour Hand pointing to 8/9 -->
+    <line x1="0" y1="0" x2="-45" y2="-12" stroke="#1a1a1a" stroke-width="5" stroke-linecap="round"/>
+    <!-- Minute Hand pointing to 12 -->
+    <line x1="0" y1="0" x2="2" y2="-62" stroke="#1a1a1a" stroke-width="3.5" stroke-linecap="round"/>
+    <!-- Center Pivot -->
+    <circle cx="0" cy="0" r="6" fill="#aa7c11"/>
+    <circle cx="0" cy="0" r="3" fill="#ffffff"/>
+  </g>
+
+  <!-- Rohit Sharma / Celebrity Illustration & Silhouette on Right -->
+  <g transform="translate(800, 310)">
+    <!-- Suited Body -->
+    <!-- Shadow -->
+    <ellipse cx="0" cy="180" rx="90" ry="20" fill="#000" opacity="0.4"/>
+    
+    <!-- Dark Navy Suit Jacket -->
+    <path d="M -70 120 C -70 50 -50 0 -10 -20 C 30 0 50 50 50 120 C 50 180 40 250 40 250 L -60 250 Z" fill="#151b30"/>
+    <!-- Suit Lapels -->
+    <path d="M -10 -20 L -35 60 L -10 60 L 5 -20 Z" fill="#202742"/>
+    <path d="M -10 -20 L 15 60 L -10 60 L -10 -20 Z" fill="#202742"/>
+    <!-- White Shirt & Tie / Pocket Square -->
+    <polygon points="-10,-18 -4,15 -16,15" fill="#ffffff"/>
+    <rect x="-42" y="52" width="12" height="4" fill="#ffffff" rx="1"/>
+
+    <!-- Left Arm Pointing Left -->
+    <!-- Shoulder to elbow -->
+    <path d="M -60 20 C -90 40 -120 70 -130 90 C -140 100 -160 80 -175 75 C -190 70 -200 68 -210 65" fill="none" stroke="#151b30" stroke-width="26" stroke-linecap="round"/>
+    <!-- Hand & Pointing Finger -->
+    <g transform="translate(-215, 62)">
+      <!-- Skin tone pointing hand -->
+      <path d="M 10 10 L -30 2 C -35 1 -35 -5 -28 -6 L 8 0 Z" fill="#c68a5c"/>
+      <circle cx="10" cy="5" r="10" fill="#c68a5c"/>
+      <!-- Watch on wrist -->
+      <rect x="16" y="-3" width="10" height="16" rx="2" fill="#111111"/>
+      <circle cx="21" cy="5" r="4" fill="#d4af37"/>
+    </g>
+
+    <!-- Head & Face (Smiling with groomed beard/hair) -->
+    <!-- Neck -->
+    <rect x="-22" y="-45" width="24" height="30" fill="#b97b4f" rx="4"/>
+    <!-- Face Base -->
+    <ellipse cx="-10" cy="-65" rx="30" ry="34" fill="#cf9266"/>
+    <!-- Hair -->
+    <path d="M -42 -75 C -40 -115 10 -115 20 -80 C 22 -65 18 -60 16 -60 C 12 -80 -30 -85 -40 -70 Z" fill="#1a1512"/>
+    <!-- Styled Beard -->
+    <path d="M -38 -65 C -35 -40 -25 -32 -10 -32 C 5 -32 15 -40 18 -65 C 18 -55 10 -40 -10 -40 C -30 -40 -38 -55 -38 -65 Z" fill="#211a16" opacity="0.9"/>
+    <path d="M -22 -48 Q -10 -42 2 -48" stroke="#211a16" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <!-- Eyes and Eyebrows -->
+    <path d="M -30 -75 Q -22 -80 -15 -76" stroke="#1a1512" stroke-width="3" fill="none"/>
+    <path d="M -4 -76 Q 4 -80 12 -75" stroke="#1a1512" stroke-width="3" fill="none"/>
+    <ellipse cx="-22" cy="-70" rx="3" ry="2.5" fill="#2d1e15"/>
+    <ellipse cx="4" cy="-70" rx="3" ry="2.5" fill="#2d1e15"/>
+    <!-- Smile -->
+    <path d="M -22 -44 Q -10 -35 2 -44" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="#ffffff"/>
+  </g>
+
+  <!-- Bottom Bank Sponsors Bar -->
+  <g transform="translate(50, 485)">
+    <!-- Axis Bank -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="115" height="42" rx="4" fill="#97144d"/>
+      <polygon points="12,28 22,12 32,28" fill="#ffffff"/>
+      <text x="36" y="26" font-family="sans-serif" font-weight="900" font-size="12" fill="#ffffff">AXIS BANK</text>
+    </g>
+
+    <!-- ICICI Bank -->
+    <g transform="translate(122, 0)">
+      <rect x="0" y="0" width="160" height="42" rx="4" fill="#ffffff"/>
+      <circle cx="20" cy="21" r="12" fill="#b02a30"/>
+      <path d="M 16 15 L 24 21 L 16 27 Z" fill="#ffffff"/>
+      <text x="38" y="26" font-family="sans-serif" font-weight="900" font-size="13" fill="#b02a30">ICICI Bank</text>
+    </g>
+
+    <!-- 10% Instant Discount -->
+    <g transform="translate(288, 0)">
+      <rect x="0" y="0" width="105" height="42" rx="4" fill="#ffffff"/>
+      <text x="8" y="20" font-family="sans-serif" font-weight="900" font-size="11" fill="#000000">10% Instant</text>
+      <text x="8" y="34" font-family="sans-serif" font-weight="bold" font-size="10" fill="#333333">Discount*</text>
+      <text x="82" y="16" font-family="sans-serif" font-size="7" fill="#666">*T&amp;C Apply</text>
+    </g>
+
+    <!-- Flipkart Axis Bank Credit Card -->
+    <g transform="translate(400, 0)">
+      <rect x="0" y="0" width="220" height="42" rx="4" fill="#ffffff"/>
+      <rect x="6" y="7" width="38" height="28" rx="2" fill="#1a1f38"/>
+      <text x="50" y="20" font-family="sans-serif" font-weight="bold" font-size="10" fill="#000000">Get 10% Savings*</text>
+      <text x="50" y="32" font-family="sans-serif" font-weight="bold" font-size="8" fill="#002d6c">with FLIPKART AXIS BANK Credit Card</text>
+    </g>
+  </g>
+</svg>
