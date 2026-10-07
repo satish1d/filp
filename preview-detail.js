@@ -115,14 +115,15 @@ if (btnAddCart) {
     const cart = JSON.parse(localStorage.getItem('flipkart_cart') || '[]');
     cart.push({
       id: currentProduct?.id || 1,
-      name: currentProduct?.name || 'MUFTI Shirt',
-      size: selectedSize,
+      name: currentProduct?.name || 'Product',
+      size: selectedSize || '1 Unit',
       price: currentSellingPrice,
-      img: currentProduct?.img1 || 'assets/images/mufti_check_shirt.jpg',
+      img: currentProduct?.img1 || 'assets/images/chair_opt.jpg',
     });
     localStorage.setItem('flipkart_cart', JSON.stringify(cart));
     updateCartBadge();
-    showToast(`Added Size ${selectedSize} to Cart 🛒`);
+    const toastMsg = currentProduct?.sizes ? `Added Size ${selectedSize} to Cart 🛒` : `Added to Cart 🛒`;
+    showToast(toastMsg);
   });
 }
 
@@ -298,15 +299,21 @@ async function loadProduct() {
 
     const mainImg = document.getElementById('pd-main-img');
     if (mainImg) {
-      mainImg.src = prod.img1 || './assets/images/mufti_check_shirt.jpg';
+      mainImg.src = prod.img1 || './assets/images/chair_opt.jpg';
       mainImg.alt = prod.name;
+      mainImg.onerror = function() {
+        if (!this._retried) {
+          this._retried = true;
+          this.src = './assets/images/chair_opt.jpg';
+        }
+      };
     }
 
     const ratingVal = document.getElementById('pd-rating-val');
-    if (ratingVal) ratingVal.textContent = prod.rating || '4';
+    if (ratingVal) ratingVal.textContent = prod.rating || '4.5';
 
     const reviewVal = document.getElementById('pd-review-val');
-    if (reviewVal) reviewVal.textContent = prod.review_count || '221';
+    if (reviewVal) reviewVal.textContent = prod.review_count || '1,248';
 
     const discountEl = document.getElementById('pd-discount');
     if (discountEl) discountEl.textContent = prod.discount_label || `↓ ${prod.discount_percent}%`;
@@ -332,11 +339,11 @@ async function loadProduct() {
     }
 
     const sellerNameEl = document.getElementById('pd-seller-name');
-    if (sellerNameEl) sellerNameEl.textContent = prod.seller_name || 'HSAtlastradeFashion';
+    if (sellerNameEl) sellerNameEl.textContent = prod.seller_name || 'RetailNet';
 
     const fullDescEl = document.getElementById('pd-full-description');
     if (fullDescEl) {
-      fullDescEl.innerHTML = prod.features || `<p>${prod.name} crafted from pure cotton with standard regular/slim fit.</p>`;
+      fullDescEl.innerHTML = prod.features || `<p>${prod.name} with authentic 100% genuine quality check.</p>`;
     }
 
     // AD tag & Authorized Seller Shield visibility
@@ -352,21 +359,67 @@ async function loadProduct() {
 
     const dealPriceText = document.getElementById('pd-deal-price-text');
     if (dealPriceText) {
-      const dealVal = prod.deal_price || (currentSellingPrice - 50);
+      const dealVal = prod.deal_price || (currentSellingPrice - 30);
       dealPriceText.textContent = `Buy at ₹${currencyFormatter.format(dealVal)}`;
+    }
+
+    // Size section: Show for products with sizes, hide for electronics/appliances
+    const sizeSection = document.querySelector('.pd-size-section');
+    if (sizeSection) {
+      if (prod.sizes && Array.isArray(prod.sizes) && prod.sizes.length > 0) {
+        sizeSection.style.display = 'block';
+        if (sizePillsContainer) {
+          const avail = prod.available_sizes || prod.sizes;
+          sizePillsContainer.innerHTML = prod.sizes.map((s, idx) => {
+            const isAvail = avail.includes(s);
+            const isActive = idx === 0 && isAvail;
+            if (isActive) selectedSize = s;
+            return `<div class="pd-size-pill ${isActive ? 'active' : ''} ${!isAvail ? 'disabled' : ''}" data-size="${s}">${s}</div>`;
+          }).join('');
+
+          sizePillsContainer.querySelectorAll('.pd-size-pill').forEach((pill) => {
+            pill.addEventListener('click', () => {
+              if (pill.classList.contains('disabled')) {
+                showToast(`Size ${pill.dataset.size} is out of stock`);
+                return;
+              }
+              sizePillsContainer.querySelectorAll('.pd-size-pill').forEach((p) => p.classList.remove('active'));
+              pill.classList.add('active');
+              selectedSize = pill.dataset.size;
+              showToast(`Selected Size: ${selectedSize}`);
+            });
+          });
+        }
+      } else {
+        sizeSection.style.display = 'none';
+        selectedSize = '1 Unit';
+      }
     }
 
     // Populate Specs
     const specsGrid = document.getElementById('pd-specs-grid');
-    if (specsGrid && prod.fabric) {
-      specsGrid.innerHTML = `
-        <div class="pd-spec-item"><span class="pd-spec-label">Pack of</span><span class="pd-spec-value">${prod.pack_of || '1'}</span></div>
-        <div class="pd-spec-item"><span class="pd-spec-label">Fabric</span><span class="pd-spec-value">${prod.fabric || 'Pure Cotton'}</span></div>
-        <div class="pd-spec-item"><span class="pd-spec-label">Sleeve</span><span class="pd-spec-value">${prod.sleeve || 'Full Sleeve'}</span></div>
-        <div class="pd-spec-item"><span class="pd-spec-label">Pattern</span><span class="pd-spec-value">${prod.pattern || 'Checkered'}</span></div>
-        <div class="pd-spec-item"><span class="pd-spec-label">Collar</span><span class="pd-spec-value">${prod.collar || 'Spread'}</span></div>
-        <div class="pd-spec-item"><span class="pd-spec-label">Color</span><span class="pd-spec-value">${prod.color || 'Blue, White, Yellow'}</span></div>
-      `;
+    if (specsGrid) {
+      if (prod.specs && typeof prod.specs === 'object' && Object.keys(prod.specs).length > 0) {
+        specsGrid.innerHTML = Object.entries(prod.specs).map(([label, val]) => `
+          <div class="pd-spec-item"><span class="pd-spec-label">${escapeHtml(label)}</span><span class="pd-spec-value">${escapeHtml(String(val))}</span></div>
+        `).join('');
+      } else if (prod.fabric) {
+        specsGrid.innerHTML = `
+          <div class="pd-spec-item"><span class="pd-spec-label">Pack of</span><span class="pd-spec-value">${prod.pack_of || '1'}</span></div>
+          <div class="pd-spec-item"><span class="pd-spec-label">Fabric</span><span class="pd-spec-value">${prod.fabric || 'Pure Cotton'}</span></div>
+          <div class="pd-spec-item"><span class="pd-spec-label">Sleeve</span><span class="pd-spec-value">${prod.sleeve || 'Full Sleeve'}</span></div>
+          <div class="pd-spec-item"><span class="pd-spec-label">Pattern</span><span class="pd-spec-value">${prod.pattern || 'Checkered'}</span></div>
+          <div class="pd-spec-item"><span class="pd-spec-label">Collar</span><span class="pd-spec-value">${prod.collar || 'Spread'}</span></div>
+          <div class="pd-spec-item"><span class="pd-spec-label">Color</span><span class="pd-spec-value">${prod.color || 'Blue, White, Yellow'}</span></div>
+        `;
+      } else {
+        specsGrid.innerHTML = `
+          <div class="pd-spec-item"><span class="pd-spec-label">Brand</span><span class="pd-spec-value">${escapeHtml(prod.brand || 'Flipkart')}</span></div>
+          <div class="pd-spec-item"><span class="pd-spec-label">Category</span><span class="pd-spec-value">${escapeHtml(prod.category || 'General')}</span></div>
+          <div class="pd-spec-item"><span class="pd-spec-label">Warranty</span><span class="pd-spec-value">1 Year Manufacturer Warranty</span></div>
+          <div class="pd-spec-item"><span class="pd-spec-label">Flipkart Assured</span><span class="pd-spec-value">Verified Quality Checked</span></div>
+        `;
+      }
     }
 
     // Populate Similar Products

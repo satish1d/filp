@@ -106,13 +106,15 @@ function createProductCard(product) {
   img.onerror = function() {
     if (!this._retried) {
       this._retried = true;
-      if (this.src.indexOf('/real/') === -1) {
+      if (product.img1 && product.img1.startsWith('http')) {
+        this.src = './assets/images/chair_opt.jpg';
+      } else if (this.src.indexOf('/real/') === -1) {
         this.src = (product.img1 || '').replace('assets/images/', 'assets/images/real/');
       } else {
         this.src = (product.img1 || '').replace('assets/images/real/', 'assets/images/');
       }
     } else {
-      this.src = './assets/images/chair.svg';
+      this.src = './assets/images/chair_opt.jpg';
     }
   };
 
