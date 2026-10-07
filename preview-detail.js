@@ -57,6 +57,14 @@ function showToast(message) {
   }, 2300);
 }
 
+// HTML Escaping Helper
+function escapeHtml(text) {
+  if (text == null) return '';
+  const div = document.createElement('div');
+  div.textContent = String(text);
+  return div.innerHTML;
+}
+
 // 1. Back Navigation
 if (backBtn) {
   backBtn.addEventListener('click', () => {
@@ -297,16 +305,130 @@ async function loadProduct() {
     const brandStoreEl = document.getElementById('pd-brand-store');
     if (brandStoreEl) brandStoreEl.textContent = `Visit ${prod.brand || 'brand'} store`;
 
-    const mainImg = document.getElementById('pd-main-img');
-    if (mainImg) {
-      mainImg.src = prod.img1 || './assets/images/chair_opt.jpg';
-      mainImg.alt = prod.name;
-      mainImg.onerror = function() {
-        if (!this._retried) {
-          this._retried = true;
-          this.src = './assets/images/chair_opt.jpg';
+    // Setup Swipeable Full Catalog Image Carousel
+    const carouselTrack = document.getElementById('pd-carousel-track');
+    const dotsContainer = document.getElementById('pd-carousel-dots');
+
+    // Collect full catalog images for this product
+    const catalogImages = [];
+    if (prod.img1) catalogImages.push(prod.img1);
+    if (Array.isArray(prod.images)) {
+      prod.images.forEach((img) => {
+        if (img && !catalogImages.includes(img)) catalogImages.push(img);
+      });
+    }
+
+    // Add related catalog images from same category
+    const sameCategoryProds = products.filter(
+      (p) => String(p.category).toLowerCase() === String(prod.category).toLowerCase() && p.id !== prod.id
+    );
+    for (const p of sameCategoryProds) {
+      if (p.img1 && !catalogImages.includes(p.img1)) {
+        catalogImages.push(p.img1);
+        if (catalogImages.length >= 6) break;
+      }
+    }
+
+    // If still less than 4, add from general catalog products
+    if (catalogImages.length < 4) {
+      for (const p of products) {
+        if (p.img1 && !catalogImages.includes(p.img1)) {
+          catalogImages.push(p.img1);
+          if (catalogImages.length >= 4) break;
         }
-      };
+      }
+    }
+
+    if (carouselTrack) {
+      carouselTrack.innerHTML = catalogImages.map((src, idx) => `
+        <div class="pd-carousel-slide" data-index="${idx}">
+          <img src="${src}" alt="${escapeHtml(prod.name)} - Slide ${idx + 1}" ${idx === 0 ? 'id="pd-main-img"' : ''} onerror="this.src='./assets/images/chair_opt.jpg';">
+        </div>
+      `).join('');
+
+      // Render matching carousel dots
+      if (dotsContainer) {
+        dotsContainer.innerHTML = catalogImages.map((_, idx) => `
+          <span class="pd-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}"></span>
+        `).join('');
+
+        // Dot click to slide
+        dotsContainer.querySelectorAll('.pd-dot').forEach((dot) => {
+          dot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const targetIdx = Number(dot.dataset.index);
+            const slideWidth = carouselTrack.clientWidth || carouselTrack.offsetWidth;
+            carouselTrack.scrollTo({ left: targetIdx * slideWidth, behavior: 'smooth' });
+            updateActiveDot(targetIdx);
+          });
+        });
+      }
+
+      function updateActiveDot(activeIdx) {
+        if (!dotsContainer) return;
+        dotsContainer.querySelectorAll('.pd-dot').forEach((dot, idx) => {
+          if (idx === activeIdx) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+      }
+
+      // Live touch scroll tracking for dots
+      let scrollRaf = null;
+      carouselTrack.addEventListener('scroll', () => {
+        if (scrollRaf) cancelAnimationFrame(scrollRaf);
+        scrollRaf = requestAnimationFrame(() => {
+          const slideWidth = carouselTrack.clientWidth || carouselTrack.offsetWidth;
+          if (slideWidth > 0) {
+            const currentIdx = Math.round(carouselTrack.scrollLeft / slideWidth);
+            updateActiveDot(currentIdx);
+          }
+        });
+      }, { passive: true });
+
+      // Mouse drag support for desktop
+      let isMouseDown = false;
+      let startX = 0;
+      let startScroll = 0;
+
+      carouselTrack.addEventListener('mousedown', (e) => {
+        isMouseDown = true;
+        startX = e.pageX;
+        startScroll = carouselTrack.scrollLeft;
+        carouselTrack.style.scrollBehavior = 'auto';
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isMouseDown) {
+          isMouseDown = false;
+          carouselTrack.style.scrollBehavior = 'smooth';
+          const slideWidth = carouselTrack.clientWidth || carouselTrack.offsetWidth;
+          const targetIdx = Math.round(carouselTrack.scrollLeft / slideWidth);
+          carouselTrack.scrollTo({ left: targetIdx * slideWidth, behavior: 'smooth' });
+          updateActiveDot(targetIdx);
+        }
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isMouseDown) return;
+        e.preventDefault();
+        const diffX = e.pageX - startX;
+        carouselTrack.scrollLeft = startScroll - diffX;
+      });
+    } else {
+      const mainImg = document.getElementById('pd-main-img');
+      if (mainImg) {
+        mainImg.src = prod.img1 || './assets/images/chair_opt.jpg';
+        mainImg.alt = prod.name;
+        mainImg.onerror = function() {
+          if (!this._retried) {
+            this._retried = true;
+            this.src = './assets/images/chair_opt.jpg';
+          }
+        };
+      }
     }
 
     const ratingVal = document.getElementById('pd-rating-val');

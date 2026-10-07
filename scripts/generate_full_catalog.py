@@ -183,6 +183,13 @@ for idx, item in enumerate(all_sql_items):
 
     deal_price = max(99, sp - 30)
 
+    # Group catalog images by category so each product gets 4-6 related images
+    cat_images = [x[5].strip() for x in all_sql_items if x[4].strip() == cat and x[5].strip() != img]
+    item_images = [img]
+    for ci in cat_images[:5]:
+        if ci not in item_images:
+            item_images.append(ci)
+
     p_dict = {
         "id": raw_id,
         "md5_id": slug,
@@ -205,6 +212,7 @@ for idx, item in enumerate(all_sql_items):
         "seller_name": "RetailNet" if (idx % 2 == 0) else "OmniTechRetail",
         "seller_rating": "4.4 ★ • 5 years with Flipkart",
         "img1": img,
+        "images": item_images,
         "features": features_html,
         "specs": specs,
         "assured": True
