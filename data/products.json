@@ -13,6 +13,7 @@
       "discount_percent": 90,
       "mrp": 6990,
       "selling_price": 478,
+      "emi_price": "From ₹163/m",
       "delivery_text": "Get it by 11 Oct",
       "img1": "assets/images/chair.svg",
       "features": "<p><b>GREEN SOUL Kiev Orthopedic Executive High Back Office Chair</b></p><ul><li><b>Ergonomic Comfort:</b> Multi-density contoured foam cushion for spine alignment and lumbar relief.</li><li><b>Premium Upholstery:</b> Breathable Slate Grey leatherette with stylish vertical ribbed stitching.</li><li><b>Heavy Duty Base:</b> Polished chrome 5-star swivel base with 360-degree dual-caster nylon wheels.</li><li><b>Adjustable:</b> Smooth Class-4 hydraulic gas lift with 135-degree tilt lock mechanism.</li><li><b>Warranty:</b> 3 Years comprehensive warranty.</li></ul>",
@@ -31,6 +32,7 @@
       "discount_percent": 86,
       "mrp": 5299,
       "selling_price": 699,
+      "emi_price": "From ₹239/m",
       "delivery_text": "Get it by 11 Oct",
       "img1": "assets/images/safari_luggage.svg",
       "features": "<p><b>SAFARI Magnum Hard Body Polycarbonate Set of 3 Trolley Bags</b></p><ul><li><b>3 Piece Nesting Set:</b> 55 cm (Cabin), 65 cm (Medium), 75 cm (Large) hard trolley suitcases.</li><li><b>Material:</b> Scratch-resistant extra thick Polycarbonate shell in deep Royal Navy.</li><li><b>Mobility:</b> 8 silent 360-degree multi-directional spinner wheels.</li><li><b>Lock:</b> Built-in recessed 3-digit TSA lock for international security.</li><li><b>Warranty:</b> 5 Years international warranty.</li></ul>",
@@ -49,6 +51,7 @@
       "discount_percent": 90,
       "mrp": 36999,
       "selling_price": 1899,
+      "emi_price": "From ₹649/m",
       "delivery_text": "Get it by 10 Oct",
       "img1": "assets/images/vivo_v50.svg",
       "features": "<p><b>vivo V50 5G (Rose Red, 256 GB)</b></p><ul><li><b>RAM / Storage:</b> 12 GB RAM | 256 GB ROM | Expandable up to 1 TB</li><li><b>Display:</b> 17.22 cm (6.78 inch) 1.5K 120Hz 3D Curved AMOLED, 2800 nits peak brightness.</li><li><b>Camera:</b> 50MP ZEISS Studio Portrait OIS Main + 50MP Ultra-Wide + 50MP Eye AF Selfie.</li><li><b>Battery:</b> 5500 mAh BlueVolt Battery with 90W FlashCharge.</li><li><b>Processor:</b> Snapdragon 7 Gen 3 4nm Octa-core processor.</li></ul>",
@@ -67,28 +70,57 @@
       "discount_percent": 98,
       "mrp": 154900,
       "selling_price": 3999,
+      "emi_price": "From ₹1,368/m",
       "delivery_text": "Get it by 10 Oct",
       "img1": "assets/images/iphone_17_pro.svg",
       "features": "<p><b>Apple iPhone 17 Pro (Cosmic Orange, 256 GB)</b></p><ul><li><b>Display:</b> 6.3 inch Super Retina XDR ProMotion 120Hz Always-On OLED display with Ceramic Shield 2.</li><li><b>Processor:</b> A19 Pro Bionic Chip with 6-core GPU and hardware ray tracing.</li><li><b>Camera:</b> 48MP Fusion Pro Camera system, 48MP Ultra Wide, and 48MP 5x Telephoto with Action Button.</li><li><b>Build:</b> Grade 5 Aerospace Titanium in Cosmic Desert Orange finish.</li><li><b>Battery:</b> Up to 29 hours video playback with Fast USB-C Charging.</li></ul>",
       "assured": true
+    },
+    {
+      "id": 5,
+      "md5_id": "hp-victus-14th-gen-rtx-4050",
+      "name": "HP Victus Intel Core i7 14th Gen 14700HX - (16 GB/1 TB SSD/Windows 11 Home/6 GB Graphics/NVIDIA GeForce RTX 4050/144 Hz) 16-r1080TX Gaming Laptop",
+      "short_name": "HP Victus 14th Gen...",
+      "brand": "HP",
+      "category": "Electronics",
+      "rating": "4.5",
+      "review_count": "1k+",
+      "discount_label": "↓ 23%",
+      "discount_percent": 23,
+      "mrp": 199990,
+      "selling_price": 153990,
+      "emi_price": "From ₹52,704/m",
+      "delivery_text": "Get it by 10 Oct",
+      "img1": "assets/images/hp_victus_laptop.svg",
+      "features": "<p><b>HP Victus 14th Gen Intel Core i7 Gaming Laptop</b></p><ul><li><b>Processor:</b> Intel Core i7-14700HX (Up to 5.5 GHz with Intel Turbo Boost Technology, 33 MB L3 cache, 20 cores, 28 threads)</li><li><b>Graphics:</b> NVIDIA GeForce RTX 4050 Laptop GPU (6 GB GDDR6 dedicated)</li><li><b>Display:</b> 40.9 cm (16.1 in) diagonal, FHD (1920 x 1080), 144 Hz, 7 ms response time, IPS, micro-edge, anti-glare, 300 nits, 100% sRGB</li><li><b>Memory &amp; Storage:</b> 16 GB DDR5-5600 MHz RAM | 1 TB PCIe Gen4 NVMe TLC M.2 SSD</li><li><b>Battery:</b> 4-cell, 70 Wh Li-ion polymer battery with fast charging (50% in 30 mins)</li><li><b>Audio &amp; Cooling:</b> DTS:X Ultra Audio with dual HP speakers &amp; OMEN Tempest Cooling with Enhanced Thermals</li></ul>",
+      "assured": true
     }
   ],
   "variants": [
+    {
+      "id": 501,
+      "product_id": 5,
+      "color": "Mica Silver",
+      "storage": "16 GB / 1 TB SSD",
+      "selling_price": 153990,
+      "mrp": 199990,
+      "img1": "assets/images/hp_victus_laptop.svg"
+    },
+    {
+      "id": 502,
+      "product_id": 5,
+      "color": "Performance Blue",
+      "storage": "32 GB / 1 TB SSD",
+      "selling_price": 164990,
+      "mrp": 209990,
+      "img1": "assets/images/hp_victus_laptop.svg"
+    },
     {
       "id": 101,
       "product_id": 1,
       "color": "Slate Grey",
       "size": "Standard High Back",
       "selling_price": 478,
-      "mrp": 6990,
-      "img1": "assets/images/chair.svg"
-    },
-    {
-      "id": 102,
-      "product_id": 1,
-      "color": "Midnight Black",
-      "size": "Standard High Back",
-      "selling_price": 499,
       "mrp": 6990,
       "img1": "assets/images/chair.svg"
     },
@@ -102,15 +134,6 @@
       "img1": "assets/images/safari_luggage.svg"
     },
     {
-      "id": 202,
-      "product_id": 2,
-      "color": "Teal Blue",
-      "size": "Set of 3 (S+M+L)",
-      "selling_price": 749,
-      "mrp": 5299,
-      "img1": "assets/images/safari_luggage.svg"
-    },
-    {
       "id": 301,
       "product_id": 3,
       "color": "Rose Red",
@@ -120,30 +143,12 @@
       "img1": "assets/images/vivo_v50.svg"
     },
     {
-      "id": 302,
-      "product_id": 3,
-      "color": "Titanium Grey",
-      "storage": "512 GB",
-      "selling_price": 2299,
-      "mrp": 41999,
-      "img1": "assets/images/vivo_v50.svg"
-    },
-    {
       "id": 401,
       "product_id": 4,
       "color": "Cosmic Orange",
       "storage": "256 GB",
       "selling_price": 3999,
       "mrp": 154900,
-      "img1": "assets/images/iphone_17_pro.svg"
-    },
-    {
-      "id": 402,
-      "product_id": 4,
-      "color": "Desert Titanium",
-      "storage": "512 GB",
-      "selling_price": 4499,
-      "mrp": 169900,
       "img1": "assets/images/iphone_17_pro.svg"
     }
   ]

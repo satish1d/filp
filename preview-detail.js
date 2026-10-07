@@ -1,13 +1,16 @@
 const currencyFormatter = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
 
-const backBtn = document.getElementById('back-btn');
+const backBtn = document.getElementById('pd-back-btn');
 const toastElement = document.getElementById('toast');
-const cartBadge = document.getElementById('cart-count-badge');
-const btnAddCart = document.getElementById('btn-add-cart');
-const btnBuyNow = document.getElementById('btn-buy-now');
-const wishlistBtn = document.getElementById('detail-wishlist-btn');
-const shareBtn = document.getElementById('detail-share-btn');
+const cartBadge = document.getElementById('pd-cart-count');
+const cartBtn = document.getElementById('pd-cart-btn');
+const btnAddCartIcon = document.getElementById('btn-add-cart-icon');
+const btnBuyEmi = document.getElementById('btn-buy-emi');
+const btnBuyNowYellow = document.getElementById('btn-buy-now-yellow');
+const wishlistBtn = document.getElementById('btn-detail-wishlist');
+const shareBtn = document.getElementById('btn-detail-share');
 
+// Toast Notification
 function showToast(message) {
   if (!toastElement) return;
   toastElement.textContent = message;
@@ -17,7 +20,7 @@ function showToast(message) {
   }, 2200);
 }
 
-// Back Button
+// 1. Back Navigation
 if (backBtn) {
   backBtn.addEventListener('click', () => {
     if (window.history.length > 1) {
@@ -28,7 +31,31 @@ if (backBtn) {
   });
 }
 
-// Update Cart Badge from Storage
+// 2. Real-time Countdown Timer (Sale starts in [ 33 ] Hrs : [ 53 ] Min : [ 37 ] Sec)
+const hrsEl = document.getElementById('cd-hrs');
+const minEl = document.getElementById('cd-min');
+const secEl = document.getElementById('cd-sec');
+
+let totalCountdownSecs = 33 * 3600 + 53 * 60 + 37;
+
+function updateCountdown() {
+  if (totalCountdownSecs <= 0) {
+    totalCountdownSecs = 34 * 3600; // Reset loop
+  }
+  const hrs = Math.floor(totalCountdownSecs / 3600);
+  const mins = Math.floor((totalCountdownSecs % 3600) / 60);
+  const secs = totalCountdownSecs % 60;
+
+  if (hrsEl) hrsEl.textContent = hrs;
+  if (minEl) minEl.textContent = mins < 10 ? `0${mins}` : mins;
+  if (secEl) secEl.textContent = secs < 10 ? `0${secs}` : secs;
+
+  totalCountdownSecs--;
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// 3. Cart Badge Count
 function updateCartCount() {
   const cart = JSON.parse(localStorage.getItem('flipkart_cart') || '[]');
   if (cartBadge) {
@@ -37,7 +64,13 @@ function updateCartCount() {
 }
 updateCartCount();
 
-// Parse Product ID from URL parameters
+if (cartBtn) {
+  cartBtn.addEventListener('click', () => {
+    showToast(`You have ${cartBadge.textContent} item(s) in your Flipkart Cart 🛒`);
+  });
+}
+
+// 4. Product Loader from URL param
 const urlParams = new URLSearchParams(window.location.search);
 const productIdParam = urlParams.get('id');
 
@@ -49,45 +82,56 @@ async function loadProductDetails() {
     const products = data.products || [];
     const variants = data.variants || [];
 
-    // Find Product by md5_id or id
-    let product = products.find(
-      (p) => String(p.md5_id) === String(productIdParam) || String(p.id) === String(productIdParam)
-    );
-
-    if (!product && products.length > 0) {
-      product = products[0]; // fallback to first product
+    // Default to HP Victus laptop (matching screenshot) or find by ID
+    let product;
+    if (productIdParam) {
+      product = products.find(
+        (p) => String(p.md5_id) === String(productIdParam) || String(p.id) === String(productIdParam)
+      );
     }
 
     if (!product) {
-      document.getElementById('detail-title').textContent = 'Product Not Found';
-      return;
+      // Find HP Victus or fallback to first product
+      product = products.find((p) => p.md5_id === 'hp-victus-14th-gen-rtx-4050') || products[0];
     }
 
-    // Set Meta & Title
-    document.title = `${product.name} - Flipkart The Big Billion Days`;
+    // Update Page Elements
+    document.title = `${product.name} - Flipkart`;
 
-    // Populate Fields
-    document.getElementById('detail-img').src = product.img1 || './assets/images/chair.svg';
-    document.getElementById('detail-img').alt = product.name;
-    document.getElementById('detail-brand').textContent = product.brand || 'FLIPKART';
-    document.getElementById('detail-title').textContent = product.name || '';
-    document.getElementById('detail-rating').textContent = product.rating || '4.5';
-    document.getElementById('detail-rating-count').textContent = `${product.review_count || '1,280'} Ratings & Reviews`;
+    const mainImg = document.getElementById('pd-main-img');
+    if (mainImg) {
+      mainImg.src = product.img1 || './assets/images/hp_victus_laptop.svg';
+      mainImg.alt = product.name;
+    }
+
+    document.getElementById('pd-brand-name').textContent = product.brand || 'HP';
+    document.getElementById('pd-title').textContent = product.name || '';
+    document.getElementById('pd-rating-val').textContent = product.rating || '4.5';
+    document.getElementById('pd-review-val').textContent = `${product.review_count || '1,280'} Ratings & 340 Reviews`;
 
     const mrp = Number(product.mrp) || 0;
     const price = Number(product.selling_price) || 0;
-    const discountRate = mrp > 0 ? Math.round(((mrp - price) / mrp) * 100) : product.discount_percent || 90;
+    const discountRate = mrp > 0 ? Math.round(((mrp - price) / mrp) * 100) : product.discount_percent || 23;
 
-    document.getElementById('detail-discount').textContent = `${discountRate}% off`;
-    document.getElementById('detail-mrp').textContent = `₹${currencyFormatter.format(mrp)}`;
-    document.getElementById('detail-price').textContent = `₹${currencyFormatter.format(price)}`;
+    document.getElementById('pd-discount-tag').textContent = `↓ ${discountRate}%`;
+    document.getElementById('pd-mrp-val').textContent = `₹${currencyFormatter.format(mrp)}`;
+    document.getElementById('pd-price-val').textContent = `₹${currencyFormatter.format(price)}`;
 
-    const deliveryText = product.delivery_text || 'Get it by 11 Oct';
-    document.getElementById('detail-delivery').innerHTML = `Get it by <b>${deliveryText.replace('Get it by ', '')}</b> | <span style="color: #388e3c; font-weight: 700;">FREE Delivery</span>`;
+    const deliveryText = product.delivery_text || 'Get it by 10 Oct';
+    document.getElementById('pd-delivery-val').innerHTML = `Get it by <b>${deliveryText.replace('Get it by ', '')}</b> | <span style="color: #16a34a; font-weight: 700;">FREE Delivery</span>`;
 
-    document.getElementById('detail-specs').innerHTML = product.features || '<p>High quality product with official manufacturer warranty.</p>';
+    document.getElementById('pd-specs-container').innerHTML =
+      product.features || '<p>High performance gaming machine with official manufacturer warranty.</p>';
 
-    // Wishlist Button State
+    // Update Bottom Buttons
+    const emiText = product.emi_price || `From ₹${currencyFormatter.format(Math.round(price / 3))}/m`;
+    const btnEmiSub = document.getElementById('btn-emi-sub');
+    if (btnEmiSub) btnEmiSub.textContent = emiText;
+
+    const btnBuyNowSub = document.getElementById('btn-buynow-sub');
+    if (btnBuyNowSub) btnBuyNowSub.textContent = `at ₹${currencyFormatter.format(price)}`;
+
+    // Wishlist Toggle
     const savedWishlist = JSON.parse(localStorage.getItem('flipkart_wishlist') || '[]');
     if (savedWishlist.includes(product.id) && wishlistBtn) {
       wishlistBtn.classList.add('active');
@@ -126,58 +170,35 @@ async function loadProductDetails() {
       });
     }
 
-    // Product Variants Setup
+    // Variants (if available)
     const prodVariants = variants.filter((v) => v.product_id === product.id);
+    const variantWrap = document.getElementById('pd-variant-wrap');
+    const variantChips = document.getElementById('pd-variant-chips');
 
-    // Color Variants
-    const colors = [...new Set(prodVariants.map((v) => v.color).filter(Boolean))];
-    const colorWrap = document.getElementById('color-variant-wrap');
-    const colorContainer = document.getElementById('color-options-container');
-
-    if (colors.length > 0 && colorWrap && colorContainer) {
-      colorWrap.style.display = 'block';
-      colorContainer.innerHTML = '';
-      colors.forEach((color, i) => {
+    if (prodVariants.length > 0 && variantWrap && variantChips) {
+      variantWrap.style.display = 'block';
+      variantChips.innerHTML = '';
+      prodVariants.forEach((v, i) => {
         const chip = document.createElement('button');
         chip.className = `variant-chip ${i === 0 ? 'active' : ''}`;
-        chip.textContent = color;
+        chip.textContent = v.storage || v.size || v.color;
         chip.addEventListener('click', () => {
-          colorContainer.querySelectorAll('.variant-chip').forEach((c) => c.classList.remove('active'));
+          variantChips.querySelectorAll('.variant-chip').forEach((c) => c.classList.remove('active'));
           chip.classList.add('active');
-          showToast(`Selected Color: ${color}`);
+          const vPrice = Number(v.selling_price) || price;
+          document.getElementById('pd-price-val').textContent = `₹${currencyFormatter.format(vPrice)}`;
+          if (btnBuyNowSub) btnBuyNowSub.textContent = `at ₹${currencyFormatter.format(vPrice)}`;
+          showToast(`Selected: ${chip.textContent}`);
         });
-        colorContainer.appendChild(chip);
+        variantChips.appendChild(chip);
       });
+    } else if (variantWrap) {
+      variantWrap.style.display = 'none';
     }
 
-    // Size / Storage Variants
-    const storages = [...new Set(prodVariants.map((v) => v.storage || v.size).filter(Boolean))];
-    const sizeWrap = document.getElementById('size-variant-wrap');
-    const sizeContainer = document.getElementById('size-options-container');
-    const sizeLabel = document.getElementById('size-variant-label');
-
-    if (storages.length > 0 && sizeWrap && sizeContainer) {
-      sizeWrap.style.display = 'block';
-      if (sizeLabel) {
-        sizeLabel.textContent = prodVariants.some((v) => v.storage) ? 'Select Storage' : 'Select Size';
-      }
-      sizeContainer.innerHTML = '';
-      storages.forEach((storage, i) => {
-        const chip = document.createElement('button');
-        chip.className = `variant-chip ${i === 0 ? 'active' : ''}`;
-        chip.textContent = storage;
-        chip.addEventListener('click', () => {
-          sizeContainer.querySelectorAll('.variant-chip').forEach((c) => c.classList.remove('active'));
-          chip.classList.add('active');
-          showToast(`Selected: ${storage}`);
-        });
-        sizeContainer.appendChild(chip);
-      });
-    }
-
-    // Add to Cart
-    if (btnAddCart) {
-      btnAddCart.addEventListener('click', () => {
+    // Bottom Action Handlers
+    if (btnAddCartIcon) {
+      btnAddCartIcon.addEventListener('click', () => {
         const cart = JSON.parse(localStorage.getItem('flipkart_cart') || '[]');
         cart.push(product.id);
         localStorage.setItem('flipkart_cart', JSON.stringify(cart));
@@ -186,15 +207,30 @@ async function loadProductDetails() {
       });
     }
 
-    // Buy Now
-    if (btnBuyNow) {
-      btnBuyNow.addEventListener('click', () => {
-        showToast('Proceeding to Big Billion Days Instant Checkout...');
+    if (btnBuyEmi) {
+      btnBuyEmi.addEventListener('click', () => {
+        showToast('Select EMI Option: No Cost EMI starting at ₹52,704/month');
+      });
+    }
+
+    if (btnBuyNowYellow) {
+      btnBuyNowYellow.addEventListener('click', () => {
+        showToast(`Proceeding to Buy ${product.short_name || 'Product'} at ₹${currencyFormatter.format(price)}!`);
       });
     }
   } catch (err) {
-    console.error('Failed to load product detail:', err);
+    console.error('Error loading product detail:', err);
   }
+}
+
+// Search input inside product page
+const searchInput = document.getElementById('pd-search-input');
+if (searchInput) {
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      window.location.href = `index.html?q=${encodeURIComponent(searchInput.value)}`;
+    }
+  });
 }
 
 loadProductDetails();
