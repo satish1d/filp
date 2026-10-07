@@ -1244,43 +1244,25 @@
                 </div>
                 <div class="pd-accordion-body" id="pd-reviews-body">
                     <div class="pd-reviews-header-block">
-                        <span class="pd-big-rating-tag">4 ★</span>
-                        <span class="pd-rating-status">Good</span>
+                        <span class="pd-big-rating-tag" id="pd-big-rating">4.5 ★</span>
+                        <span class="pd-rating-status" id="pd-rating-status">Very Good</span>
                     </div>
-                    <div class="pd-rating-verified">based on 221 ratings by ✓ Verified Buyers</div>
+                    <div class="pd-rating-verified" id="pd-rating-verified">based on verified ratings by ✓ Verified Buyers</div>
 
                     <!-- Customer Review Photos -->
-                    <div class="pd-review-photos-strip">
-                        <img src="./assets/images/rev_photo1.jpg" alt="Customer review" class="pd-rev-img" onerror="this.src='./assets/images/cat_men.jpg';">
-                        <img src="./assets/images/rev_photo2.jpg" alt="Customer review" class="pd-rev-img" onerror="this.src='./assets/images/cat_men.jpg';">
-                        <img src="./assets/images/rev_photo3.jpg" alt="Customer review" class="pd-rev-img" onerror="this.src='./assets/images/cat_men.jpg';">
+                    <div class="pd-review-photos-strip" id="pd-review-photos-strip">
+                        <!-- Populated dynamically via JS -->
                     </div>
 
                     <!-- Features loved -->
                     <div style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">Features customers loved</div>
-                    <div class="pd-loved-features-row">
-                        <span class="pd-loved-tag">Fabric Quality</span>
-                        <span class="pd-loved-tag">Colour</span>
-                        <span class="pd-loved-tag">Style</span>
-                        <span class="pd-loved-tag">Comfort</span>
+                    <div class="pd-loved-features-row" id="pd-loved-features-row">
+                        <!-- Populated dynamically via JS -->
                     </div>
 
                     <!-- Verified review list -->
-                    <div class="pd-review-card">
-                        <div class="pd-rev-top">
-                            <span class="pd-rev-star">2 ★</span>
-                            <span class="pd-rev-title">Not good</span>
-                            <span class="pd-rev-time">8 months ago</span>
-                        </div>
-                        <div class="pd-rev-text">The quality is not the same as in the stores.</div>
-                    </div>
-                    <div class="pd-review-card">
-                        <div class="pd-rev-top">
-                            <span class="pd-rev-star">2 ★</span>
-                            <span class="pd-rev-title">Expected better</span>
-                            <span class="pd-rev-time">6 months ago</span>
-                        </div>
-                        <div class="pd-rev-text">After very first wash shirt color faded slightly, fit is decent though... <a style="color: #2874f0; font-weight: 700; cursor: pointer;">more</a></div>
+                    <div id="pd-review-cards-list">
+                        <!-- Populated dynamically via JS -->
                     </div>
                 </div>
             </div>

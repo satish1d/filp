@@ -305,34 +305,74 @@ async function loadProduct() {
     const brandStoreEl = document.getElementById('pd-brand-store');
     if (brandStoreEl) brandStoreEl.textContent = `Visit ${prod.brand || 'brand'} store`;
 
-    // Setup Swipeable Full Catalog Image Carousel
+    // Product Sub-Type Classification Helper
+    function getProductType(name, category) {
+      const t = (name || '').toLowerCase();
+      const c = (category || '').toLowerCase();
+      if (c.includes('men') || c.includes('women') || c.includes('kid') || c.includes('fashion') || t.includes('shirt') || t.includes('kurta') || t.includes('anarkali') || t.includes('lehenga') || t.includes('ethnic')) {
+        return 'fashion';
+      }
+      if (t.includes('fan') || t.includes('bldc') || t.includes('pedestal') || t.includes('tower fan') || t.includes('ceiling')) {
+        return 'fan';
+      }
+      if (t.includes('mixer') || t.includes('grinder') || t.includes('juicer') || t.includes('blender') || t.includes('nutri-blend') || t.includes('food processor')) {
+        return 'mixer';
+      }
+      if (t.includes('cooker') || t.includes('casserole') || t.includes('dinner set') || t.includes('cookware') || t.includes('kadhai') || t.includes('kitchen set') || t.includes('kitchen in the box') || t.includes('opalware') || t.includes('pan')) {
+        return 'cookware';
+      }
+      if (t.includes('stove') || t.includes('hob') || t.includes('cooktop') || t.includes('burner') || t.includes('induction')) {
+        return 'stove';
+      }
+      if (t.includes('cooler') || t.includes('air cooler')) {
+        return 'cooler';
+      }
+      if (t.includes('iron') || t.includes('steamer') || t.includes('cloth dry') || t.includes('dryer') || t.includes('hanger') || t.includes('rack')) {
+        return 'iron_laundry';
+      }
+      if (t.includes('kettle') || t.includes('egg boiler') || t.includes('sandwich')) {
+        return 'kettle_small_appliance';
+      }
+      if (t.includes('smartwatch') || t.includes('band') || t.includes('reflex') || t.includes('pulse')) {
+        return 'smartwatch';
+      }
+      if (t.includes('headset') || t.includes('buds') || t.includes('speaker') || t.includes('soundbar') || t.includes('guitar') || t.includes('truesport')) {
+        return 'audio';
+      }
+      if (t.includes('vacuum') || t.includes('cleaner') || t.includes('purifier') || t.includes('sewing') || t.includes('calf')) {
+        return 'home_utility';
+      }
+      if (t.includes('pen drive') || t.includes('flash drive') || t.includes('laptop table')) {
+        return 'gadget_storage';
+      }
+      return 'general';
+    }
+
+    const currentType = getProductType(prod.name, prod.category);
+
+    // Filter products belonging strictly to the SAME sub-type
+    const sameTypeProds = products.filter(
+      (p) => p.id !== prod.id && getProductType(p.name, p.category) === currentType
+    );
+
+    // Setup Swipeable Full Catalog Image Carousel (Matching ONLY the exact product sub-type!)
     const carouselTrack = document.getElementById('pd-carousel-track');
     const dotsContainer = document.getElementById('pd-carousel-dots');
 
-    // Collect full catalog images for this product
-    const catalogImages = [];
-    if (prod.img1) catalogImages.push(prod.img1);
-    if (Array.isArray(prod.images)) {
-      prod.images.forEach((img) => {
-        if (img && !catalogImages.includes(img)) catalogImages.push(img);
-      });
-    }
+    const catalogImages = [prod.img1];
 
-    // Add related catalog images from same category
-    const sameCategoryProds = products.filter(
-      (p) => String(p.category).toLowerCase() === String(prod.category).toLowerCase() && p.id !== prod.id
-    );
-    for (const p of sameCategoryProds) {
+    // Add matching images ONLY from products of the exact same sub-type
+    for (const p of sameTypeProds) {
       if (p.img1 && !catalogImages.includes(p.img1)) {
         catalogImages.push(p.img1);
-        if (catalogImages.length >= 6) break;
+        if (catalogImages.length >= 5) break;
       }
     }
 
-    // If still less than 4, add from general catalog products
-    if (catalogImages.length < 4) {
+    // If still less than 3, add from parent category
+    if (catalogImages.length < 3) {
       for (const p of products) {
-        if (p.img1 && !catalogImages.includes(p.img1)) {
+        if (p.id !== prod.id && p.category === prod.category && p.img1 && !catalogImages.includes(p.img1)) {
           catalogImages.push(p.img1);
           if (catalogImages.length >= 4) break;
         }
@@ -417,18 +457,6 @@ async function loadProduct() {
         const diffX = e.pageX - startX;
         carouselTrack.scrollLeft = startScroll - diffX;
       });
-    } else {
-      const mainImg = document.getElementById('pd-main-img');
-      if (mainImg) {
-        mainImg.src = prod.img1 || './assets/images/chair_opt.jpg';
-        mainImg.alt = prod.name;
-        mainImg.onerror = function() {
-          if (!this._retried) {
-            this._retried = true;
-            this.src = './assets/images/chair_opt.jpg';
-          }
-        };
-      }
     }
 
     const ratingVal = document.getElementById('pd-rating-val');
@@ -544,29 +572,306 @@ async function loadProduct() {
       }
     }
 
-    // Populate Similar Products
+    // Product-Specific Reviews, Loved Tags, and Review Photos
+    const PRODUCT_REVIEWS_MAP = {
+      fan: {
+        lovedTags: ['Air Delivery', 'Silent Motor', 'Energy Saving', 'Remote Control', 'Design'],
+        reviews: [
+          {
+            rating: 5,
+            title: 'Super silent & energy efficient fan',
+            time: '2 weeks ago',
+            text: 'Amazing BLDC fan! Absolutely whisper-quiet even on full speed. Remote works from anywhere in the bedroom and it consumes barely 28-35 watts. Worth every rupee during Big Billion Days.',
+          },
+          {
+            rating: 5,
+            title: 'Strong air delivery across the room',
+            time: '1 month ago',
+            text: 'The air throw is very wide and covers all corners of our large room. Delivered safely with all mounting accessories, canopy, and genuine brand warranty card.',
+          },
+          {
+            rating: 4,
+            title: 'Modern look and high speed',
+            time: '2 months ago',
+            text: 'Looks very elegant on the ceiling. Installation was straightforward and cooling is top notch.',
+          },
+        ],
+      },
+      mixer: {
+        lovedTags: ['Grinding Power', 'Jar Build Quality', 'Motor Speed', 'Easy to Clean', 'Safety Switch'],
+        reviews: [
+          {
+            rating: 5,
+            title: 'Heavy duty grinding power',
+            time: '10 days ago',
+            text: 'Grinds tough spices, turmeric and thick dosa batter effortlessly in seconds. The stainless steel jars have strong locks and heavy handles.',
+          },
+          {
+            rating: 5,
+            title: 'Superb motor and sharp blades',
+            time: '3 weeks ago',
+            text: 'The motor is very powerful and quick cool ventilation keeps it running without overheating. Chutney jar makes ultra-fine paste quickly.',
+          },
+          {
+            rating: 4,
+            title: 'Value for money mixer grinder',
+            time: '1 month ago',
+            text: 'Does the job wonderfully for daily cooking. 3 speed settings with pulse function give great control. Very easy to wash and clean.',
+          },
+        ],
+      },
+      stove: {
+        lovedTags: ['Even Flame', 'Toughened Glass', 'Auto-Ignition', 'Easy to Clean', 'Brass Burners'],
+        reviews: [
+          {
+            rating: 5,
+            title: 'Sturdy glass top & uniform flame',
+            time: '2 weeks ago',
+            text: 'The toughened glass top looks sleek and wipes clean with a wet cloth. Burners produce high efficiency blue flame with zero soot.',
+          },
+          {
+            rating: 5,
+            title: 'Smooth auto ignition',
+            time: '1 month ago',
+            text: 'Knobs turn smoothly and ignition sparks reliably on the first click. Pan supports hold heavy kadais firmly without wobbling.',
+          },
+          {
+            rating: 4,
+            title: 'Solid construction',
+            time: '2 months ago',
+            text: 'Spill proof design makes everyday kitchen cleaning very easy. Good spacing between all burners.',
+          },
+        ],
+      },
+      cookware: {
+        lovedTags: ['Even Heating', 'Non-Stick Coating', 'Sturdy Handles', 'Easy to Clean', 'Food-Grade'],
+        reviews: [
+          {
+            rating: 5,
+            title: 'True non-stick & healthy cooking',
+            time: '1 week ago',
+            text: 'Hardly requires a drop of oil to cook dosas and vegetables. Very easy to clean with a soft sponge, no scrubbing needed.',
+          },
+          {
+            rating: 5,
+            title: 'Heavy gauge material',
+            time: '3 weeks ago',
+            text: 'Uniform heat distribution ensures food cooks evenly without burning at the bottom. Handles stay cool while on the gas stove.',
+          },
+          {
+            rating: 4,
+            title: 'Complete kitchen combo',
+            time: '1 month ago',
+            text: 'Very practical set for daily family cooking. Durable coating and looks premium on the dining table.',
+          },
+        ],
+      },
+      cooler: {
+        lovedTags: ['Instant Cooling', 'Honeycomb Pads', 'Ice Chamber', 'Air Throw', 'Inverter Support'],
+        reviews: [
+          {
+            rating: 5,
+            title: 'Chills the room fast',
+            time: '2 weeks ago',
+            text: 'Thick honeycomb pads hold water well and the ice chamber gives instant cold air during peak afternoon heat.',
+          },
+          {
+            rating: 5,
+            title: 'Smooth multi-speed airflow',
+            time: '1 month ago',
+            text: 'Air delivery reaches across the entire hall. Castor wheels make moving it between rooms very convenient.',
+          },
+        ],
+      },
+      iron_laundry: {
+        lovedTags: ['Smooth Glide', 'Quick Heating', 'Steam Burst', 'Lightweight', 'Fabric Safety'],
+        reviews: [
+          {
+            rating: 5,
+            title: 'Glides like butter on clothes',
+            time: '5 days ago',
+            text: 'Non-stick soleplate does not stick to cotton or synthetics. Fast heating in under 30 seconds makes morning ironing a breeze.',
+          },
+          {
+            rating: 5,
+            title: 'Heavy crease removal',
+            time: '3 weeks ago',
+            text: 'Lightweight yet removes stubborn wrinkles with ease. 360 degree swivel cord gives full flexibility.',
+          },
+        ],
+      },
+      kettle_small_appliance: {
+        lovedTags: ['Fast Boiling', 'Auto Cut-Off', 'Stainless Steel Interior', 'Cool Touch Body'],
+        reviews: [
+          {
+            rating: 5,
+            title: 'Boils in under 2 minutes',
+            time: '1 week ago',
+            text: 'Boils water for tea and coffee rapidly. Auto cut-off triggers safely and keep warm function is very handy.',
+          },
+          {
+            rating: 4,
+            title: 'Durable build quality',
+            time: '3 weeks ago',
+            text: 'Food grade stainless steel interior with wide opening makes cleaning very simple. Solid everyday appliance.',
+          },
+        ],
+      },
+      smartwatch: {
+        lovedTags: ['Display Clarity', 'Battery Life', 'Bluetooth Calling', 'SpO2 & Heart Rate', 'Watch Faces'],
+        reviews: [
+          {
+            rating: 5,
+            title: 'Crisp bright display & clear calls',
+            time: '1 week ago',
+            text: 'Bluetooth calling audio is surprisingly clear through the built-in speaker. Battery easily lasts 6-7 days on normal usage.',
+          },
+          {
+            rating: 5,
+            title: 'Accurate health metrics',
+            time: '2 weeks ago',
+            text: 'Heart rate and SpO2 tracking match clinical monitors closely. Step counter and sleep analysis are very helpful.',
+          },
+        ],
+      },
+      audio: {
+        lovedTags: ['Deep Bass', 'Battery Backup', 'Noise Cancellation', 'Comfortable Fit', 'Clear Calling'],
+        reviews: [
+          {
+            rating: 5,
+            title: 'Thumping bass and crystal vocals',
+            time: '10 days ago',
+            text: 'Sound quality is crisp with deep punchy bass. Connectivity connects instantly without any audio latency.',
+          },
+          {
+            rating: 5,
+            title: 'Comfortable ergonomic fit',
+            time: '3 weeks ago',
+            text: 'Can wear them for hours without ear fatigue. Battery life with charging case lasts days.',
+          },
+        ],
+      },
+      home_utility: {
+        lovedTags: ['Powerful Suction', 'Quiet Operation', 'Easy Maintenance', 'Durable Motor'],
+        reviews: [
+          {
+            rating: 5,
+            title: 'Remarkable cleaning power',
+            time: '2 weeks ago',
+            text: 'High suction power cleans deep dust from carpets, sofas, and floor tiles. Multiple accessories included are very useful.',
+          },
+        ],
+      },
+      fashion: {
+        lovedTags: ['Fabric Quality', 'Vibrant Color', 'Comfortable Fit', 'Stitching Finish'],
+        reviews: [
+          {
+            rating: 5,
+            title: 'Premium pure cotton fabric',
+            time: '2 weeks ago',
+            text: 'Very comfortable breathable cotton material. Fitting is true to size and colors remain vibrant after washing.',
+          },
+          {
+            rating: 4,
+            title: 'Festive look and fine stitching',
+            time: '1 month ago',
+            text: 'Received exactly as shown in images. Perfect for festivals and party wear.',
+          },
+        ],
+      },
+      general: {
+        lovedTags: ['Build Quality', 'Value for Money', 'Packaging', 'Performance'],
+        reviews: [
+          {
+            rating: 5,
+            title: 'Excellent purchase in Big Billion Days',
+            time: '1 week ago',
+            text: 'Original brand product received in genuine company packaging. Fast delivery and working flawlessly.',
+          },
+        ],
+      },
+    };
+
+    const revConfig = PRODUCT_REVIEWS_MAP[currentType] || PRODUCT_REVIEWS_MAP.general;
+
+    const bigRatingEl = document.getElementById('pd-big-rating');
+    if (bigRatingEl) bigRatingEl.textContent = `${prod.rating || '4.5'} ★`;
+
+    const ratingStatusEl = document.getElementById('pd-rating-status');
+    if (ratingStatusEl) {
+      ratingStatusEl.textContent = Number(prod.rating || 4.5) >= 4.4 ? 'Very Good' : 'Good';
+    }
+
+    const ratingVerifiedEl = document.getElementById('pd-rating-verified');
+    if (ratingVerifiedEl) {
+      ratingVerifiedEl.textContent = `based on ${prod.review_count || '1,248'} ratings by ✓ Verified Buyers`;
+    }
+
+    // Features customers loved
+    const lovedRowEl = document.getElementById('pd-loved-features-row');
+    if (lovedRowEl && revConfig.lovedTags) {
+      lovedRowEl.innerHTML = revConfig.lovedTags.map(
+        (tag) => `<span class="pd-loved-tag">${escapeHtml(tag)}</span>`
+      ).join('');
+    }
+
+    // Customer review photos (matching the exact product type)
+    const reviewPhotosStripEl = document.getElementById('pd-review-photos-strip');
+    if (reviewPhotosStripEl) {
+      const revPhotos = [prod.img1];
+      for (const p of sameTypeProds) {
+        if (p.img1 && !revPhotos.includes(p.img1)) {
+          revPhotos.push(p.img1);
+          if (revPhotos.length >= 4) break;
+        }
+      }
+      reviewPhotosStripEl.innerHTML = revPhotos.map(
+        (src) => `<img src="${src}" alt="Customer review photo" class="pd-rev-img" onerror="this.src='./assets/images/chair_opt.jpg';">`
+      ).join('');
+    }
+
+    // Verified review list
+    const reviewListEl = document.getElementById('pd-review-cards-list');
+    if (reviewListEl && revConfig.reviews) {
+      reviewListEl.innerHTML = revConfig.reviews.map((rev) => `
+        <div class="pd-review-card">
+          <div class="pd-rev-top">
+            <span class="pd-rev-star">${rev.rating} ★</span>
+            <span class="pd-rev-title">${escapeHtml(rev.title)}</span>
+            <span class="pd-rev-time">${escapeHtml(rev.time)}</span>
+          </div>
+          <div class="pd-rev-text">${escapeHtml(rev.text)}</div>
+        </div>
+      `).join('');
+    }
+
+    // Populate Similar Products with matching SUB-TYPE only!
     const similarGrid = document.getElementById('pd-similar-grid');
-    if (similarGrid && similarProducts.length > 0) {
+    if (similarGrid) {
       similarGrid.innerHTML = '';
-      similarProducts.forEach((item) => {
+      let similarList = sameTypeProds.slice(0, 4);
+      if (similarList.length === 0) {
+        similarList = products.filter((p) => p.id !== prod.id && p.category === prod.category).slice(0, 4);
+      }
+      similarList.forEach((item) => {
         const itemCard = document.createElement('div');
         itemCard.className = 'pd-similar-card';
         itemCard.innerHTML = `
           <div class="pd-similar-img-box">
-            <img src="${item.img1}" alt="${item.name}" onerror="this.src='./assets/images/cat_men.jpg';">
+            <img src="${item.img1}" alt="${escapeHtml(item.name)}" onerror="this.src='./assets/images/chair_opt.jpg';">
             <span class="pd-similar-rating">${item.rating} ★</span>
           </div>
           <div class="pd-similar-info">
-            <div class="pd-similar-title-txt">${item.short_name || item.name}</div>
+            <div class="pd-similar-title-txt">${escapeHtml(item.short_name || item.name)}</div>
             <div class="pd-similar-price-row">
-              <span class="pd-similar-discount">${item.discount_label}</span>
+              <span class="pd-similar-discount">${escapeHtml(item.discount_label)}</span>
               <span class="pd-similar-price">₹${currencyFormatter.format(item.selling_price)}</span>
             </div>
-            ${item.badge ? `<div style="background: #6a1b9a; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; margin-top: 4px; display: inline-block;">${item.badge}</div>` : ''}
+            ${item.badge ? `<div style="background: #6a1b9a; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; margin-top: 4px; display: inline-block;">${escapeHtml(item.badge)}</div>` : ''}
           </div>
         `;
         itemCard.addEventListener('click', () => {
-          window.location.href = `product-detail.html?id=${item.id}`;
+          window.location.href = `product-detail.html?id=${encodeURIComponent(item.md5_id || item.id)}`;
         });
         similarGrid.appendChild(itemCard);
       });
