@@ -152,8 +152,8 @@ function renderCart() {
     card.innerHTML = `
       <div class="cart-item-card">
         <div class="cart-item-thumb">
-          <img src="${item.img || './assets/images/chair_opt.jpg'}" alt="${escapeHtml(item.name || 'Product')}"
-               onerror="this.src='./assets/images/chair_opt.jpg'">
+          <img src="${item.img || ''}" alt="${escapeHtml(item.name || 'Product')}"
+               onerror="this.onerror=null; if(this.src.includes('?')){this.src=this.src.split('?')[0];}">
         </div>
         <div class="cart-item-details">
           <span class="cart-item-brand">${escapeHtml(item.brand || 'Flipkart')}</span>

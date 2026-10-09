@@ -153,6 +153,40 @@ def make_features_and_specs(title, brand, category, price, mrp):
 
     return features_html, specs
 
+def is_kitchen_product(item):
+    pid, name, sp, mrp, cat, img = item
+    n = name.lower()
+    
+    # Non-kitchen categories/keywords
+    if any(k in n for k in ['ceiling fan', 'pedestal fan', 'table fan', 'tower fan', 'air cooler', 'cooler for home', 'room/personal air cooler']):
+        return False
+    if ' fan' in n or 'fans ' in n or ' fan ' in n:
+        return False
+    if 'washing machine' in n:
+        return False
+    if any(k in n for k in ['drying stand', 'clothes rack', 'clothes dryer', 'warmer for clothes', 'cloth dryer']):
+        return False
+    if any(k in n for k in ['steam iron', 'dry iron', 'cordless steam iron', 'garment steamer', 'steam iron for clothes']):
+        return False
+    if any(k in n for k in ['smartwatch', 'smart band', 't.band', 'pen drive', 'flash drive', 'speaker', 'soundbar', 'headset', 'buds', 'guitar']):
+        return False
+    if any(k in n for k in ['vacuum cleaner', 'floor cleaner', 'calf machine', 'sewing machine', 'air purifier', 'luggage', 'emergency rechargeable light', 'laptop table']):
+        return False
+    
+    # Kitchen checks
+    if any(k in n for k in [
+        'mixer', 'grinder', 'juicer', 'blender', 'nutri-blend', 'quickmix',
+        'cookware', 'cooker', 'casserole', 'dinner set', 'pan', 'kadai', 'kadhai',
+        'gas stove', 'stove', 'hob', 'cooktop', 'induction', 'burner',
+        'kettle', 'tea kettle', 'egg boiler', 'sandwich', 'otg', 'onion baskets',
+        'kitchen'
+    ]):
+        return True
+    
+    return False
+
+all_kitchen_items = [item for item in all_sql_items if is_kitchen_product(item)]
+
 products_list = []
 
 # Ratings and reviews lookup for consistency
@@ -160,12 +194,12 @@ ratings_cycle = [4.5, 4.4, 4.6, 4.3, 4.7, 4.2, 4.5, 4.8, 4.4, 4.6, 4.3, 4.5]
 review_counts_cycle = ["1,248", "852", "2.4k+", "419", "3.1k+", "720", "1.8k+", "4,510", "960", "2.1k+", "630", "1.5k+"]
 delivery_cycle = ["Delivery by 10 Oct, Sat", "Delivery by 11 Oct, Sun", "Get it by 10 Oct", "Fast Delivery by 11 Oct"]
 
-for idx, item in enumerate(all_sql_items):
+for idx, item in enumerate(all_kitchen_items):
     raw_id = item[0]
     name = item[1].strip()
     sp = int(item[2])
     mrp = int(item[3])
-    cat = item[4].strip()
+    cat = "Kitchen"
     img = item[5].strip()
 
     brand = clean_brand(name)
@@ -183,12 +217,8 @@ for idx, item in enumerate(all_sql_items):
 
     deal_price = max(99, sp - 30)
 
-    # Group catalog images by category so each product gets 4-6 related images
-    cat_images = [x[5].strip() for x in all_sql_items if x[4].strip() == cat and x[5].strip() != img]
+    # Each kitchen product gets strictly its own authentic image
     item_images = [img]
-    for ci in cat_images[:5]:
-        if ci not in item_images:
-            item_images.append(ci)
 
     p_dict = {
         "id": raw_id,
@@ -196,7 +226,7 @@ for idx, item in enumerate(all_sql_items):
         "name": name,
         "short_name": short_name,
         "brand": brand,
-        "category": cat,
+        "category": "Kitchen",
         "rating": str(rating_val),
         "rating_stars": rating_val,
         "review_count": review_val,
@@ -336,8 +366,8 @@ fashion_items = [
     }
 ]
 
-# We place all 114 SQL products first, followed by the fashion items
-full_catalog = products_list + fashion_items
+# The catalog consists purely of all 114 CSV products
+full_catalog = products_list
 
 print(f"Total products in catalog: {len(full_catalog)} ({len(products_list)} from SQL + {len(fashion_items)} Fashion)")
 
@@ -345,17 +375,17 @@ print(f"Total products in catalog: {len(full_catalog)} ({len(products_list)} fro
 similar_products = [
     {
         "id": 101,
-        "name": "ACTIVA Lotus 5 Star 1200 mm BLDC Motor with Remote Fan",
-        "short_name": "ACTIVA Lotus 5 Star...",
-        "brand": "ACTIVA",
-        "rating": "4.4",
-        "discount_label": "↓ 91%",
-        "mrp": 3699,
-        "selling_price": 306,
+        "name": "Amazon Basics - Non-Stick Cookware Set (Black) 8 Piece",
+        "short_name": "Amazon Basics Cookware...",
+        "brand": "Amazon Basics",
+        "rating": "4.5",
+        "discount_label": "↓ 90%",
+        "mrp": 2999,
+        "selling_price": 311,
         "badge": "Big Billion Days Price",
         "ad": True,
         "authorized_seller": True,
-        "img1": "https://cdn.shopify.com/s/files/1/0596/9743/0617/files/original-imagz6radeccth8g.jpg?v=1713047300"
+        "img1": "https://cdn.shopify.com/s/files/1/0596/9743/0617/files/81-sJRhEapL._SX679.jpg?v=1713050191"
     },
     {
         "id": 102,

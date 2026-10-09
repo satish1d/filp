@@ -3,6 +3,25 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        // Suppress external browser extension errors (e.g. MetaMask inpage.js)
+        window.addEventListener('error', function(e) {
+            if (e && ((e.filename && e.filename.indexOf('chrome-extension://') !== -1) || (e.message && (e.message.indexOf('MetaMask') !== -1 || e.message.indexOf('extension') !== -1)))) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                return true;
+            }
+        }, true);
+        window.addEventListener('unhandledrejection', function(e) {
+            var reason = e && (e.reason || '');
+            var msg = typeof reason === 'object' ? (reason.message || reason.stack || '') : String(reason);
+            if (msg && (msg.indexOf('MetaMask') !== -1 || msg.indexOf('chrome-extension://') !== -1 || msg.indexOf('extension') !== -1)) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                return true;
+            }
+        }, true);
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff" id="themeColor">
     <title>Flipkart - Product Details</title>
@@ -1039,23 +1058,18 @@
             </div>
             <div class="pd-carousel-track" id="pd-carousel-track">
                 <div class="pd-carousel-slide">
-                    <img src="./assets/images/chair_opt.jpg" alt="Product" id="pd-main-img">
+                    <img src="" alt="Product" id="pd-main-img" style="object-fit: contain;">
                 </div>
             </div>
             <div class="pd-rating-overlay" style="pointer-events: none;">
-                <span id="pd-rating-val">4</span>
+                <span id="pd-rating-val">4.5</span>
                 <span style="color: #212121;">★</span>
                 <span style="color: #9e9e9e;">|</span>
-                <span id="pd-review-val">221</span>
+                <span id="pd-review-val">1,248</span>
             </div>
             <!-- Golden Shield (strictly 28px width, only for authorized sellers) -->
             <img src="./assets/images/brand_seller.svg" alt="Brand Authorized Seller" class="pd-auth-seller-badge" id="pd-auth-badge">
-            <div class="pd-carousel-dots" id="pd-carousel-dots">
-                <span class="pd-dot active" data-index="0"></span>
-                <span class="pd-dot" data-index="1"></span>
-                <span class="pd-dot" data-index="2"></span>
-                <span class="pd-dot" data-index="3"></span>
-            </div>
+            <div class="pd-carousel-dots" id="pd-carousel-dots" style="display: none;"></div>
         </div>
 
         <!-- 3. Product Info Content -->

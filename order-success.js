@@ -54,12 +54,12 @@ function loadOrderDetails() {
       },
       items: [
         {
-          name: 'Fastrack FS1 Pro Smartwatch with 1.96 Super AMOLED Display',
-          brand: 'Fastrack',
-          price: 949,
+          name: 'Amazon Basics - Non-Stick Cookware Set (Black) 8 Piece',
+          brand: 'Amazon Basics',
+          price: 311,
           quantity: 1,
-          size: 'Standard',
-          img: './assets/images/chair_opt.jpg'
+          size: '8 Piece Set',
+          img: 'https://cdn.shopify.com/s/files/1/0596/9743/0617/files/81-sJRhEapL._SX679.jpg?v=1713050191'
         }
       ]
     };
@@ -89,9 +89,9 @@ function loadOrderDetails() {
       const itemEl = document.createElement('div');
       itemEl.style.cssText = 'display: flex; gap: 12px; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9;';
       itemEl.innerHTML = `
-        <img src="${item.img || './assets/images/chair_opt.jpg'}" alt="${escapeHtml(item.name || '')}"
+        <img src="${item.img || ''}" alt="${escapeHtml(item.name || '')}"
              style="width: 52px; height: 58px; object-fit: contain; border-radius: 4px; border: 1px solid #eee; background: #fafafa;"
-             onerror="this.src='./assets/images/chair_opt.jpg'">
+             onerror="this.onerror=null; if(this.src.includes('?')){this.src=this.src.split('?')[0];}">
         <div style="flex: 1; min-width: 0;">
           <div style="font-size: 13px; font-weight: 700; color: #212121; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
             ${escapeHtml(item.name || 'Product')}

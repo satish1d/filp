@@ -126,7 +126,7 @@ if (btnAddCart) {
       name: currentProduct?.name || 'Product',
       size: selectedSize || '1 Unit',
       price: currentSellingPrice,
-      img: currentProduct?.img1 || 'assets/images/chair_opt.jpg',
+      img: currentProduct?.img1 || '',
     });
     localStorage.setItem('flipkart_cart', JSON.stringify(cart));
     updateCartBadge();
@@ -265,7 +265,7 @@ if (btnBuyNow) {
       mrp: currentProduct?.mrp || (currentSellingPrice * 2),
       discount_label: currentProduct?.discount_label || '↓ 50%',
       discount_percent: currentProduct?.discount_percent || 50,
-      img: currentProduct?.img1 || './assets/images/chair_opt.jpg',
+      img: currentProduct?.img1 || '',
       delivery_text: currentProduct?.delivery_text || 'Free Delivery by 12 Oct',
       seller_name: currentProduct?.seller_name || 'RetailNet',
       quantity: 1,
@@ -278,7 +278,7 @@ if (btnBuyNow) {
 // 11. Load Product Data from products.json
 async function loadProduct() {
   try {
-    const res = await fetch('./data/products.json');
+    const res = await fetch('./data/products.json?v=' + Date.now());
     if (!res.ok) throw new Error('Catalog failed to load');
     const data = await res.json();
     const products = data.products || [];
@@ -291,9 +291,9 @@ async function loadProduct() {
     if (paramId) {
       prod = products.find((p) => String(p.md5_id) === String(paramId) || String(p.id) === String(paramId));
     }
-    // Default to MUFTI shirt (product id 1) matching screenshots
+    // Default to first product in catalog if not matched
     if (!prod) {
-      prod = products.find((p) => p.brand === 'MUFTI') || products[0];
+      prod = products[0];
     }
     currentProduct = prod;
     currentSellingPrice = Number(prod.selling_price) || 999;
@@ -356,53 +356,45 @@ async function loadProduct() {
       (p) => p.id !== prod.id && getProductType(p.name, p.category) === currentType
     );
 
-    // Setup Swipeable Full Catalog Image Carousel (Matching ONLY the exact product sub-type!)
+    // Setup Product Image Carousel (strictly showing only this product's own images)
     const carouselTrack = document.getElementById('pd-carousel-track');
     const dotsContainer = document.getElementById('pd-carousel-dots');
 
-    const catalogImages = [prod.img1];
-
-    // Add matching images ONLY from products of the exact same sub-type
-    for (const p of sameTypeProds) {
-      if (p.img1 && !catalogImages.includes(p.img1)) {
-        catalogImages.push(p.img1);
-        if (catalogImages.length >= 5) break;
-      }
-    }
-
-    // If still less than 3, add from parent category
-    if (catalogImages.length < 3) {
-      for (const p of products) {
-        if (p.id !== prod.id && p.category === prod.category && p.img1 && !catalogImages.includes(p.img1)) {
-          catalogImages.push(p.img1);
-          if (catalogImages.length >= 4) break;
-        }
-      }
-    }
+    // Strictly this product's authentic images
+    const rawImages = (Array.isArray(prod.images) && prod.images.length > 0)
+      ? prod.images.filter(Boolean)
+      : [prod.img1].filter(Boolean);
+    const catalogImages = rawImages.length > 0 ? rawImages : (prod.img1 ? [prod.img1] : []);
 
     if (carouselTrack) {
       carouselTrack.innerHTML = catalogImages.map((src, idx) => `
         <div class="pd-carousel-slide" data-index="${idx}">
-          <img src="${src}" alt="${escapeHtml(prod.name)} - Slide ${idx + 1}" ${idx === 0 ? 'id="pd-main-img"' : ''} onerror="this.src='./assets/images/chair_opt.jpg';">
+          <img src="${src}" alt="${escapeHtml(prod.name)} - Slide ${idx + 1}" ${idx === 0 ? 'id="pd-main-img"' : ''} onerror="this.onerror=null; if(this.src.includes('?')){this.src=this.src.split('?')[0];}">
         </div>
       `).join('');
 
-      // Render matching carousel dots
+      // Render carousel dots only if there are multiple images for this product
       if (dotsContainer) {
-        dotsContainer.innerHTML = catalogImages.map((_, idx) => `
-          <span class="pd-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}"></span>
-        `).join('');
+        if (catalogImages.length > 1) {
+          dotsContainer.style.display = 'flex';
+          dotsContainer.innerHTML = catalogImages.map((_, idx) => `
+            <span class="pd-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}"></span>
+          `).join('');
 
-        // Dot click to slide
-        dotsContainer.querySelectorAll('.pd-dot').forEach((dot) => {
-          dot.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const targetIdx = Number(dot.dataset.index);
-            const slideWidth = carouselTrack.clientWidth || carouselTrack.offsetWidth;
-            carouselTrack.scrollTo({ left: targetIdx * slideWidth, behavior: 'smooth' });
-            updateActiveDot(targetIdx);
+          // Dot click to slide
+          dotsContainer.querySelectorAll('.pd-dot').forEach((dot) => {
+            dot.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const targetIdx = Number(dot.dataset.index);
+              const slideWidth = carouselTrack.clientWidth || carouselTrack.offsetWidth;
+              carouselTrack.scrollTo({ left: targetIdx * slideWidth, behavior: 'smooth' });
+              updateActiveDot(targetIdx);
+            });
           });
-        });
+        } else {
+          dotsContainer.style.display = 'none';
+          dotsContainer.innerHTML = '';
+        }
       }
 
       function updateActiveDot(activeIdx) {
@@ -816,18 +808,14 @@ async function loadProduct() {
       ).join('');
     }
 
-    // Customer review photos (matching the exact product type)
+    // Customer review photos (strictly this product's own image)
     const reviewPhotosStripEl = document.getElementById('pd-review-photos-strip');
     if (reviewPhotosStripEl) {
-      const revPhotos = [prod.img1];
-      for (const p of sameTypeProds) {
-        if (p.img1 && !revPhotos.includes(p.img1)) {
-          revPhotos.push(p.img1);
-          if (revPhotos.length >= 4) break;
-        }
-      }
+      const revPhotos = (Array.isArray(prod.images) && prod.images.length > 0)
+        ? prod.images.filter(Boolean)
+        : [prod.img1].filter(Boolean);
       reviewPhotosStripEl.innerHTML = revPhotos.map(
-        (src) => `<img src="${src}" alt="Customer review photo" class="pd-rev-img" onerror="this.src='./assets/images/chair_opt.jpg';">`
+        (src) => `<img src="${src}" alt="${escapeHtml(prod.name)}" class="pd-rev-img" onerror="this.onerror=null; if(this.src.includes('?')){this.src=this.src.split('?')[0];}">`
       ).join('');
     }
 
@@ -859,7 +847,7 @@ async function loadProduct() {
         itemCard.className = 'pd-similar-card';
         itemCard.innerHTML = `
           <div class="pd-similar-img-box">
-            <img src="${item.img1}" alt="${escapeHtml(item.name)}" onerror="this.src='./assets/images/chair_opt.jpg';">
+            <img src="${item.img1}" alt="${escapeHtml(item.name)}" onerror="this.onerror=null; if(this.src.includes('?')){this.src=this.src.split('?')[0];}">
             <span class="pd-similar-rating">${item.rating} ★</span>
           </div>
           <div class="pd-similar-info">

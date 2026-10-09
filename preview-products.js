@@ -20,29 +20,33 @@ function showToast(message) {
   }, 2200);
 }
 
-// 1. Live Countdown Timer (Starts at 2min 41sec = 161 seconds, loops or counts down realistically)
+// 1. Live Countdown Timer (if timerElement exists)
 let totalSeconds = 161;
 function updateTimer() {
   if (!timerElement) return;
   if (totalSeconds <= 0) {
-    totalSeconds = 180; // Reset to 3 minutes for continuous live excitement
+    totalSeconds = 180;
   }
   const mins = Math.floor(totalSeconds / 60);
   const secs = totalSeconds % 60;
   timerElement.textContent = `${mins}min ${secs < 10 ? '0' : ''}${secs}sec`;
   totalSeconds--;
 }
-setInterval(updateTimer, 1000);
-updateTimer();
+if (timerElement) {
+  setInterval(updateTimer, 1000);
+  updateTimer();
+}
 
-// 2. Real-time Viewer Fluctuation around 14,352
+// 2. Real-time Viewer Fluctuation (if viewersElement exists)
 let currentViewers = 14352;
-setInterval(() => {
-  if (!viewersElement) return;
-  const delta = Math.floor(Math.random() * 15) - 7;
-  currentViewers = Math.max(12000, currentViewers + delta);
-  viewersElement.textContent = `${currentViewers.toLocaleString('en-IN')} People watching this sale`;
-}, 3500);
+if (viewersElement) {
+  setInterval(() => {
+    if (!viewersElement) return;
+    const delta = Math.floor(Math.random() * 15) - 7;
+    currentViewers = Math.max(12000, currentViewers + delta);
+    viewersElement.textContent = `${currentViewers.toLocaleString('en-IN')} People watching this sale`;
+  }, 3500);
+}
 
 // 3. Render Product Cards (Exact Replica of Screenshots)
 function createProductCard(product) {
@@ -100,21 +104,15 @@ function createProductCard(product) {
   // Product Image
   const img = document.createElement('img');
   img.className = 'product-img';
-  img.src = product.img1 || './assets/images/chair_opt.jpg';
+  img.src = product.img1 || '';
   img.alt = product.name || 'Product Image';
   img.loading = 'lazy';
   img.onerror = function() {
     if (!this._retried) {
       this._retried = true;
-      if (product.img1 && product.img1.startsWith('http')) {
-        this.src = './assets/images/chair_opt.jpg';
-      } else if (this.src.indexOf('/real/') === -1) {
-        this.src = (product.img1 || '').replace('assets/images/', 'assets/images/real/');
-      } else {
-        this.src = (product.img1 || '').replace('assets/images/real/', 'assets/images/');
+      if (product.img1 && product.img1.includes('?')) {
+        this.src = product.img1.split('?')[0];
       }
-    } else {
-      this.src = './assets/images/chair_opt.jpg';
     }
   };
 
@@ -248,14 +246,24 @@ function filterProducts() {
   let filtered = allProducts;
 
   if (currentCategory !== 'all') {
-    if (currentCategory.toLowerCase() === 'fashion') {
-      filtered = filtered.filter(
-        (p) => ['fashion', 'men', 'women', 'kids'].includes((p.category || '').toLowerCase())
-      );
+    const c = currentCategory.toLowerCase();
+    if (c === 'appliances') {
+      filtered = filtered.filter((p) => {
+        const name = (p.name || '').toLowerCase();
+        return name.includes('mixer') || name.includes('grinder') || name.includes('blender') || name.includes('juicer') || name.includes('kettle') || name.includes('stove') || name.includes('cooktop') || name.includes('otg') || name.includes('sandwich');
+      });
+    } else if (c === 'cookware') {
+      filtered = filtered.filter((p) => {
+        const name = (p.name || '').toLowerCase();
+        return name.includes('cookware') || name.includes('cooker') || name.includes('casserole') || name.includes('dinner set') || name.includes('pan') || name.includes('kadai') || name.includes('box') || name.includes('opalware');
+      });
+    } else if (c === 'home' || c === 'kitchen') {
+      filtered = allProducts;
     } else {
-      filtered = filtered.filter(
-        (p) => (p.category || '').toLowerCase() === currentCategory.toLowerCase()
+      const subFiltered = filtered.filter(
+        (p) => (p.category || '').toLowerCase() === c || (p.name || '').toLowerCase().includes(c)
       );
+      filtered = subFiltered.length > 0 ? subFiltered : allProducts;
     }
   }
 
@@ -269,6 +277,11 @@ function filterProducts() {
     );
   }
 
+  const countBadge = document.getElementById('product-count-badge');
+  if (countBadge) {
+    countBadge.textContent = `${filtered.length} Kitchen Products`;
+  }
+
   renderProducts(filtered);
 }
 
@@ -276,12 +289,15 @@ function filterProducts() {
 if (categoryNav) {
   categoryNav.querySelectorAll('.category-item').forEach((item) => {
     item.addEventListener('click', () => {
+      const cat = item.dataset.category || 'all';
+      currentCategory = cat;
       categoryNav.querySelectorAll('.category-item').forEach((c) => c.classList.remove('active'));
-      // Remove active state from fashion strip cards
-      document.querySelectorAll('.fashion-cat-card').forEach((fc) => fc.classList.remove('active'));
       item.classList.add('active');
-      currentCategory = item.dataset.category || 'all';
       filterProducts();
+      const gridSection = document.querySelector('.product-grid-section');
+      if (gridSection) {
+        gridSection.scrollIntoView({ behavior: 'smooth' });
+      }
     });
   });
 }
@@ -291,41 +307,37 @@ const fashionStrip = document.getElementById('fashion-strip');
 if (fashionStrip) {
   fashionStrip.querySelectorAll('.fashion-cat-card').forEach((card) => {
     card.addEventListener('click', () => {
-      const selectedCat = card.dataset.category;
-      const isAlreadyActive = card.classList.contains('active');
-
-      fashionStrip.querySelectorAll('.fashion-cat-card').forEach((fc) => fc.classList.remove('active'));
-
-      if (isAlreadyActive) {
-        currentCategory = 'all';
-        const forYouTab = categoryNav?.querySelector('[data-category="all"]');
-        if (forYouTab) {
-          categoryNav?.querySelectorAll('.category-item').forEach((c) => c.classList.remove('active'));
-          forYouTab.classList.add('active');
-        }
-        showToast('Showing all deals');
-      } else {
-        card.classList.add('active');
-        currentCategory = selectedCat;
-        categoryNav?.querySelectorAll('.category-item').forEach((c) => c.classList.remove('active'));
-        showToast(`Showing ${selectedCat}'s Deals 🛍️`);
-        
-        // Scroll to products
-        const liveSection = document.querySelector('.live-sale-section');
-        if (liveSection) {
-          liveSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-
+      const selectedCat = card.dataset.category || 'Fashion';
+      showToast(`Showing ${selectedCat} Deals 🛍️`);
+      currentCategory = selectedCat;
       filterProducts();
+      const gridSection = document.querySelector('.product-grid-section');
+      if (gridSection) {
+        gridSection.scrollIntoView({ behavior: 'smooth' });
+      }
     });
   });
 }
 
-// 7. Search Input Listener
+// 7. Search Input Listener (Real-Time Dynamic Search)
 if (searchInput) {
   searchInput.addEventListener('input', () => {
     filterProducts();
+    const gridSection = document.querySelector('.product-grid-section');
+    if (gridSection && searchInput.value.trim().length > 0) {
+      gridSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      filterProducts();
+      const gridSection = document.querySelector('.product-grid-section');
+      if (gridSection) {
+        gridSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
   });
 }
 
@@ -384,10 +396,19 @@ if (btnSelectLocation) {
 async function loadCatalog() {
   try {
     updateHomeCartBadge();
-    const res = await fetch('./data/products.json');
+    const res = await fetch('./data/products.json?v=' + Date.now());
     if (!res.ok) throw new Error('Catalog failed to load');
     const data = await res.json();
     allProducts = data.products || [];
+
+    const countBadge = document.getElementById('product-count-badge');
+    if (countBadge) {
+      const kitchenItems = allProducts.filter(p => (p.category || '').toLowerCase() === 'kitchen');
+      const countLabel = (kitchenItems.length > 0 && kitchenItems.length === allProducts.length)
+        ? `${allProducts.length} Kitchen Products`
+        : `${allProducts.length} Products`;
+      countBadge.textContent = countLabel;
+    }
 
     // Check URL parameter for active category from categories page
     const urlParams = new URLSearchParams(window.location.search);

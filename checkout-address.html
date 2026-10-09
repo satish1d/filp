@@ -3,6 +3,25 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        // Suppress external browser extension errors (e.g. MetaMask inpage.js)
+        window.addEventListener('error', function(e) {
+            if (e && ((e.filename && e.filename.indexOf('chrome-extension://') !== -1) || (e.message && (e.message.indexOf('MetaMask') !== -1 || e.message.indexOf('extension') !== -1)))) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                return true;
+            }
+        }, true);
+        window.addEventListener('unhandledrejection', function(e) {
+            var reason = e && (e.reason || '');
+            var msg = typeof reason === 'object' ? (reason.message || reason.stack || '') : String(reason);
+            if (msg && (msg.indexOf('MetaMask') !== -1 || msg.indexOf('chrome-extension://') !== -1 || msg.indexOf('extension') !== -1)) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                return true;
+            }
+        }, true);
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#2874f0">
     <title>Flipkart - Select Delivery Address</title>

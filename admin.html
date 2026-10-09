@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#2874f0">
+    <title>Flipkart Admin Panel - Live Product & CSV Catalog Manager</title>
+    <meta name="description" content="Manage product catalog in real-time, upload CSV, and delete products directly from the database.">
+    <link rel="stylesheet" href="./assets/css/custom.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f1f3f6;
+            color: #212121;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        /* Top Admin Navbar */
+        .admin-nav {
+            background: #2874f0;
+            color: #ffffff;
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .admin-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-logo-img {
+            height: 28px;
+            width: auto;
+            background: #fff;
+            padding: 3px 6px;
+            border-radius: 4px;
+        }
+
+        .admin-title-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-subtitle {
+            font-size: 11px;
+            color: #e3edfe;
+            font-weight: 500;
+        }
+
+        .admin-actions-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-top-nav {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-top-nav:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: #ffffff;
+        }
+
+        .btn-top-primary {
+            background: #ff9f00;
+            color: #ffffff;
+            border: none;
+            font-weight: 700;
+        }
+
+        .btn-top-primary:hover {
+            background: #f39400;
+        }
+
+        /* Container */
+        .admin-container {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Stats Cards Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-val {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .stat-sub {
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        /* Section Cards */
+        .admin-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #f1f5f9;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .card-title-group h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title-group p {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 3px;
+        }
+
+        /* Pipeline Upload Box */
+        .pipeline-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 860px) {
+            .pipeline-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .upload-dropzone {
+            border: 2px dashed #93c5fd;
+            border-radius: 10px;
+            background: #f8fafc;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .upload-dropzone:hover, .upload-dropzone.dragover {
+            border-color: #2874f0;
+            background: #eff6ff;
+        }
+
+        .dropzone-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .dropzone-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .dropzone-subtitle {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 14px;
+        }
+
+        .file-input-hidden {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .pipeline-options {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-top: 3px;
+            accent-color: #2874f0;
+            width: 16px;
+            height: 16px;
+        }
+
+        .radio-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .radio-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .radio-desc {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .btn-upload-submit {
+            background: #2874f0;
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+            margin-top: auto;
+        }
+
+        .btn-upload-submit:hover:not(:disabled) {
+            background: #125cdb;
+        }
+
+        .btn-upload-submit:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        /* CSV Preview Table */
+        .preview-box {
+            margin-top: 18px;
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 14px;
+            border: 1px solid #e2e8f0;
+            display: none;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .preview-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .preview-table-wrap {
+            max-height: 200px;
+            overflow: auto;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .preview-table th {
+            background: #f1f5f9;
+            padding: 6px 10px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #cbd5e1;
+            position: sticky;
+            top: 0;
+        }
+
+        .preview-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            white-space: nowrap;
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Pipeline Status Logs */
+        .pipeline-logs {
+            margin-top: 14px;
+            background: #0f172a;
+            color: #38bdf8;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 12px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            display: none;
+            max-height: 120px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        /* Product Catalog Table Controls */
+        .table-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .search-box-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #ffffff;
+            color: #1e293b;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #2874f0;
+            box-shadow: 0 0 0 3px rgba(40, 116, 240, 0.15);
+        }
+
+        .search-icon-svg {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .filter-select {
+            padding: 10px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #ffffff;
+            color: #1e293b;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .btn-add-product {
+            background: #10b981;
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-add-product:hover {
+            background: #059669;
+        }
+
+        /* Products Table */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #ffffff;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .products-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            padding: 12px 14px;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .products-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .products-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .prod-thumb-img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 6px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 2px;
+        }
+
+        .prod-name-cell {
+            max-width: 280px;
+        }
+
+        .prod-title {
+            font-weight: 600;
+            color: #1e293b;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .prod-brand-tag {
+            display: inline-block;
+            background: #eff6ff;
+            color: #2874f0;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+
+        .price-badge {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .mrp-strike {
+            font-size: 11px;
+            color: #94a3b8;
+            text-decoration: line-through;
+            margin-left: 4px;
+        }
+
+        .discount-pill {
+            font-size: 11px;
+            font-weight: 700;
+            color: #10b981;
+            background: #ecfdf5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        .rating-chip {
+            background: #388e3c;
+            color: #ffffff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        /* Action Buttons */
+        .actions-cell {
+            white-space: nowrap;
+        }
+
+        .btn-action {
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-action-edit {
+            color: #2874f0;
+            background: #eff6ff;
+            margin-right: 6px;
+        }
+
+        .btn-action-edit:hover {
+            background: #dbeafe;
+        }
+
+        .btn-action-delete {
+            color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .btn-action-delete:hover {
+            background: #fee2e2;
+        }
+
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.2s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #64748b;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #1e293b;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #2874f0;
+        }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-footer {
+            padding: 14px 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-modal-cancel {
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-modal-save {
+            background: #2874f0;
+            color: #ffffff;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-modal-delete {
+            background: #ef4444;
+            color: #ffffff;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Toast Notice */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e293b;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .toast.show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .toast.success {
+            background: #10b981;
+        }
+
+        .toast.error {
+            background: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Admin Navigation -->
+    <header class="admin-nav">
+        <div class="admin-brand">
+            <img src="./assets/images/flipkart_f_logo.svg" alt="Flipkart" class="admin-logo-img">
+            <div class="admin-title-wrap">
+                <div class="admin-title">
+                    Flipkart Admin Panel
+                    <span style="font-size: 11px; background: #e3edfe; color: #2874f0; padding: 2px 8px; border-radius: 12px; font-weight: 700;">Live Catalog</span>
+                </div>
+                <div class="admin-subtitle">Real-time CSV Pipeline & Database Product Manager</div>
+            </div>
+        </div>
+
+        <div class="admin-actions-top">
+            <a href="index.html" class="btn-top-nav">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+                View Live Storefront
+            </a>
+            <button id="btn-refresh" class="btn-top-nav" title="Refresh Live Data">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <polyline points="1 20 1 14 7 14"></polyline>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+                Sync
+            </button>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <!-- Stats Summary -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <div class="stat-label">Total Live Products</div>
+                    <div class="stat-val" id="stat-total-products">-</div>
+                    <div class="stat-sub">
+                        <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981;"></span>
+                        Live in Database
+                    </div>
+                </div>
+                <div class="stat-icon" style="background: #eff6ff; color: #2874f0;">📦</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <div class="stat-label">Kitchen Products</div>
+                    <div class="stat-val" id="stat-kitchen-products">-</div>
+                    <div class="stat-sub" style="color: #2874f0;">Flipkart Assured Deals</div>
+                </div>
+                <div class="stat-icon" style="background: #fef3c7; color: #d97706;">🍳</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <div class="stat-label">Active Brands</div>
+                    <div class="stat-val" id="stat-brands-count">-</div>
+                    <div class="stat-sub" style="color: #64748b;">Genuine Verified</div>
+                </div>
+                <div class="stat-icon" style="background: #f3e8ff; color: #7e22ce;">🏷️</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <div class="stat-label">Catalog Status</div>
+                    <div class="stat-val" style="font-size: 18px; color: #10b981;">Real-time Synced</div>
+                    <div class="stat-sub" id="stat-last-synced" style="color: #64748b;">Just now</div>
+                </div>
+                <div class="stat-icon" style="background: #ecfdf5; color: #10b981;">⚡</div>
+            </div>
+        </div>
+
+        <!-- Section 1: CSV Upload Pipeline -->
+        <section class="admin-card">
+            <div class="card-header-bar">
+                <div class="card-title-group">
+                    <h2>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2874f0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        CSV Upload & Live Pipeline
+                    </h2>
+                    <p>Upload a CSV file to update or replace products on the live website. The pipeline automatically calculates discounts, assigns images accurately, and syncs directly to the database.</p>
+                </div>
+
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <a href="/api/sample-csv" download="sample_kitchen_products_template.csv" class="btn-top-nav" style="background: #f1f5f9; color: #1e293b; border-color: #cbd5e1;">
+                        📥 Download Sample CSV
+                    </a>
+                    <a href="/api/export-csv" download="flipkart_kitchen_catalog.csv" class="btn-top-nav" style="background: #f1f5f9; color: #1e293b; border-color: #cbd5e1;">
+                        📤 Export Current Catalog
+                    </a>
+                </div>
+            </div>
+
+            <div class="pipeline-layout">
+                <!-- Dropzone -->
+                <div class="upload-dropzone" id="dropzone">
+                    <input type="file" id="csv-file-input" class="file-input-hidden" accept=".csv,text/csv,text/plain">
+                    <div class="dropzone-icon">📄</div>
+                    <div class="dropzone-title" id="dropzone-file-name">Click or Drag & Drop CSV File Here</div>
+                    <div class="dropzone-subtitle">Supported format: .csv with columns (Name, Price, MRP, Category, Brand, Image URL)</div>
+                    <button type="button" class="btn-top-nav" style="background: #2874f0; color: #fff; pointer-events: none;">
+                        Browse Computer
+                    </button>
+                </div>
+
+                <!-- Pipeline Options -->
+                <div class="pipeline-options">
+                    <div style="font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 2px;">Import Mode:</div>
+                    
+                    <label class="radio-option">
+                        <input type="radio" name="import-mode" value="replace" checked>
+                        <div class="radio-info">
+                            <span class="radio-title">Replace Full Catalog (Recommended)</span>
+                            <span class="radio-desc">Replaces the live store database with the uploaded CSV products.</span>
+                        </div>
+                    </label>
+
+                    <label class="radio-option">
+                        <input type="radio" name="import-mode" value="append">
+                        <div class="radio-info">
+                            <span class="radio-title">Add / Merge Products</span>
+                            <span class="radio-desc">Appends new products and updates existing products matching by ID.</span>
+                        </div>
+                    </label>
+
+                    <button type="button" id="btn-run-pipeline" class="btn-upload-submit" disabled>
+                        <span>🚀 Upload & Update Live Website</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CSV Preview Box -->
+            <div id="preview-box" class="preview-box">
+                <div class="preview-header">
+                    <div class="preview-title" id="preview-count-label">Parsed 0 Rows from CSV</div>
+                    <span style="font-size: 11px; color: #64748b;">Previewing first 5 rows</span>
+                </div>
+                <div class="preview-table-wrap">
+                    <table class="preview-table" id="preview-table">
+                        <thead>
+                            <tr id="preview-thead-tr"></tr>
+                        </thead>
+                        <tbody id="preview-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Real-time Pipeline Logs -->
+            <div id="pipeline-logs" class="pipeline-logs"></div>
+        </section>
+
+        <!-- Section 2: Live Product Database Table -->
+        <section class="admin-card">
+            <div class="card-header-bar">
+                <div class="card-title-group">
+                    <h2>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                            <line x1="9" y1="21" x2="9" y2="9"></line>
+                        </svg>
+                        Product Catalog & Database Actions
+                    </h2>
+                    <p>Real-time database editor. Delete any product instantly from the database or add new items.</p>
+                </div>
+
+                <button type="button" id="btn-open-add-modal" class="btn-add-product">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add Product
+                </button>
+            </div>
+
+            <!-- Filter and Search Controls -->
+            <div class="table-controls">
+                <div class="search-box-wrap">
+                    <svg class="search-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="search-products-input" class="search-input" placeholder="Search by name, brand, or ID...">
+                </div>
+
+                <select id="filter-category" class="filter-select">
+                    <option value="">All Categories</option>
+                    <option value="Kitchen" selected>Kitchen</option>
+                </select>
+
+                <select id="filter-brand" class="filter-select">
+                    <option value="">All Brands</option>
+                </select>
+            </div>
+
+            <!-- Products Table -->
+            <div class="table-responsive">
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">Image</th>
+                            <th style="width: 70px;">ID</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Brand</th>
+                            <th>Price / MRP</th>
+                            <th>Discount</th>
+                            <th>Rating</th>
+                            <th style="width: 100px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-tbody">
+                        <tr>
+                            <td colspan="9" class="empty-state">Loading products from live database...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal: Add / Edit Product -->
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-product-title">Add New Product</h3>
+                <button type="button" class="modal-close-btn" id="btn-close-product-modal">&times;</button>
+            </div>
+            <form id="product-form">
+                <div class="modal-body">
+                    <input type="hidden" id="form-product-id">
+
+                    <div class="form-group">
+                        <label class="form-label">Product Name *</label>
+                        <input type="text" id="form-name" class="form-input" required placeholder="e.g. Prestige 750W Mixer Grinder 3 Jars">
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label class="form-label">Category *</label>
+                            <input type="text" id="form-category" class="form-input" value="Kitchen" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Brand</label>
+                            <input type="text" id="form-brand" class="form-input" placeholder="e.g. Prestige">
+                        </div>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label class="form-label">Selling Price (₹) *</label>
+                            <input type="number" id="form-price" class="form-input" required placeholder="e.g. 1299" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">MRP (₹) *</label>
+                            <input type="number" id="form-mrp" class="form-input" required placeholder="e.g. 2999" min="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Image URL *</label>
+                        <input type="url" id="form-image" class="form-input" required placeholder="https://cdn.shopify.com/.../image.jpg">
+                        <span style="font-size: 11px; color: #64748b;">Enter full URL. Product detail carousel will display strictly this item's image.</span>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label class="form-label">Rating (1.0 to 5.0)</label>
+                            <input type="text" id="form-rating" class="form-input" value="4.5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Review Count</label>
+                            <input type="text" id="form-reviews" class="form-input" value="1,248">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-modal-cancel" id="btn-cancel-product-form">Cancel</button>
+                    <button type="submit" class="btn-modal-save" id="btn-save-product">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Confirm Delete -->
+    <div id="delete-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 440px;">
+            <div class="modal-header" style="border-bottom-color: #fee2e2; background: #fff5f5;">
+                <h3 class="modal-title" style="color: #b91c1c;">Confirm Database Deletion</h3>
+                <button type="button" class="modal-close-btn" id="btn-close-delete-modal">&times;</button>
+            </div>
+            <div class="modal-body" style="text-align: center; padding: 24px 20px;">
+                <div style="font-size: 44px; margin-bottom: 10px;">🗑️</div>
+                <h4 style="font-size: 16px; color: #1e293b; margin-bottom: 8px;" id="delete-product-name-title">Delete Product?</h4>
+                <p style="font-size: 13px; color: #64748b; line-height: 1.4;">
+                    Are you sure you want to permanently delete this product from the database? It will be <b>immediately removed</b> from the live website in real-time.
+                </p>
+                <div id="delete-prod-preview" style="margin-top: 14px; padding: 10px; background: #f8fafc; border-radius: 8px; font-size: 12px; color: #475569; display: flex; align-items: center; gap: 10px;">
+                    <img id="delete-preview-img" src="" style="width: 40px; height: 40px; object-fit: contain; border-radius: 4px; border: 1px solid #cbd5e1;">
+                    <div style="text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="delete-preview-text"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-cancel" id="btn-cancel-delete">Cancel</button>
+                <button type="button" class="btn-modal-delete" id="btn-confirm-delete">Yes, Delete from Database</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="admin-toast" class="toast">
+        <span id="toast-icon">✓</span>
+        <span id="toast-msg">Action completed</span>
+    </div>
+
+    <script>
+        let liveProducts = [];
+        let rawCsvContent = '';
+        let pendingDeleteId = null;
+
+        // Elements
+        const productsTbody = document.getElementById('products-tbody');
+        const statTotal = document.getElementById('stat-total-products');
+        const statKitchen = document.getElementById('stat-kitchen-products');
+        const statBrands = document.getElementById('stat-brands-count');
+        const statLastSynced = document.getElementById('stat-last-synced');
+
+        const dropzone = document.getElementById('dropzone');
+        const csvFileInput = document.getElementById('csv-file-input');
+        const dropzoneFileName = document.getElementById('dropzone-file-name');
+        const btnRunPipeline = document.getElementById('btn-run-pipeline');
+        const previewBox = document.getElementById('preview-box');
+        const previewTheadTr = document.getElementById('preview-thead-tr');
+        const previewTbody = document.getElementById('preview-tbody');
+        const previewCountLabel = document.getElementById('preview-count-label');
+        const pipelineLogs = document.getElementById('pipeline-logs');
+
+        const searchInput = document.getElementById('search-products-input');
+        const filterCategory = document.getElementById('filter-category');
+        const filterBrand = document.getElementById('filter-brand');
+
+        const productModal = document.getElementById('product-modal');
+        const productForm = document.getElementById('product-form');
+        const deleteModal = document.getElementById('delete-modal');
+        const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+
+        // Toast helper
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('admin-toast');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toast.className = `toast ${type} show`;
+            toastMsg.textContent = message;
+            toastIcon.textContent = type === 'success' ? '✓' : '⚠️';
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // Fetch Live Catalog
+        async function fetchProducts() {
+            try {
+                statLastSynced.textContent = 'Syncing...';
+                const res = await fetch('/api/products?t=' + Date.now());
+                if (!res.ok) throw new Error('Failed to fetch products');
+                const data = await res.json();
+
+                liveProducts = data.products || [];
+                statTotal.textContent = liveProducts.length;
+                statKitchen.textContent = data.kitchenCount || liveProducts.filter(p => (p.category || '').toLowerCase() === 'kitchen').length;
+                statBrands.textContent = (data.brands || []).length;
+                statLastSynced.textContent = new Date().toLocaleTimeString();
+
+                populateBrandFilter(data.brands || []);
+                renderProductsTable();
+            } catch (err) {
+                console.error('Fetch error:', err);
+                productsTbody.innerHTML = `<tr><td colspan="9" class="empty-state" style="color: #ef4444;">Failed to connect to backend: ${err.message}</td></tr>`;
+            }
+        }
+
+        function populateBrandFilter(brands) {
+            const current = filterBrand.value;
+            filterBrand.innerHTML = '<option value="">All Brands</option>';
+            brands.sort().forEach(b => {
+                const opt = document.createElement('option');
+                opt.value = b;
+                opt.textContent = b;
+                filterBrand.appendChild(opt);
+            });
+            if (current) filterBrand.value = current;
+        }
+
+        // Render Table
+        function renderProductsTable() {
+            const q = searchInput.value.toLowerCase().trim();
+            const cat = filterCategory.value;
+            const brand = filterBrand.value;
+
+            const filtered = liveProducts.filter(p => {
+                const matchSearch = !q ||
+                    String(p.id).includes(q) ||
+                    (p.name && p.name.toLowerCase().includes(q)) ||
+                    (p.brand && p.brand.toLowerCase().includes(q));
+
+                const matchCat = !cat || (p.category && p.category.toLowerCase() === cat.toLowerCase());
+                const matchBrand = !brand || (p.brand && p.brand.toLowerCase() === brand.toLowerCase());
+
+                return matchSearch && matchCat && matchBrand;
+            });
+
+            if (filtered.length === 0) {
+                productsTbody.innerHTML = `<tr><td colspan="9" class="empty-state">No products found matching filters.</td></tr>`;
+                return;
+            }
+
+            productsTbody.innerHTML = filtered.map(p => {
+                const imgUrl = p.img1 || (p.images && p.images[0]) || './assets/images/chair_opt.jpg';
+                return `
+                    <tr id="row-prod-${p.id}">
+                        <td>
+                            <img src="${imgUrl}" alt="${p.name}" class="prod-thumb-img" onerror="this.src='./assets/images/chair_opt.jpg'">
+                        </td>
+                        <td><b>#${p.id}</b></td>
+                        <td class="prod-name-cell">
+                            <div class="prod-title" title="${p.name}">${p.name}</div>
+                            <span class="prod-brand-tag">${p.brand || 'Kitchen'}</span>
+                        </td>
+                        <td><span style="font-size: 12px; font-weight: 600; color: #475569;">${p.category || 'Kitchen'}</span></td>
+                        <td>${p.brand || '-'}</td>
+                        <td>
+                            <span class="price-badge">₹${(p.selling_price || 0).toLocaleString('en-IN')}</span>
+                            ${p.mrp ? `<span class="mrp-strike">₹${p.mrp.toLocaleString('en-IN')}</span>` : ''}
+                        </td>
+                        <td>
+                            <span class="discount-pill">${p.discount_label || (p.discount_percent ? `↓ ${p.discount_percent}%` : '-')}</span>
+                        </td>
+                        <td>
+                            <span class="rating-chip">${p.rating || '4.4'} ★</span>
+                        </td>
+                        <td class="actions-cell" style="text-align: center;">
+                            <button type="button" class="btn-action btn-action-edit" title="Edit Product" onclick="openEditModal(${p.id})">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </button>
+                            <button type="button" class="btn-action btn-action-delete" title="Delete from Database" onclick="confirmDelete(${p.id})">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Delete Product Pipeline
+        window.confirmDelete = function(id) {
+            const prod = liveProducts.find(p => p.id === id);
+            if (!prod) return;
+
+            pendingDeleteId = id;
+            document.getElementById('delete-product-name-title').textContent = `Delete #${prod.id}: ${prod.name.slice(0, 45)}...`;
+            document.getElementById('delete-preview-img').src = prod.img1 || './assets/images/chair_opt.jpg';
+            document.getElementById('delete-preview-text').innerHTML = `<b>#${prod.id}</b> - ${prod.name}<br><span style="color:#2874f0;">₹${prod.selling_price}</span> • Category: ${prod.category}`;
+            deleteModal.style.display = 'flex';
+        };
+
+        btnConfirmDelete.addEventListener('click', async () => {
+            if (!pendingDeleteId) return;
+            const idToDelete = pendingDeleteId;
+
+            btnConfirmDelete.disabled = true;
+            btnConfirmDelete.textContent = 'Deleting...';
+
+            try {
+                const res = await fetch(`/api/products/${idToDelete}`, {
+                    method: 'DELETE'
+                });
+                const result = await res.json();
+
+                if (!res.ok || !result.success) {
+                    throw new Error(result.error || 'Failed to delete product');
+                }
+
+                showToast(`Product #${idToDelete} deleted permanently from database!`, 'success');
+                deleteModal.style.display = 'none';
+
+                // Immediate local real-time update
+                liveProducts = liveProducts.filter(p => p.id !== idToDelete);
+                statTotal.textContent = liveProducts.length;
+                statKitchen.textContent = liveProducts.filter(p => (p.category || '').toLowerCase() === 'kitchen').length;
+                renderProductsTable();
+            } catch (err) {
+                console.error('Delete error:', err);
+                showToast(`Error: ${err.message}`, 'error');
+            } finally {
+                btnConfirmDelete.disabled = false;
+                btnConfirmDelete.textContent = 'Yes, Delete from Database';
+                pendingDeleteId = null;
+            }
+        });
+
+        // Edit Product Modal
+        window.openEditModal = function(id) {
+            const prod = liveProducts.find(p => p.id === id);
+            if (!prod) return;
+
+            document.getElementById('modal-product-title').textContent = `Edit Product #${prod.id}`;
+            document.getElementById('form-product-id').value = prod.id;
+            document.getElementById('form-name').value = prod.name;
+            document.getElementById('form-category').value = prod.category || 'Kitchen';
+            document.getElementById('form-brand').value = prod.brand || '';
+            document.getElementById('form-price').value = prod.selling_price || '';
+            document.getElementById('form-mrp').value = prod.mrp || '';
+            document.getElementById('form-image').value = prod.img1 || '';
+            document.getElementById('form-rating').value = prod.rating || '4.5';
+            document.getElementById('form-reviews').value = prod.review_count || '1,248';
+
+            productModal.style.display = 'flex';
+        };
+
+        // Add Product Modal
+        document.getElementById('btn-open-add-modal').addEventListener('click', () => {
+            document.getElementById('modal-product-title').textContent = 'Add New Product';
+            document.getElementById('form-product-id').value = '';
+            productForm.reset();
+            document.getElementById('form-category').value = 'Kitchen';
+            document.getElementById('form-rating').value = '4.5';
+            document.getElementById('form-reviews').value = '1,248';
+            productModal.style.display = 'flex';
+        });
+
+        // Save Add / Edit
+        productForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('form-product-id').value;
+            const payload = {
+                name: document.getElementById('form-name').value.trim(),
+                category: document.getElementById('form-category').value.trim() || 'Kitchen',
+                brand: document.getElementById('form-brand').value.trim(),
+                selling_price: Number(document.getElementById('form-price').value),
+                mrp: Number(document.getElementById('form-mrp').value),
+                img1: document.getElementById('form-image').value.trim(),
+                rating: document.getElementById('form-rating').value.trim() || '4.5',
+                review_count: document.getElementById('form-reviews').value.trim() || '1,248'
+            };
+
+            const url = editId ? `/api/products/${editId}` : '/api/products';
+            const method = editId ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if (!res.ok || !result.success) {
+                    throw new Error(result.error || 'Failed to save product');
+                }
+
+                showToast(editId ? 'Product updated in database!' : 'New product added to database!', 'success');
+                productModal.style.display = 'none';
+                fetchProducts();
+            } catch (err) {
+                showToast(`Error: ${err.message}`, 'error');
+            }
+        });
+
+        // Modal close buttons
+        document.getElementById('btn-close-product-modal').addEventListener('click', () => productModal.style.display = 'none');
+        document.getElementById('btn-cancel-product-form').addEventListener('click', () => productModal.style.display = 'none');
+        document.getElementById('btn-close-delete-modal').addEventListener('click', () => deleteModal.style.display = 'none');
+        document.getElementById('btn-cancel-delete').addEventListener('click', () => deleteModal.style.display = 'none');
+
+        // CSV File Handling
+        function handleFileSelection(file) {
+            if (!file) return;
+            dropzoneFileName.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                rawCsvContent = e.target.result;
+                btnRunPipeline.disabled = false;
+                parseAndPreviewCSV(rawCsvContent);
+            };
+            reader.readAsText(file);
+        }
+
+        csvFileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                handleFileSelection(e.target.files[0]);
+            }
+        });
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                handleFileSelection(e.dataTransfer.files[0]);
+            }
+        });
+
+        // Parse and Preview CSV client-side
+        function parseAndPreviewCSV(csvText) {
+            const lines = csvText.trim().split(/\r?\n/).filter(Boolean);
+            if (lines.length < 2) {
+                previewBox.style.display = 'none';
+                return;
+            }
+
+            const headers = lines[0].split(',').map(h => h.replace(/^["']|["']$/g, '').trim());
+            previewTheadTr.innerHTML = headers.slice(0, 6).map(h => `<th>${h}</th>`).join('');
+
+            const previewRows = lines.slice(1, 6);
+            previewTbody.innerHTML = previewRows.map(rowStr => {
+                const cols = rowStr.split(',').map(c => c.replace(/^["']|["']$/g, '').trim());
+                return `<tr>${headers.slice(0, 6).map((_, i) => `<td>${cols[i] || ''}</td>`).join('')}</tr>`;
+            }).join('');
+
+            previewCountLabel.textContent = `Parsed ${lines.length - 1} Product Rows from CSV`;
+            previewBox.style.display = 'block';
+        }
+
+        // Upload and Run Pipeline
+        btnRunPipeline.addEventListener('click', async () => {
+            if (!rawCsvContent) return;
+
+            const mode = document.querySelector('input[name="import-mode"]:checked').value;
+            btnRunPipeline.disabled = true;
+            btnRunPipeline.innerHTML = '⏳ Processing CSV Pipeline...';
+            pipelineLogs.style.display = 'block';
+            pipelineLogs.textContent = `[Pipeline] Initiating CSV upload...\n[Pipeline] Mode: ${mode.toUpperCase()}\n[Pipeline] Sending payload to server...`;
+
+            try {
+                const res = await fetch('/api/upload-csv', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        csvContent: rawCsvContent,
+                        mode
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    throw new Error(data.error || 'Pipeline execution failed');
+                }
+
+                pipelineLogs.textContent += `\n[Pipeline] ✓ ${data.message}\n[Pipeline] Total live products: ${data.totalCount}\n[Pipeline] Database written atomically. Changes are LIVE on storefront!`;
+                showToast(`Success! ${data.totalCount} products live on website!`, 'success');
+
+                // Refresh catalog table
+                await fetchProducts();
+            } catch (err) {
+                pipelineLogs.textContent += `\n[Error] Pipeline failed: ${err.message}`;
+                showToast(`Pipeline failed: ${err.message}`, 'error');
+            } finally {
+                btnRunPipeline.disabled = false;
+                btnRunPipeline.innerHTML = '🚀 Upload & Update Live Website';
+            }
+        });
+
+        // Search & Filters
+        searchInput.addEventListener('input', renderProductsTable);
+        filterCategory.addEventListener('change', renderProductsTable);
+        filterBrand.addEventListener('change', renderProductsTable);
+        document.getElementById('btn-refresh').addEventListener('click', () => {
+            fetchProducts();
+            showToast('Catalog synced with live database', 'success');
+        });
+
+        // Initialize
+        fetchProducts();
+    </script>
+</body>
+
+</html>

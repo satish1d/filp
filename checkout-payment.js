@@ -90,12 +90,12 @@ function loadCartData() {
 
   if (!Array.isArray(cartItems) || cartItems.length === 0) {
     cartItems = [{
-      id: 1,
-      name: 'Item from Catalog',
-      price: 999,
-      mrp: 2499,
+      id: 3,
+      name: 'Amazon Basics - Non-Stick Cookware Set (Black) 8 Piece',
+      price: 311,
+      mrp: 2999,
       quantity: 1,
-      img: './assets/images/chair_opt.jpg'
+      img: 'https://cdn.shopify.com/s/files/1/0596/9743/0617/files/81-sJRhEapL._SX679.jpg?v=1713050191'
     }];
   }
 

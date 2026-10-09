@@ -3,6 +3,25 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        // Suppress external browser extension errors (e.g. MetaMask inpage.js)
+        window.addEventListener('error', function(e) {
+            if (e && ((e.filename && e.filename.indexOf('chrome-extension://') !== -1) || (e.message && (e.message.indexOf('MetaMask') !== -1 || e.message.indexOf('extension') !== -1)))) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                return true;
+            }
+        }, true);
+        window.addEventListener('unhandledrejection', function(e) {
+            var reason = e && (e.reason || '');
+            var msg = typeof reason === 'object' ? (reason.message || reason.stack || '') : String(reason);
+            if (msg && (msg.indexOf('MetaMask') !== -1 || msg.indexOf('chrome-extension://') !== -1 || msg.indexOf('extension') !== -1)) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                return true;
+            }
+        }, true);
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ebf3fe" id="themeColor">
     <title>Flipkart - The Big Billion Days Sale</title>
@@ -221,21 +240,20 @@
             </div>
         </section>
 
-        <!-- Live Sale Section & Countdown Timer -->
-        <section class="live-sale-section">
-            <h2 class="live-sale-heading">Live Sale : <span class="live-sale-timer" id="countdown-timer">2min 41sec</span></h2>
-            <p class="live-sale-viewers" id="viewers-count">14,352 People watching this sale</p>
-        </section>
-
         <!-- Section Divider -->
         <div class="section-divider-bar"></div>
 
-        <!-- Product Grid (2 Columns) -->
-        <main class="product-grid-section">
-            <div class="product-grid" id="product-grid-container">
-                <!-- Dynamically populated via preview-products.js -->
+        <!-- Products Grid Section (All 114 CSV Products Live) -->
+        <section class="product-grid-section">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 2px 4px;">
+                <div>
+                    <h2 style="font-size: 16px; font-weight: 700; color: #212121; margin: 0; line-height: 1.2;">Deals of the Day</h2>
+                    <span style="font-size: 11px; color: #878787;">Flipkart Assured • Big Billion Days Kitchen Sale</span>
+                </div>
+                <span id="product-count-badge" style="font-size: 12px; color: #2874f0; font-weight: 700; background: #e3edfe; padding: 3px 8px; border-radius: 4px;">54 Kitchen Products</span>
             </div>
-        </main>
+            <div id="product-grid-container" class="product-grid"></div>
+        </section>
 
         <!-- Bottom Navigation Bar (4 Fixed Tabs: Home, Categories, Account, Cart) -->
         <nav class="bottom-nav-bar">
@@ -261,7 +279,7 @@
                 </svg>
                 <span class="nav-label">Account</span>
             </a>
-            <a href="checkout.html" class="nav-item">
+            <a href="cart.html" class="nav-item">
                 <div style="position: relative; display: flex; align-items: center; justify-content: center;">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="9" cy="21" r="1"></circle>

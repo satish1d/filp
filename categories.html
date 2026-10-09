@@ -3,6 +3,25 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        // Suppress external browser extension errors (e.g. MetaMask inpage.js)
+        window.addEventListener('error', function(e) {
+            if (e && ((e.filename && e.filename.indexOf('chrome-extension://') !== -1) || (e.message && (e.message.indexOf('MetaMask') !== -1 || e.message.indexOf('extension') !== -1)))) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                return true;
+            }
+        }, true);
+        window.addEventListener('unhandledrejection', function(e) {
+            var reason = e && (e.reason || '');
+            var msg = typeof reason === 'object' ? (reason.message || reason.stack || '') : String(reason);
+            if (msg && (msg.indexOf('MetaMask') !== -1 || msg.indexOf('chrome-extension://') !== -1 || msg.indexOf('extension') !== -1)) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                return true;
+            }
+        }, true);
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff" id="themeColor">
     <title>All Categories - Flipkart</title>
@@ -453,7 +472,7 @@
                 <!-- 2. Fashion -->
                 <div class="cat-side-item" data-cat="Fashion" onclick="selectCategory('Fashion')">
                     <div class="cat-side-icon-box">
-                        <img src="./assets/images/cat_men.jpg" alt="Fashion" onerror="this.src='./assets/images/chair_opt.jpg';">
+                        <img src="./assets/images/cat_men.jpg" alt="Fashion" onerror="this.onerror=null;">
                     </div>
                     <span class="cat-side-label">Fashion</span>
                 </div>
@@ -640,7 +659,7 @@
                 </svg>
                 <span class="nav-label">Account</span>
             </a>
-            <a href="checkout.html" class="nav-item">
+            <a href="cart.html" class="nav-item">
                 <div style="position: relative; display: flex; align-items: center; justify-content: center;">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="9" cy="21" r="1"></circle>
@@ -659,6 +678,9 @@
 
     <!-- Interactive Script -->
     <script>
+        let cachedCatalog = [];
+        let defaultPaneHtml = '';
+
         function showToast(msg) {
             const toast = document.getElementById('toast');
             if (!toast) return;
@@ -687,23 +709,90 @@
             } catch(e) {}
         }
 
+        async function loadCatalogData() {
+            try {
+                const res = await fetch('./data/products.json?v=' + Date.now());
+                const data = await res.json();
+                cachedCatalog = data.products || [];
+            } catch(e) {
+                console.error('Failed to load catalog:', e);
+            }
+        }
+
+        function filterProductsForCat(catName) {
+            const c = (catName || '').toLowerCase();
+            if (c === 'all' || c === 'for-you' || c === 'home' || c === 'kitchen') return cachedCatalog;
+            if (c === 'appliances') {
+                return cachedCatalog.filter(p => {
+                    const name = (p.name || '').toLowerCase();
+                    return name.includes('mixer') || name.includes('grinder') || name.includes('blender') || name.includes('juicer') || name.includes('kettle') || name.includes('stove') || name.includes('cooktop') || name.includes('otg') || name.includes('sandwich');
+                });
+            }
+            if (c === 'cookware' || c === 'dining') {
+                return cachedCatalog.filter(p => {
+                    const name = (p.name || '').toLowerCase();
+                    return name.includes('cookware') || name.includes('cooker') || name.includes('casserole') || name.includes('dinner set') || name.includes('pan') || name.includes('kadai') || name.includes('box') || name.includes('opalware');
+                });
+            }
+            const filtered = cachedCatalog.filter(p => (p.name || '').toLowerCase().includes(c) || (p.category || '').toLowerCase().includes(c));
+            return filtered.length > 0 ? filtered : cachedCatalog;
+        }
+
         function selectCategory(catName) {
             document.querySelectorAll('.cat-side-item').forEach(el => el.classList.remove('active'));
             const target = document.querySelector(`.cat-side-item[data-cat="${catName}"]`);
             if (target) target.classList.add('active');
 
+            const pane = document.getElementById('cat-main-content');
+            if (!pane) return;
+
             if (catName === 'for-you') {
-                document.getElementById('cat-main-content').scrollTop = 0;
+                if (defaultPaneHtml) pane.innerHTML = defaultPaneHtml;
+                pane.scrollTop = 0;
             } else {
-                showToast(`Viewing ${catName} Collection`);
-                // Smooth scroll to launches or navigate to homepage with category filter
-                setTimeout(() => {
-                    window.location.href = `index.html?cat=${encodeURIComponent(catName)}`;
-                }, 400);
+                showToast(`Viewing ${catName} Products`);
+                const prods = filterProductsForCat(catName);
+                if (prods.length === 0) {
+                    pane.innerHTML = `
+                        <div style="padding: 24px; text-align: center; color: #878787;">
+                            <h4 style="font-size: 14px; font-weight: 600; color: #212121; margin-bottom: 6px;">${catName} Collection</h4>
+                            <p style="font-size: 12px;">Discover live Big Billion Days offers on the home page.</p>
+                            <button onclick="window.location.href='index.html'" style="margin-top: 14px; background: #2874f0; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer;">Explore All Deals</button>
+                        </div>
+                    `;
+                } else {
+                    pane.innerHTML = `
+                        <div style="padding: 10px 8px 6px 8px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f0f0f0;">
+                            <span style="font-size: 14px; font-weight: 700; color: #212121;">${catName} (${prods.length})</span>
+                            <a href="index.html" style="font-size: 12px; color: #2874f0; text-decoration: none; font-weight: 600;">View All</a>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 8px;">
+                            ${prods.map(p => `
+                                <div onclick="window.location.href='product-detail.html?id=${encodeURIComponent(p.md5_id || p.id)}'" style="background: #fff; border: 1px solid #eef2f6; border-radius: 8px; padding: 8px; cursor: pointer; display: flex; flex-direction: column;">
+                                    <div style="aspect-ratio: 1; background: #f8fafc; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;">
+                                        <img src="${p.img1 || ''}" alt="${p.name}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.onerror=null; if(this.src.includes('?')){this.src=this.src.split('?')[0];}">
+                                    </div>
+                                    <span style="font-size: 11px; font-weight: 700; color: #2874f0;">${p.brand || ''}</span>
+                                    <span style="font-size: 11px; color: #212121; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">${p.short_name || p.name}</span>
+                                    <div style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
+                                        <span style="font-size: 11px; font-weight: 700; color: #388e3c;">${p.discount_label || '↓ 90%'}</span>
+                                        <span style="font-size: 12px; font-weight: 700; color: #212121;">₹${p.selling_price}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                pane.scrollTop = 0;
             }
         }
 
-        window.addEventListener('DOMContentLoaded', updateCartBadges);
+        window.addEventListener('DOMContentLoaded', () => {
+            const pane = document.getElementById('cat-main-content');
+            if (pane) defaultPaneHtml = pane.innerHTML;
+            updateCartBadges();
+            loadCatalogData();
+        });
     </script>
 </body>
 
