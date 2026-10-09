@@ -341,9 +341,26 @@ if (tabFlipkart && tabTravel) {
   });
 }
 
+function updateHomeCartBadge() {
+  const badge = document.getElementById('home-cart-badge');
+  if (badge) {
+    try {
+      const raw = localStorage.getItem('flipkart_cart');
+      const cart = raw ? JSON.parse(raw) : [];
+      const count = Array.isArray(cart) ? cart.reduce((acc, item) => acc + (item.quantity || 1), 0) : 0;
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'flex' : 'none';
+    } catch (e) {
+      badge.textContent = '0';
+      badge.style.display = 'none';
+    }
+  }
+}
+
 // 8. Fetch Catalog Data
 async function loadCatalog() {
   try {
+    updateHomeCartBadge();
     const res = await fetch('./data/products.json');
     if (!res.ok) throw new Error('Catalog failed to load');
     const data = await res.json();

@@ -114,7 +114,7 @@ updateCartBadge();
 
 if (cartBtn) {
   cartBtn.addEventListener('click', () => {
-    showToast(`Flipkart Cart: ${cartBadge.textContent} item(s)`);
+    window.location.href = 'checkout.html';
   });
 }
 
@@ -252,25 +252,26 @@ if (reviewsToggle && reviewsBody) {
   });
 }
 
-// 10. Buy Now Modal Flow
-if (btnBuyNow && checkoutModal) {
+// 10. Buy Now Flow -> Full Cart, Address & Payment Page
+if (btnBuyNow) {
   btnBuyNow.addEventListener('click', () => {
-    document.getElementById('checkout-size').textContent = selectedSize;
-    document.getElementById('checkout-total').textContent = `Total: ₹${currencyFormatter.format(currentSellingPrice)}`;
-    checkoutModal.classList.add('show');
-  });
-}
-
-if (btnCloseCheckout && checkoutModal) {
-  btnCloseCheckout.addEventListener('click', () => {
-    checkoutModal.classList.remove('show');
-  });
-}
-
-if (btnConfirmOrder && checkoutModal) {
-  btnConfirmOrder.addEventListener('click', () => {
-    checkoutModal.classList.remove('show');
-    showToast(`Order Placed Successfully! Arriving by 10 Oct, Sat 📦`);
+    const checkoutItem = {
+      id: currentProduct?.id,
+      md5_id: currentProduct?.md5_id,
+      name: currentProduct?.name || 'Product',
+      brand: currentProduct?.brand || 'Brand',
+      size: selectedSize || 'Standard',
+      price: currentSellingPrice,
+      mrp: currentProduct?.mrp || (currentSellingPrice * 2),
+      discount_label: currentProduct?.discount_label || '↓ 50%',
+      discount_percent: currentProduct?.discount_percent || 50,
+      img: currentProduct?.img1 || './assets/images/chair_opt.jpg',
+      delivery_text: currentProduct?.delivery_text || 'Free Delivery by 12 Oct',
+      seller_name: currentProduct?.seller_name || 'RetailNet',
+      quantity: 1,
+    };
+    localStorage.setItem('flipkart_checkout_item', JSON.stringify(checkoutItem));
+    window.location.href = `checkout.html?id=${encodeURIComponent(currentProduct?.md5_id || currentProduct?.id || 1)}`;
   });
 }
 

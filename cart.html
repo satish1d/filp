@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#2874f0">
+    <title>Flipkart - Shopping Cart</title>
+    <meta name="description" content="View items in your Flipkart shopping cart, apply coupons, and proceed to checkout.">
+    <link rel="stylesheet" href="./assets/css/checkout.css">
+</head>
+
+<body class="checkout-body">
+    <div class="checkout-container" id="cart-container">
+        <!-- 1. Header -->
+        <header class="checkout-header">
+            <div class="header-left">
+                <button class="back-btn" id="btn-back" aria-label="Go Back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </button>
+                <div class="header-title-wrap">
+                    <span class="header-title" id="cart-header-title">My Cart</span>
+                    <span class="header-subtitle" id="cart-header-subtitle">1 Item</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <img src="./assets/images/flipkart_f_logo.svg" alt="Flipkart" style="height: 22px; width: auto;">
+            </div>
+        </header>
+
+        <!-- 2. Step Progress Bar -->
+        <div class="checkout-steps-bar">
+            <div class="step-item active">
+                <span class="step-num">1</span>
+                <span>Cart</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step-item">
+                <span class="step-num">2</span>
+                <span>Address</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step-item">
+                <span class="step-num">3</span>
+                <span>Payment</span>
+            </div>
+        </div>
+
+        <!-- 3. Deliver To Address Strip -->
+        <div class="delivery-address-strip" id="cart-address-strip">
+            <div class="address-strip-left">
+                <span class="address-strip-heading">Deliver To:</span>
+                <span class="address-strip-text" id="strip-recipient">Satish Patel, 400001</span>
+                <span class="address-strip-sub" id="strip-address-text">Flat 402, Green Avenue, Mumbai</span>
+            </div>
+            <a href="checkout-address.html" class="btn-change-address" id="btn-change-addr">Change</a>
+        </div>
+
+        <!-- 4. Empty Cart State -->
+        <div class="empty-cart-state" id="empty-cart-box">
+            <svg class="empty-cart-icon" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <h3 class="empty-cart-title">Your Cart is Empty!</h3>
+            <p class="empty-cart-sub">Explore Big Billion Days offers and add products to your cart.</p>
+            <a href="index.html" class="btn-primary-action" style="max-width: 200px;">Shop Now</a>
+        </div>
+
+        <!-- 5. Active Cart Items List -->
+        <main class="cart-items-wrapper" id="cart-items-list">
+            <!-- Dynamically populated via cart.js -->
+        </main>
+
+        <!-- 6. Coupons & Offers Banner -->
+        <section class="offers-card" id="offers-card">
+            <div class="coupon-info">
+                <div class="coupon-icon">🏷️</div>
+                <div>
+                    <div class="coupon-text-main" id="coupon-title">BBD Special Extra ₹50 Off</div>
+                    <div class="coupon-text-sub" id="coupon-subtitle">Applicable on orders above ₹499</div>
+                </div>
+            </div>
+            <button class="btn-apply-coupon" id="btn-toggle-coupon">Apply</button>
+        </section>
+
+        <!-- 7. Price Details Breakdown -->
+        <section class="price-details-card" id="price-details-card">
+            <h4 class="price-card-title">Price Details</h4>
+            <div class="price-row">
+                <span id="price-items-label">Price (1 item)</span>
+                <span id="price-total-mrp">₹2,499</span>
+            </div>
+            <div class="price-row discount-row">
+                <span>Discount</span>
+                <span id="price-discount-amt">-₹1,500</span>
+            </div>
+            <div class="price-row discount-row" id="coupon-row" style="display: none;">
+                <span>Coupons for you</span>
+                <span id="coupon-discount-amt">-₹50</span>
+            </div>
+            <div class="price-row free-highlight">
+                <span>Delivery Charges</span>
+                <span><s style="color: #878787; font-weight: normal; margin-right: 4px;">₹40</s> FREE</span>
+            </div>
+            <div class="price-row free-highlight">
+                <span>Secured Packaging Fee</span>
+                <span>FREE</span>
+            </div>
+            <div class="price-row total-row">
+                <span>Total Amount</span>
+                <span id="price-final-total">₹999</span>
+            </div>
+            <div class="price-savings-banner" id="price-savings-banner">
+                <span>🎉 You will save <strong id="total-savings-text">₹1,500</strong> on this order</span>
+            </div>
+        </section>
+
+        <!-- 8. Trust Footer -->
+        <footer class="trust-badge-footer">
+            <span>🛡️ Safe and Secure Payments</span>
+            <span>•</span>
+            <span>100% Authentic</span>
+        </footer>
+
+        <!-- 9. Sticky Bottom Bar -->
+        <div class="checkout-bottom-bar" id="cart-bottom-bar">
+            <div class="bottom-price-info">
+                <span class="bottom-total-price" id="bottom-bar-price">₹999</span>
+                <a href="#price-details-card" class="bottom-view-price">View price details</a>
+            </div>
+            <button class="btn-primary-action" id="btn-place-order">Place Order</button>
+        </div>
+
+        <!-- Toast Notice -->
+        <div class="checkout-toast" id="checkout-toast">Action completed</div>
+    </div>
+
+    <script defer src="./cart.js"></script>
+</body>
+
+</html>

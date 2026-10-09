@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#2874f0">
+    <title>Flipkart - Select Delivery Address</title>
+    <meta name="description" content="Add or select delivery address for your Flipkart order.">
+    <link rel="stylesheet" href="./assets/css/checkout.css">
+</head>
+
+<body class="checkout-body">
+    <div class="checkout-container" id="address-container">
+        <!-- 1. Header -->
+        <header class="checkout-header">
+            <div class="header-left">
+                <button class="back-btn" id="btn-back-to-cart" aria-label="Back to Cart">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </button>
+                <div class="header-title-wrap">
+                    <span class="header-title">Delivery Address</span>
+                    <span class="header-subtitle">Step 2 of 3</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <img src="./assets/images/flipkart_f_logo.svg" alt="Flipkart" style="height: 22px; width: auto;">
+            </div>
+        </header>
+
+        <!-- 2. Step Progress Bar -->
+        <div class="checkout-steps-bar">
+            <div class="step-item done">
+                <span class="step-num">✓</span>
+                <span>Cart</span>
+            </div>
+            <div class="step-divider done"></div>
+            <div class="step-item active">
+                <span class="step-num">2</span>
+                <span>Address</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step-item">
+                <span class="step-num">3</span>
+                <span>Payment</span>
+            </div>
+        </div>
+
+        <!-- 3. Saved Addresses Section -->
+        <section class="address-section-card" id="saved-addresses-section">
+            <h4 class="price-card-title" style="margin-bottom: 14px;">Select Delivery Address</h4>
+            <div id="saved-addresses-list">
+                <!-- Dynamically populated via checkout-address.js -->
+            </div>
+
+            <button id="btn-toggle-add-form" style="width: 100%; padding: 12px; background: #ffffff; border: 1.5px dashed var(--fk-blue); color: var(--fk-blue); border-radius: 8px; font-weight: 700; font-size: 13.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px;">
+                <span>+ Add a new address</span>
+            </button>
+        </section>
+
+        <!-- 4. Add / Edit Address Form (Collapsible) -->
+        <section class="address-section-card" id="address-form-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h4 class="price-card-title" style="margin: 0; padding: 0; border: none;" id="form-heading">Add New Address</h4>
+                <button type="button" id="btn-close-form" style="background: none; border: none; font-size: 13px; color: #dc2626; font-weight: 700; cursor: pointer;">Cancel</button>
+            </div>
+
+            <form id="address-form" onsubmit="return false;">
+                <div class="form-group">
+                    <label class="form-label" for="input-name">Full Name *</label>
+                    <input type="text" id="input-name" class="form-input" placeholder="e.g. Satish Patel" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="input-phone">10-digit Mobile Number *</label>
+                    <input type="tel" id="input-phone" class="form-input" placeholder="e.g. 9876543210" maxlength="10" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="input-pincode">Pincode *</label>
+                        <input type="text" id="input-pincode" class="form-input" placeholder="6-digit PIN" maxlength="6" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="input-city">City *</label>
+                        <input type="text" id="input-city" class="form-input" placeholder="e.g. Mumbai" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="input-state">State *</label>
+                    <input type="text" id="input-state" class="form-input" placeholder="e.g. Maharashtra" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="input-flat">House No., Building Name *</label>
+                    <input type="text" id="input-flat" class="form-input" placeholder="e.g. Flat 402, Green Avenue" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="input-area">Road Name, Area, Colony *</label>
+                    <input type="text" id="input-area" class="form-input" placeholder="e.g. Linking Road, Bandra West" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="input-landmark">Landmark (Optional)</label>
+                    <input type="text" id="input-landmark" class="form-input" placeholder="e.g. Near National College">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Type of Address</label>
+                    <div class="address-type-selector">
+                        <button type="button" class="type-pill-btn active" data-type="Home">
+                            <span>🏠 Home</span>
+                        </button>
+                        <button type="button" class="type-pill-btn" data-type="Work">
+                            <span>🏢 Work</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="button" id="btn-save-address" class="btn-primary-action" style="width: 100%; margin-top: 10px;">Save & Deliver Here</button>
+            </form>
+        </section>
+
+        <!-- 5. Order Summary Ribbon -->
+        <section class="address-section-card" id="cart-preview-strip" style="display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <span style="font-size: 11.5px; color: var(--fk-subtext); text-transform: uppercase; font-weight: 700;">Order Total:</span>
+                <div style="font-size: 16px; font-weight: 800; color: var(--fk-text);" id="addr-order-total">₹999</div>
+            </div>
+            <div style="font-size: 12.5px; color: var(--fk-blue); font-weight: 700;">
+                <span id="addr-items-count">1 Item</span> in Cart
+            </div>
+        </section>
+
+        <!-- 6. Sticky Bottom Bar -->
+        <div class="checkout-bottom-bar" id="address-bottom-bar">
+            <div class="bottom-price-info">
+                <span class="bottom-total-price" id="bottom-addr-price">₹999</span>
+                <span style="font-size: 11px; color: #475569;" id="bottom-recipient-info">Deliver to Satish</span>
+            </div>
+            <button class="btn-primary-action" id="btn-continue-payment">Deliver Here</button>
+        </div>
+
+        <!-- Toast Notice -->
+        <div class="checkout-toast" id="checkout-toast">Address Updated</div>
+    </div>
+
+    <script defer src="./checkout-address.js"></script>
+</body>
+
+</html>

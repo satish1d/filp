@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#16a34a">
+    <title>Flipkart - Order Placed Successfully!</title>
+    <meta name="description" content="Your Flipkart order has been placed successfully. Track your delivery and view order receipt.">
+    <link rel="stylesheet" href="./assets/css/checkout.css">
+</head>
+
+<body class="checkout-body">
+    <div class="checkout-container" id="success-container">
+        <!-- 1. Green Success Banner -->
+        <header class="success-banner">
+            <div class="success-check-circle">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <h1 class="success-title">Order Placed, Thank You!</h1>
+            <p class="success-subtitle">Confirmation SMS &amp; email sent to your mobile.</p>
+            <div class="order-id-badge" id="order-id-badge">
+                <span id="display-order-id">OD4928174920194</span>
+                <span style="opacity: 0.7; font-size: 11px;">📋</span>
+            </div>
+        </header>
+
+        <!-- 2. Interactive Delivery Tracker -->
+        <section class="tracking-card">
+            <h3 class="tracking-title">Delivery Status</h3>
+            <div class="timeline-list">
+                <div class="timeline-step completed">
+                    <div class="step-marker">✓</div>
+                    <div class="step-content">
+                        <div class="step-heading">Order Confirmed</div>
+                        <div class="step-desc" id="timeline-ordered-date">Today, Just now</div>
+                    </div>
+                </div>
+                <div class="timeline-step active">
+                    <div class="step-marker">●</div>
+                    <div class="step-content">
+                        <div class="step-heading">Packaging at Warehouse</div>
+                        <div class="step-desc">Expected by Tomorrow, 9:00 AM</div>
+                    </div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-marker"></div>
+                    <div class="step-content">
+                        <div class="step-heading">Shipped with EKART Logistics</div>
+                        <div class="step-desc">Tracking ID will be shared via SMS</div>
+                    </div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-marker"></div>
+                    <div class="step-content">
+                        <div class="step-heading">Delivery Expected</div>
+                        <div class="step-desc" style="color: var(--fk-green); font-weight: 700;" id="timeline-expected-date">Tomorrow by 11:00 PM</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Delivery Address Card -->
+        <section class="price-details-card" style="border-bottom: 8px solid var(--fk-bg);">
+            <h4 class="price-card-title">Delivery Address</h4>
+            <div style="font-size: 13.5px; font-weight: 800; color: var(--fk-text);" id="success-recipient-name">Satish Patel</div>
+            <div style="font-size: 12.5px; color: #475569; line-height: 1.45; margin-top: 4px;" id="success-full-address">
+                Flat 402, Green Avenue, Linking Road, Bandra West, Mumbai - 400001
+            </div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--fk-text); margin-top: 6px;" id="success-phone">
+                Phone: 9876543210
+            </div>
+        </section>
+
+        <!-- 4. Ordered Items Card -->
+        <section class="price-details-card" style="border-bottom: 8px solid var(--fk-bg);">
+            <h4 class="price-card-title">Items in This Order</h4>
+            <div id="success-items-list" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Populated via order-success.js -->
+            </div>
+        </section>
+
+        <!-- 5. Payment Summary Card -->
+        <section class="price-details-card" style="border-bottom: 8px solid var(--fk-bg);">
+            <h4 class="price-card-title">Payment Summary</h4>
+            <div class="price-row">
+                <span>Payment Mode</span>
+                <span style="font-weight: 700;" id="success-payment-mode">UPI (Google Pay)</span>
+            </div>
+            <div class="price-row total-row" style="margin-top: 6px; padding-top: 8px;">
+                <span>Total Amount Paid</span>
+                <span id="success-total-paid">₹949</span>
+            </div>
+        </section>
+
+        <!-- 6. Action Buttons -->
+        <div style="padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+            <a href="index.html" class="btn-primary-action" style="text-align: center; text-decoration: none;">Continue Shopping</a>
+            <button type="button" id="btn-download-invoice" style="background: #ffffff; border: 1.5px solid #d1d5db; color: #334155; font-size: 13px; font-weight: 700; padding: 12px; border-radius: 4px; cursor: pointer;">
+                📄 Download Tax Invoice
+            </button>
+        </div>
+
+        <!-- Toast Notice -->
+        <div class="checkout-toast" id="checkout-toast">Order ID Copied!</div>
+    </div>
+
+    <script defer src="./order-success.js"></script>
+</body>
+
+</html>

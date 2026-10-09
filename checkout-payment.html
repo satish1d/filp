@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#2874f0">
+    <title>Flipkart - Payment Options</title>
+    <meta name="description" content="Secure payments on Flipkart. Pay with UPI, Credit/Debit Card, Net Banking, or Cash on Delivery.">
+    <link rel="stylesheet" href="./assets/css/checkout.css">
+</head>
+
+<body class="checkout-body">
+    <div class="checkout-container" id="payment-container">
+        <!-- 1. Header -->
+        <header class="checkout-header">
+            <div class="header-left">
+                <button class="back-btn" id="btn-back-to-addr" aria-label="Back to Address">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </button>
+                <div class="header-title-wrap">
+                    <span class="header-title">Payment Options</span>
+                    <span class="header-subtitle">Step 3 of 3</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <span style="font-size: 11px; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; font-weight: 700;">🔒 100% Safe</span>
+            </div>
+        </header>
+
+        <!-- 2. Step Progress Bar -->
+        <div class="checkout-steps-bar">
+            <div class="step-item done">
+                <span class="step-num">✓</span>
+                <span>Cart</span>
+            </div>
+            <div class="step-divider done"></div>
+            <div class="step-item done">
+                <span class="step-num">✓</span>
+                <span>Address</span>
+            </div>
+            <div class="step-divider done"></div>
+            <div class="step-item active">
+                <span class="step-num">3</span>
+                <span>Payment</span>
+            </div>
+        </div>
+
+        <!-- 3. Delivery Address Ribbon -->
+        <div class="delivery-address-strip" style="border-bottom: 4px solid var(--fk-bg);">
+            <div class="address-strip-left">
+                <span class="address-strip-heading">Deliver To:</span>
+                <span class="address-strip-text" id="pay-recipient">Satish Patel, 400001</span>
+                <span class="address-strip-sub" id="pay-address-preview">Flat 402, Green Avenue, Mumbai</span>
+            </div>
+            <a href="checkout-address.html" class="btn-change-address">Change</a>
+        </div>
+
+        <!-- 4. Order Total Collapsible Banner -->
+        <div class="offers-card" style="border-bottom: 6px solid var(--fk-bg); padding: 12px 16px;">
+            <div>
+                <span style="font-size: 11.5px; color: var(--fk-subtext); text-transform: uppercase; font-weight: 700;">Amount Payable</span>
+                <div style="font-size: 18px; font-weight: 800; color: var(--fk-text);" id="pay-total-amount">₹999</div>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 11.5px; color: var(--fk-green); font-weight: 700;">✓ Free Delivery</span>
+                <div style="font-size: 11.5px; color: #64748b;" id="pay-items-count">1 Item in cart</div>
+            </div>
+        </div>
+
+        <!-- 5. Payment Methods Selection (Accordion Cards) -->
+        <main class="payment-methods-wrapper">
+            <!-- Method 1: UPI -->
+            <div class="payment-method-card selected" id="method-upi" data-method="upi">
+                <div class="payment-method-header">
+                    <div class="payment-header-left">
+                        <input type="radio" name="pay_mode" id="radio-upi" checked>
+                        <div class="payment-title-group">
+                            <span class="payment-method-title">UPI (Google Pay, PhonePe, Paytm)</span>
+                            <span class="payment-method-sub">⚡ ₹50 Instant Discount Applied</span>
+                        </div>
+                    </div>
+                    <span style="font-size: 18px;">📱</span>
+                </div>
+                <div class="payment-method-body">
+                    <p style="font-size: 12.5px; color: #475569; margin-bottom: 10px; font-weight: 600;">Choose UPI App:</p>
+                    <div class="upi-apps-row">
+                        <button type="button" class="upi-app-btn active" data-app="GPay">
+                            <span style="font-size: 20px;">🇬</span>
+                            <span>Google Pay</span>
+                        </button>
+                        <button type="button" class="upi-app-btn" data-app="PhonePe">
+                            <span style="font-size: 20px;">🅿️</span>
+                            <span>PhonePe</span>
+                        </button>
+                        <button type="button" class="upi-app-btn" data-app="Paytm">
+                            <span style="font-size: 20px;">🔷</span>
+                            <span>Paytm UPI</span>
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 10px;">
+                        <span style="font-size: 12px; color: #64748b; font-weight: 600;">Or Enter UPI ID:</span>
+                        <div style="display: flex; gap: 8px; margin-top: 6px;">
+                            <input type="text" id="input-upi-id" class="form-input" placeholder="e.g. username@okhdfcbank" style="height: 38px; font-size: 13px;">
+                            <button type="button" id="btn-verify-upi" style="background: var(--fk-blue); color: #fff; border: none; padding: 0 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Verify</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Method 2: Cards -->
+            <div class="payment-method-card" id="method-card" data-method="card">
+                <div class="payment-method-header">
+                    <div class="payment-header-left">
+                        <input type="radio" name="pay_mode" id="radio-card">
+                        <div class="payment-title-group">
+                            <span class="payment-method-title">Credit / Debit / ATM Card</span>
+                            <span style="font-size: 11.5px; color: #64748b;">Visa, MasterCard, RuPay, Maestro</span>
+                        </div>
+                    </div>
+                    <span style="font-size: 18px;">💳</span>
+                </div>
+                <div class="payment-method-body">
+                    <div class="card-form-grid">
+                        <div class="card-number-wrapper">
+                            <input type="text" id="card-num" class="form-input" placeholder="Card Number (#### #### #### ####)" maxlength="19">
+                            <span class="card-brand-badge" id="card-type-badge">CARD</span>
+                        </div>
+                        <div class="form-row">
+                            <input type="text" id="card-expiry" class="form-input" placeholder="MM / YY" maxlength="5">
+                            <input type="password" id="card-cvv" class="form-input" placeholder="CVV (3-digit)" maxlength="3">
+                        </div>
+                        <input type="text" id="card-holder" class="form-input" placeholder="Cardholder Name">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Method 3: Net Banking -->
+            <div class="payment-method-card" id="method-netbanking" data-method="netbanking">
+                <div class="payment-method-header">
+                    <div class="payment-header-left">
+                        <input type="radio" name="pay_mode" id="radio-netbanking">
+                        <div class="payment-title-group">
+                            <span class="payment-method-title">Net Banking</span>
+                            <span style="font-size: 11.5px; color: #64748b;">All Indian banks supported</span>
+                        </div>
+                    </div>
+                    <span style="font-size: 18px;">🏦</span>
+                </div>
+                <div class="payment-method-body">
+                    <div class="banks-grid">
+                        <button type="button" class="bank-option-btn active" data-bank="HDFC">HDFC</button>
+                        <button type="button" class="bank-option-btn" data-bank="SBI">SBI</button>
+                        <button type="button" class="bank-option-btn" data-bank="ICICI">ICICI</button>
+                        <button type="button" class="bank-option-btn" data-bank="Axis">Axis</button>
+                        <button type="button" class="bank-option-btn" data-bank="Kotak">Kotak</button>
+                        <button type="button" class="bank-option-btn" data-bank="PNB">PNB</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Method 4: Cash on Delivery (COD) -->
+            <div class="payment-method-card" id="method-cod" data-method="cod">
+                <div class="payment-method-header">
+                    <div class="payment-header-left">
+                        <input type="radio" name="pay_mode" id="radio-cod">
+                        <div class="payment-title-group">
+                            <span class="payment-method-title">Cash on Delivery (COD)</span>
+                            <span style="font-size: 11.5px; color: #64748b;">Pay cash at doorstep</span>
+                        </div>
+                    </div>
+                    <span style="font-size: 18px;">💵</span>
+                </div>
+                <div class="payment-method-body">
+                    <p style="font-size: 12px; color: #475569; margin-bottom: 8px;">
+                        Due to high demand, please enter the characters shown below to confirm your Cash on Delivery order:
+                    </p>
+                    <div class="cod-captcha-container">
+                        <div class="captcha-display" id="captcha-code">4 8 2</div>
+                        <button type="button" class="captcha-refresh-btn" id="btn-refresh-captcha" title="New Code">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <polyline points="1 20 1 14 7 14"></polyline>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <input type="tel" id="input-captcha" class="form-input" placeholder="Enter 3-digit code here" maxlength="3" style="height: 40px; font-size: 15px; font-weight: 700; text-align: center; letter-spacing: 4px;">
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 6. Price Details Card -->
+        <section class="price-details-card" style="margin-top: 10px;">
+            <h4 class="price-card-title">Price Details</h4>
+            <div class="price-row">
+                <span>Total MRP</span>
+                <span id="pay-total-mrp">₹2,499</span>
+            </div>
+            <div class="price-row discount-row">
+                <span>Sale Discount</span>
+                <span id="pay-discount-amt">-₹1,500</span>
+            </div>
+            <div class="price-row discount-row" id="pay-upi-discount-row">
+                <span>UPI Instant Discount</span>
+                <span>-₹50</span>
+            </div>
+            <div class="price-row free-highlight">
+                <span>Delivery Charges</span>
+                <span>FREE</span>
+            </div>
+            <div class="price-row total-row">
+                <span>Total Payable</span>
+                <span id="pay-final-amount">₹949</span>
+            </div>
+        </section>
+
+        <!-- 7. Trust Security Badge -->
+        <footer class="trust-badge-footer">
+            <span>🛡️ 256-Bit SSL Encrypted &amp; PCI-DSS Certified</span>
+        </footer>
+
+        <!-- 8. Sticky Bottom Bar -->
+        <div class="checkout-bottom-bar" id="pay-bottom-bar">
+            <div class="bottom-price-info">
+                <span class="bottom-total-price" id="bottom-pay-price">₹949</span>
+                <span style="font-size: 11px; color: var(--fk-green); font-weight: 700;">Free Delivery</span>
+            </div>
+            <button class="btn-primary-action" id="btn-pay-now">Pay ₹949</button>
+        </div>
+
+        <!-- 9. Real-time Payment Processing Overlay -->
+        <div class="processing-overlay" id="processing-overlay">
+            <div class="spinner-ring"></div>
+            <div class="processing-text-main" id="process-main-text">Processing Payment...</div>
+            <div class="processing-text-sub" id="process-sub-text">Please do not press back or refresh</div>
+        </div>
+
+        <!-- Toast Notice -->
+        <div class="checkout-toast" id="checkout-toast">Payment Method Selected</div>
+    </div>
+
+    <script defer src="./checkout-payment.js"></script>
+</body>
+
+</html>
