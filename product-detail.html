@@ -661,16 +661,26 @@
         }
 
         .pd-similar-arrow {
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
-            background: #212121;
-            color: #ffffff;
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 15px;
+            font-weight: 800;
             cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .pd-similar-arrow:hover {
+            background: #2874f0;
+            color: #ffffff;
+            border-color: #2874f0;
         }
 
         .pd-similar-grid {
@@ -678,7 +688,19 @@
             gap: 10px;
             overflow-x: auto;
             scrollbar-width: none;
-            padding-bottom: 4px;
+            padding-bottom: 8px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x pan-y;
+            scroll-snap-type: x proximity;
+            cursor: grab;
+        }
+
+        .pd-similar-grid.active-dragging {
+            cursor: grabbing;
+            scroll-behavior: auto;
+            scroll-snap-type: none;
+            user-select: none;
         }
 
         .pd-similar-grid::-webkit-scrollbar {
@@ -694,6 +716,13 @@
             background: #ffffff;
             cursor: pointer;
             flex-shrink: 0;
+            scroll-snap-align: start;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .pd-similar-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
         }
 
         .pd-similar-img-box {
@@ -1190,8 +1219,14 @@
             <!-- Similar Products -->
             <div class="pd-similar-section">
                 <div class="pd-similar-header">
-                    <span class="pd-similar-title">Similar Products</span>
-                    <div class="pd-similar-arrow">➔</div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="pd-similar-title">Similar Products</span>
+                        <span id="pd-similar-count-badge" style="font-size: 11px; font-weight: 700; color: #2874f0; background: #eff6ff; padding: 2px 7px; border-radius: 10px;"></span>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button type="button" class="pd-similar-arrow" id="pd-similar-prev" aria-label="Previous">‹</button>
+                        <button type="button" class="pd-similar-arrow" id="pd-similar-next" aria-label="Next">›</button>
+                    </div>
                 </div>
                 <div class="pd-similar-grid" id="pd-similar-grid">
                     <!-- Populated dynamically via JS -->
@@ -1280,6 +1315,18 @@
                     </div>
                 </div>
             </div>
+
+            <!-- All Similar Products Grid Section (Home page style) -->
+            <section class="product-grid-section" style="margin-top: 16px; margin-bottom: 24px; padding: 0 4px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 2px 4px;">
+                    <div>
+                        <h2 style="font-size: 16px; font-weight: 700; color: #212121; margin: 0; line-height: 1.2;">Similar Products</h2>
+                        <span style="font-size: 11px; color: #878787;">Flipkart Assured • Big Billion Days Deals</span>
+                    </div>
+                    <span id="pd-bottom-count-badge" style="font-size: 12px; color: #2874f0; font-weight: 700; background: #e3edfe; padding: 3px 8px; border-radius: 4px;"></span>
+                </div>
+                <div id="pd-bottom-product-grid" class="product-grid"></div>
+            </section>
         </div>
 
         <!-- Sticky Bottom Bar -->

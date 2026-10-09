@@ -302,7 +302,15 @@ if (categoryNav) {
   });
 }
 
-// 6b. Fashion Strip (Men, Women, Kids) Click Handler
+// 6b. Home Offers Strip Click Handler
+window.selectHomeOffer = function(offerId, offerName) {
+  showToast(`🎁 ${offerName} Active! Select products below.`);
+  const gridSection = document.querySelector('.product-grid-section');
+  if (gridSection) {
+    gridSection.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
 const fashionStrip = document.getElementById('fashion-strip');
 if (fashionStrip) {
   fashionStrip.querySelectorAll('.fashion-cat-card').forEach((card) => {

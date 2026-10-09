@@ -542,7 +542,7 @@
                 <h3 class="cat-section-heading">Popular Store</h3>
                 <div class="popular-stores-grid">
                     <!-- Live now (BBD) -->
-                    <div class="store-tile" onclick="window.location.href='index.html'">
+                    <div class="store-tile" onclick="openCollection('for-you', 'Live now')">
                         <div class="store-tile-img-box">
                             <svg width="76" height="76" viewBox="0 0 100 100">
                                 <circle cx="50" cy="50" r="46" fill="#ffe000" stroke="#ffffff" stroke-width="3"/>
@@ -557,7 +557,7 @@
                     </div>
 
                     <!-- Discover Luxe -->
-                    <div class="store-tile" onclick="window.location.href='index.html'">
+                    <div class="store-tile" onclick="openCollection('for-you', 'Discover Luxe')">
                         <div class="store-tile-img-box">
                             <img src="./assets/images/cat_store_luxe.svg" alt="Discover Luxe" class="store-tile-img">
                         </div>
@@ -565,7 +565,7 @@
                     </div>
 
                     <!-- Value 365 -->
-                    <div class="store-tile" onclick="window.location.href='index.html'">
+                    <div class="store-tile" onclick="openCollection('for-you', 'Value 365')">
                         <div class="store-tile-img-box">
                             <img src="./assets/images/cat_store_value365.svg" alt="Value 365" class="store-tile-img">
                         </div>
@@ -585,7 +585,7 @@
                 <h3 class="cat-section-heading">New &amp; Upcoming Launches</h3>
                 <div class="launches-grid">
                     <!-- 1. PS5 Console -->
-                    <div class="launch-card" onclick="window.location.href='product-detail.html?id=1'">
+                    <div class="launch-card" onclick="openCollection('for-you', 'PS5 console')">
                         <div class="launch-card-img-box">
                             <img src="./assets/images/cat_launch_ps5.svg" alt="PS5 console" class="launch-card-img">
                         </div>
@@ -593,7 +593,7 @@
                     </div>
 
                     <!-- 2. Google Fitbit Air -->
-                    <div class="launch-card" onclick="window.location.href='product-detail.html?id=113'">
+                    <div class="launch-card" onclick="openCollection('for-you', 'Google Fitbit Air')">
                         <div class="launch-card-img-box">
                             <img src="./assets/images/cat_launch_fitbit.svg" alt="Google Fitbit Air" class="launch-card-img">
                         </div>
@@ -601,7 +601,7 @@
                     </div>
 
                     <!-- 3. Native door locks -->
-                    <div class="launch-card" onclick="window.location.href='product-detail.html?id=3'">
+                    <div class="launch-card" onclick="openCollection('for-you', 'Native door locks')">
                         <div class="launch-card-img-box">
                             <img src="./assets/images/cat_launch_doorlock.svg" alt="Native door locks" class="launch-card-img">
                         </div>
@@ -609,7 +609,7 @@
                     </div>
 
                     <!-- 4. iPhone 18 Pro -->
-                    <div class="launch-card" onclick="window.location.href='product-detail.html?id=113'">
+                    <div class="launch-card" onclick="openCollection('for-you', 'iPhone 18 Pro')">
                         <div class="launch-card-img-box">
                             <img src="./assets/images/cat_launch_iphone.svg" alt="iPhone 18 Pro" class="launch-card-img">
                         </div>
@@ -617,7 +617,7 @@
                     </div>
 
                     <!-- 5. boAt Airdopes Prime Supreme -->
-                    <div class="launch-card" onclick="window.location.href='product-detail.html?id=113'">
+                    <div class="launch-card" onclick="openCollection('for-you', 'boAt Airdopes Prime Supreme')">
                         <div class="launch-card-img-box">
                             <img src="./assets/images/cat_launch_airdopes.svg" alt="boAt Airdopes Prime Supreme" class="launch-card-img">
                         </div>
@@ -625,7 +625,7 @@
                     </div>
 
                     <!-- 6. Acer Iconia Tab -->
-                    <div class="launch-card" onclick="window.location.href='product-detail.html?id=2'">
+                    <div class="launch-card" onclick="openCollection('for-you', 'Acer Iconia Tab')">
                         <div class="launch-card-img-box">
                             <img src="./assets/images/cat_launch_tablet.svg" alt="Acer Iconia Tab" class="launch-card-img">
                         </div>
@@ -738,6 +738,86 @@
             return filtered.length > 0 ? filtered : cachedCatalog;
         }
 
+        const categoryCollections = {
+            'Fashion': {
+                title: 'Fashion Collections',
+                items: [
+                    { name: "Men's Wear", img: './assets/images/cat_men.jpg', collection: "Men's Clothing" },
+                    { name: "Women's Ethnic", img: './assets/images/cat_women.jpg', collection: "Women's Ethnic" },
+                    { name: "Kurtas & Sets", img: './assets/images/snitch_check_shirt.jpg', collection: "Kurtas & Sets" },
+                    { name: "Kids Fashion", img: './assets/images/cat_kids.jpg', collection: "Kids Fashion" },
+                    { name: "Footwear", img: './assets/images/shoes_opt.jpg', collection: "Footwear" },
+                    { name: "Luggage & Bags", img: './assets/images/luggage_opt.jpg', collection: "Luggage & Bags" }
+                ]
+            },
+            'Mobiles': {
+                title: 'Mobiles & Accessories',
+                items: [
+                    { name: "5G Mobiles", img: './assets/images/tech_phone_card.svg', collection: "5G Mobiles" },
+                    { name: "iPhones", img: './assets/images/cat_launch_iphone.svg', collection: "iPhones" },
+                    { name: "Samsung Galaxy", img: './assets/images/samsung_opt.jpg', collection: "Samsung Mobiles" },
+                    { name: "Vivo Phones", img: './assets/images/vivo_opt.jpg', collection: "Vivo Mobiles" },
+                    { name: "Budget Phones", img: './assets/images/motorola_thumb.svg', collection: "Budget Mobiles" },
+                    { name: "Accessories", img: './assets/images/tech_phone_card.svg', collection: "Mobile Accessories" }
+                ]
+            },
+            'Appliances': {
+                title: 'Kitchen & Home Appliances',
+                items: [
+                    { name: "Mixer Grinders", img: './assets/images/cat_store_value365.svg', collection: "Mixer Grinders" },
+                    { name: "Gas Stoves", img: '', collection: "Gas Stoves", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#fef2f2"/><rect x="8" y="14" width="24" height="14" rx="3" fill="#ef4444"/><circle cx="15" cy="21" r="3.5" fill="#ffffff"/><circle cx="25" cy="21" r="3.5" fill="#ffffff"/></svg>' },
+                    { name: "Induction Tops", img: '', collection: "Induction Cooktops", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#f0fdf4"/><rect x="9" y="10" width="22" height="20" rx="4" fill="#15803d"/><circle cx="20" cy="18" r="5" stroke="#ffffff" stroke-width="2"/></svg>' },
+                    { name: "Electric Kettles", img: '', collection: "Electric Kettles", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#fefce8"/><path d="M14 14h12l-2 13h-8l-2-13z" fill="#ca8a04"/><path d="M26 18h4v6h-4z" fill="#eab308"/></svg>' },
+                    { name: "Sandwich & OTG", img: '', collection: "Sandwich & OTG", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#fff7ed"/><rect x="9" y="12" width="22" height="16" rx="3" fill="#ea580c"/><rect x="13" y="15" width="14" height="10" rx="2" fill="#ffedd5"/></svg>' },
+                    { name: "Cookware Sets", img: '', collection: "Cookware", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#fdf4ff"/><circle cx="18" cy="20" r="8" fill="#a855f7"/><rect x="25" y="18" width="8" height="4" rx="2" fill="#c084fc"/></svg>' }
+                ]
+            },
+            'Electronics': {
+                title: 'Electronics & Gadgets',
+                items: [
+                    { name: "Laptops", img: './assets/images/tech_laptop_card.svg', collection: "Laptops" },
+                    { name: "Smart TVs", img: './assets/images/tech_tv_card.svg', collection: "Smart TVs" },
+                    { name: "Headphones", img: './assets/images/headphones_opt.jpg', collection: "Headphones" },
+                    { name: "Gaming & PS5", img: './assets/images/cat_launch_ps5.svg', collection: "Gaming Consoles" },
+                    { name: "Tablets", img: './assets/images/cat_launch_tablet.svg', collection: "Tablets" },
+                    { name: "Audio Systems", img: './assets/images/headphones_opt.jpg', collection: "Audio Systems" }
+                ]
+            },
+            'Smart Gadgets': {
+                title: 'Smart Gadgets & Wearables',
+                items: [
+                    { name: "Smartwatches", img: './assets/images/smartwatch_opt.jpg', collection: "Smartwatches" },
+                    { name: "Fitbit Bands", img: './assets/images/cat_launch_fitbit.svg', collection: "Fitbit Bands" },
+                    { name: "TWS Earbuds", img: './assets/images/cat_launch_airdopes.svg', collection: "TWS Earbuds" },
+                    { name: "Smart Locks", img: './assets/images/cat_launch_doorlock.svg', collection: "Smart Door Locks" },
+                    { name: "Fitness Air", img: './assets/images/cat_launch_fitbit.svg', collection: "Fitness Air" },
+                    { name: "Bluetooth Audio", img: './assets/images/headphones_opt.jpg', collection: "Bluetooth Audio" }
+                ]
+            },
+            'Home': {
+                title: 'Home & Kitchen Collections',
+                items: [
+                    { name: "Cookware Sets", img: '', collection: "Cookware Sets", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#eff6ff"/><path d="M10 16h20v6a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8v-6z" fill="#2563eb"/></svg>' },
+                    { name: "Pressure Cookers", img: '', collection: "Pressure Cookers", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#fef2f2"/><rect x="10" y="15" width="20" height="12" rx="3" fill="#dc2626"/><rect x="16" y="11" width="8" height="4" rx="1" fill="#7f1d1d"/></svg>' },
+                    { name: "Dinnerware", img: '', collection: "Dinnerware & Opalware", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#f0fdf4"/><circle cx="20" cy="20" r="10" fill="#16a34a"/><circle cx="20" cy="20" r="6" fill="#86efac"/></svg>' },
+                    { name: "Kadai & Pans", img: '', collection: "Kadai & Non-Stick Pans", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#fefce8"/><ellipse cx="20" cy="21" rx="10" ry="7" fill="#ca8a04"/><path d="M7 19h4M29 19h4" stroke="#854d0e" stroke-width="2" stroke-linecap="round"/></svg>' },
+                    { name: "Storage Boxes", img: '', collection: "Storage Containers", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#fdf4ff"/><rect x="12" y="14" width="16" height="15" rx="3" fill="#9333ea"/><rect x="10" y="12" width="20" height="3" rx="1.5" fill="#a855f7"/></svg>' },
+                    { name: "Chairs & Furniture", img: './assets/images/chair_opt.jpg', collection: "Furniture & Chairs" }
+                ]
+            },
+            'Beauty': {
+                title: 'Beauty & Personal Care',
+                items: [
+                    { name: "Skincare", img: '', collection: "Skincare", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#fdf2f8"/><rect x="14" y="13" width="12" height="16" rx="4" fill="#db2777"/><rect x="16" y="9" width="8" height="4" rx="2" fill="#f472b6"/></svg>' },
+                    { name: "Haircare", img: '', collection: "Haircare", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#f5f3ff"/><path d="M15 13h10v14a4 4 0 0 1-4 4h-2a4 4 0 0 1-4-4V13z" fill="#7c3aed"/><path d="M17 9h6v4h-6z" fill="#a78bfa"/></svg>' },
+                    { name: "Men's Grooming", img: './assets/images/cat_men.jpg', collection: "Men's Grooming" },
+                    { name: "Fragrances", img: '', collection: "Fragrances & Deos", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#eff6ff"/><circle cx="20" cy="23" r="8" fill="#0284c7"/><rect x="17" y="11" width="6" height="5" rx="1" fill="#38bdf8"/></svg>' },
+                    { name: "Bath & Body", img: '', collection: "Bath & Body", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#ecfdf5"/><rect x="12" y="15" width="16" height="13" rx="3" fill="#059669"/><circle cx="16" cy="11" r="2" fill="#34d399"/><circle cx="23" cy="10" r="1.5" fill="#34d399"/></svg>' },
+                    { name: "Makeup", img: '', collection: "Makeup Essentials", iconSvg: '<svg width="38" height="38" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="12" fill="#fff1f2"/><rect x="16" y="16" width="8" height="13" rx="2" fill="#e11d48"/><path d="M17 16l3-6 3 6z" fill="#f43f5e"/></svg>' }
+                ]
+            }
+        };
+
         function selectCategory(catName) {
             document.querySelectorAll('.cat-side-item').forEach(el => el.classList.remove('active'));
             const target = document.querySelector(`.cat-side-item[data-cat="${catName}"]`);
@@ -749,42 +829,40 @@
             if (catName === 'for-you') {
                 if (defaultPaneHtml) pane.innerHTML = defaultPaneHtml;
                 pane.scrollTop = 0;
-            } else {
-                showToast(`Viewing ${catName} Products`);
-                const prods = filterProductsForCat(catName);
-                if (prods.length === 0) {
-                    pane.innerHTML = `
-                        <div style="padding: 24px; text-align: center; color: #878787;">
-                            <h4 style="font-size: 14px; font-weight: 600; color: #212121; margin-bottom: 6px;">${catName} Collection</h4>
-                            <p style="font-size: 12px;">Discover live Big Billion Days offers on the home page.</p>
-                            <button onclick="window.location.href='index.html'" style="margin-top: 14px; background: #2874f0; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer;">Explore All Deals</button>
-                        </div>
-                    `;
-                } else {
-                    pane.innerHTML = `
-                        <div style="padding: 10px 8px 6px 8px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f0f0f0;">
-                            <span style="font-size: 14px; font-weight: 700; color: #212121;">${catName} (${prods.length})</span>
-                            <a href="index.html" style="font-size: 12px; color: #2874f0; text-decoration: none; font-weight: 600;">View All</a>
-                        </div>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 8px;">
-                            ${prods.map(p => `
-                                <div onclick="window.location.href='product-detail.html?id=${encodeURIComponent(p.md5_id || p.id)}'" style="background: #fff; border: 1px solid #eef2f6; border-radius: 8px; padding: 8px; cursor: pointer; display: flex; flex-direction: column;">
-                                    <div style="aspect-ratio: 1; background: #f8fafc; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;">
-                                        <img src="${p.img1 || ''}" alt="${p.name}" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.onerror=null; if(this.src.includes('?')){this.src=this.src.split('?')[0];}">
-                                    </div>
-                                    <span style="font-size: 11px; font-weight: 700; color: #2874f0;">${p.brand || ''}</span>
-                                    <span style="font-size: 11px; color: #212121; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">${p.short_name || p.name}</span>
-                                    <div style="display: flex; align-items: center; gap: 4px; margin-top: 4px;">
-                                        <span style="font-size: 11px; font-weight: 700; color: #388e3c;">${p.discount_label || '↓ 90%'}</span>
-                                        <span style="font-size: 12px; font-weight: 700; color: #212121;">₹${p.selling_price}</span>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                }
-                pane.scrollTop = 0;
+                return;
             }
+
+            const data = categoryCollections[catName];
+            if (!data) return;
+
+            pane.innerHTML = `
+                <div style="margin-bottom: 12px;">
+                    <h3 class="cat-section-heading" style="margin-bottom: 2px;">${data.title}</h3>
+                    <span style="font-size: 11.5px; color: #64748b; font-weight: 500;">Tap any collection to view all products</span>
+                </div>
+                <div class="popular-stores-grid" style="margin-bottom: 16px;">
+                    ${data.items.map(item => `
+                        <div class="store-tile" onclick="openCollection('${catName}', '${item.collection}')">
+                            <div class="store-tile-img-box">
+                                ${item.iconSvg ? item.iconSvg : `
+                                    <img src="${item.img}" alt="${item.name}" class="store-tile-img" onerror="this.onerror=null; this.style.display='none';">
+                                `}
+                            </div>
+                            <span class="store-tile-label">${item.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div style="background: #eff6ff; border: 1px dashed #2874f0; border-radius: 12px; padding: 12px; text-align: center; margin-top: 14px;">
+                    <span style="font-size: 12.5px; font-weight: 700; color: #2874f0;">The Big Billion Days Sale</span>
+                    <p style="font-size: 11px; color: #475569; margin: 4px 0 10px 0;">Special discounts live on all ${catName} collections</p>
+                    <button onclick="openCollection('${catName}', 'All ${catName}')" style="background: #2874f0; color: #ffffff; border: none; border-radius: 6px; padding: 7px 16px; font-size: 12px; font-weight: 700; cursor: pointer;">View All ${catName} Deals</button>
+                </div>
+            `;
+            pane.scrollTop = 0;
+        }
+
+        function openCollection(catName, collectionName) {
+            window.location.href = `category.html?cat=${encodeURIComponent(catName)}&collection=${encodeURIComponent(collectionName)}`;
         }
 
         window.addEventListener('DOMContentLoaded', () => {

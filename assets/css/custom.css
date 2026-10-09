@@ -242,6 +242,115 @@ body {
   display: block;
 }
 
+/* ================= Home Special Offers Strip (Buy 2 Get 1 / Buy 3 Get 2 / Buy 5 Get 3) ================= */
+.home-offers-strip {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  background-color: #ffffff;
+}
+
+.home-offer-card {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  padding: 8px 4px 10px 4px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
+  border: 1.5px solid #bfdbfe;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  position: relative;
+}
+
+.home-offer-card.highlight {
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+  border-color: #86efac;
+}
+
+.home-offer-card:hover,
+.home-offer-card:active {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 116, 240, 0.15);
+}
+
+.home-offer-badge {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #2874f0;
+  background: #e0edff;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+
+.home-offer-badge.best {
+  color: #108432;
+  background: #dcfce7;
+}
+
+.home-offer-badge.mega {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.home-offer-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid #bfdbfe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  box-shadow: 0 2px 6px rgba(40, 116, 240, 0.08);
+}
+
+.home-offer-icon.best {
+  border-color: #86efac;
+}
+
+.home-offer-icon.mega {
+  border-color: #fca5a5;
+}
+
+.home-offer-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 4px;
+  line-height: 1.25;
+}
+
+.home-offer-tag {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #0d8234;
+  background: #e8f7ec;
+  padding: 2px 6px;
+  border-radius: 6px;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.home-offer-tag.best {
+  color: #108432;
+  background: #dcfce7;
+}
+
+.home-offer-tag.mega {
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
 /* ================= Festive Fashion Showcase (Men, Women, Kids) ================= */
 .fashion-categories-strip {
   display: flex;

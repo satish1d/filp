@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+
+<head>
+    <meta charset="UTF-8">
+    <script>
+        // Suppress external browser extension errors (e.g. MetaMask inpage.js)
+        window.addEventListener('error', function(e) {
+            if (e && ((e.filename && e.filename.indexOf('chrome-extension://') !== -1) || (e.message && (e.message.indexOf('MetaMask') !== -1 || e.message.indexOf('extension') !== -1)))) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                return true;
+            }
+        }, true);
+        window.addEventListener('unhandledrejection', function(e) {
+            var reason = e && (e.reason || '');
+            var msg = typeof reason === 'object' ? (reason.message || reason.stack || '') : String(reason);
+            if (msg && (msg.indexOf('MetaMask') !== -1 || msg.indexOf('chrome-extension://') !== -1 || msg.indexOf('extension') !== -1)) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                return true;
+            }
+        }, true);
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#2874f0" id="themeColor">
+    <title>Category Products - Flipkart</title>
+    <meta name="description" content="Explore products by category with live Big Billion Days sale discounts on Flipkart.">
+    
+    <link rel="stylesheet" href="./assets/css/custom.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f1f3f6;
+            color: #212121;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        #category-app-container {
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 65px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Flipkart Blue Header */
+        .cat-top-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #2874f0;
+            color: #ffffff;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        }
+
+        .cat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .cat-back-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .cat-title-wrap {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .cat-main-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: -0.2px;
+        }
+
+        .cat-sub-title {
+            font-size: 11px;
+            color: #e0e7ff;
+            font-weight: 500;
+        }
+
+        .cat-header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .cat-header-icon {
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .cat-cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: #fb641b;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 800;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+            border: 1.5px solid #2874f0;
+        }
+
+        /* Search Bar in Category Page */
+        .cat-search-bar-wrap {
+            padding: 8px 12px 10px 12px;
+            background: #f8fafc;
+            border-bottom: 1px solid #eef2f6;
+        }
+
+        .cat-search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .cat-search-box input {
+            width: 100%;
+            height: 40px;
+            background: #ffffff;
+            border: 1px solid #dcdfe4;
+            border-radius: 8px;
+            padding: 0 12px 0 38px;
+            font-size: 13.5px;
+            color: #212121;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        .cat-search-box input:focus {
+            border-color: #2874f0;
+            box-shadow: 0 0 0 2px rgba(40, 116, 240, 0.12);
+        }
+
+        .cat-search-box .cat-search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #878787;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Category Filter Chips / Pills */
+        .cat-chips-strip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            background: #ffffff;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .cat-chips-strip::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-chip {
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #f1f3f6;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .cat-chip.active {
+            background: #2874f0;
+            color: #ffffff;
+            border-color: #2874f0;
+            box-shadow: 0 2px 6px rgba(40, 116, 240, 0.25);
+        }
+
+        /* Products Info Bar */
+        .cat-products-info-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px 6px 14px;
+            background: #ffffff;
+        }
+
+        .cat-count-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: #212121;
+        }
+
+        .cat-assured-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #2874f0;
+            background: #eef5ff;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        /* Only Product Grid (Home page layout) */
+        .product-grid-section {
+            background-color: #ffffff;
+            padding: 8px 8px 30px 8px;
+            width: 100%;
+            box-sizing: border-box;
+            flex: 1;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Bottom Navigation Bar (4 Fixed Tabs: Home, Categories, Account, Cart) */
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 60px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid #e2e8f0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+            z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            box-sizing: border-box;
+        }
+
+        .nav-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            text-decoration: none;
+            color: #64748b;
+            cursor: pointer;
+            transition: color 0.15s ease;
+        }
+
+        .nav-item.active {
+            color: #2874f0;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .nav-item.active .nav-label {
+            font-weight: 700;
+            color: #2874f0;
+        }
+
+        .bottom-cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: #fb641b;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 800;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+            border: 1.5px solid #ffffff;
+        }
+
+        /* Toast Notice */
+        .toast-notice {
+            position: fixed;
+            bottom: 75px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1f2937;
+            color: #ffffff;
+            padding: 9px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.25s ease;
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+
+        .toast-notice.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="category-app-container">
+        <!-- 1. Flipkart Header (Back, Category Name, Search, Cart) -->
+        <header class="cat-top-header">
+            <div class="cat-header-left">
+                <button class="cat-back-btn" onclick="goBack()" aria-label="Back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </button>
+                <div class="cat-title-wrap">
+                    <h1 class="cat-main-title" id="page-cat-title">Category Products</h1>
+                    <span class="cat-sub-title" id="page-cat-subtitle">Big Billion Days Deals</span>
+                </div>
+            </div>
+            <div class="cat-header-right">
+                <a href="checkout.html" class="cat-header-icon" aria-label="Cart">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span id="top-cart-badge" class="cat-cart-badge" style="display: none;">0</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- 2. Search Input -->
+        <div class="cat-search-bar-wrap">
+            <div class="cat-search-box">
+                <div class="cat-search-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <input type="text" id="cat-search-input" placeholder="Search products in this category..." autocomplete="off">
+            </div>
+        </div>
+
+        <!-- 3. Category Filter Chips (Quick Switcher) -->
+        <div class="cat-chips-strip" id="cat-chips-strip">
+            <button class="cat-chip" data-cat="all" onclick="selectChip('all')">All Products</button>
+            <button class="cat-chip" data-cat="Fashion" onclick="selectChip('Fashion')">Fashion</button>
+            <button class="cat-chip" data-cat="Mobiles" onclick="selectChip('Mobiles')">Mobiles</button>
+            <button class="cat-chip" data-cat="Appliances" onclick="selectChip('Appliances')">Appliances</button>
+            <button class="cat-chip" data-cat="Electronics" onclick="selectChip('Electronics')">Electronics</button>
+            <button class="cat-chip" data-cat="Smart Gadgets" onclick="selectChip('Smart Gadgets')">Smart Gadgets</button>
+            <button class="cat-chip" data-cat="Home" onclick="selectChip('Home')">Home</button>
+            <button class="cat-chip" data-cat="Cookware" onclick="selectChip('Cookware')">Cookware</button>
+            <button class="cat-chip" data-cat="Beauty" onclick="selectChip('Beauty')">Beauty</button>
+        </div>
+
+        <!-- 4. Products Count & Assured Badge -->
+        <div class="cat-products-info-bar">
+            <span class="cat-count-text" id="cat-product-count">Loading products...</span>
+            <div class="cat-assured-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#2874f0">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                </svg>
+                <span>Flipkart Assured</span>
+            </div>
+        </div>
+
+        <!-- 5. ONLY Product Grid (Exact Replica of Home Page Product Cards) -->
+        <section class="product-grid-section">
+            <div id="product-grid-container" class="product-grid"></div>
+        </section>
+
+        <!-- 6. Bottom Navigation Bar (4 Fixed Tabs) -->
+        <nav class="bottom-nav-bar">
+            <a href="index.html" class="nav-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                <span class="nav-label">Home</span>
+            </a>
+            <a href="categories.html" class="nav-item active">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#2874f0">
+                    <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                    <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                    <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                    <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                </svg>
+                <span class="nav-label">Categories</span>
+            </a>
+            <a href="account.html" class="nav-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span class="nav-label">Account</span>
+            </a>
+            <a href="cart.html" class="nav-item">
+                <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span id="bottom-cart-badge" class="bottom-cart-badge" style="display: none;">0</span>
+                </div>
+                <span class="nav-label">Cart</span>
+            </a>
+        </nav>
+
+        <!-- Toast Notice -->
+        <div id="toast" class="toast-notice">Action Successful</div>
+    </div>
+
+    <!-- Category Products Script -->
+    <script>
+        const currencyFormatter = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
+        const productGrid = document.getElementById('product-grid-container');
+        const searchInput = document.getElementById('cat-search-input');
+        const toastElement = document.getElementById('toast');
+        const pageTitle = document.getElementById('page-cat-title');
+        const pageSubtitle = document.getElementById('page-cat-subtitle');
+        const productCountBadge = document.getElementById('cat-product-count');
+
+        let allCatalogProducts = [];
+        let currentCategory = 'all';
+        let currentCollection = '';
+
+        function showToast(message) {
+            if (!toastElement) return;
+            toastElement.textContent = message;
+            toastElement.classList.add('show');
+            setTimeout(() => {
+                toastElement.classList.remove('show');
+            }, 2200);
+        }
+
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = 'categories.html';
+            }
+        }
+
+        function updateCartBadges() {
+            try {
+                const raw = localStorage.getItem('flipkart_cart');
+                const cart = raw ? JSON.parse(raw) : [];
+                const count = Array.isArray(cart) ? cart.reduce((acc, item) => acc + (item.quantity || 1), 0) : 0;
+                
+                const topBadge = document.getElementById('top-cart-badge');
+                if (topBadge) {
+                    topBadge.textContent = count;
+                    topBadge.style.display = count > 0 ? 'flex' : 'none';
+                }
+
+                const botBadge = document.getElementById('bottom-cart-badge');
+                if (botBadge) {
+                    botBadge.textContent = count;
+                    botBadge.style.display = count > 0 ? 'flex' : 'none';
+                }
+            } catch(e) {}
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text == null ? '' : String(text);
+            return div.innerHTML;
+        }
+
+        function formatDeliveryText(text) {
+            return (text || 'Get it by 11 Oct').replace(/(\d+\s+[A-Za-z]+)/g, '<b>$1</b>');
+        }
+
+        // Exact Home Page Product Card Rendering
+        function createProductCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+
+            // Image Box
+            const imageBox = document.createElement('div');
+            imageBox.className = 'product-image-box';
+
+            // Wishlist Button
+            const wishlistBtn = document.createElement('button');
+            wishlistBtn.className = 'wishlist-btn';
+            wishlistBtn.setAttribute('aria-label', 'Add to Wishlist');
+            wishlistBtn.innerHTML = `
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            `;
+
+            // Wishlist State from LocalStorage
+            try {
+                const savedWishlist = JSON.parse(localStorage.getItem('flipkart_wishlist') || '[]');
+                if (savedWishlist.includes(product.id)) {
+                    wishlistBtn.classList.add('active');
+                }
+            } catch(e) {}
+
+            wishlistBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                try {
+                    const list = JSON.parse(localStorage.getItem('flipkart_wishlist') || '[]');
+                    const index = list.indexOf(product.id);
+                    if (index > -1) {
+                        list.splice(index, 1);
+                        wishlistBtn.classList.remove('active');
+                        showToast('Removed from Wishlist');
+                    } else {
+                        list.push(product.id);
+                        wishlistBtn.classList.add('active');
+                        showToast('Added to Wishlist ❤️');
+                    }
+                    localStorage.setItem('flipkart_wishlist', JSON.stringify(list));
+                } catch(err) {}
+            });
+
+            // Rating Pill Badge (Bottom-Left)
+            const ratingBadge = document.createElement('div');
+            ratingBadge.className = 'product-rating-badge';
+            ratingBadge.innerHTML = `
+                <span>${product.rating || '4.5'}</span>
+                <span class="rating-star-icon">★</span>
+                <span class="rating-divider">|</span>
+                <span class="rating-count">${product.review_count || '1k+'}</span>
+            `;
+
+            // Product Image
+            const img = document.createElement('img');
+            img.className = 'product-img';
+            img.src = product.img1 || '';
+            img.alt = product.name || 'Product Image';
+            img.loading = 'lazy';
+            img.onerror = function() {
+                if (!this._retried) {
+                    this._retried = true;
+                    if (product.img1 && product.img1.includes('?')) {
+                        this.src = product.img1.split('?')[0];
+                    }
+                }
+            };
+
+            // AD tag
+            if (product.ad) {
+                const adTag = document.createElement('span');
+                adTag.className = 'card-ad-tag';
+                adTag.textContent = 'AD';
+                imageBox.appendChild(adTag);
+            }
+
+            // Brand Authorized Seller Shield
+            if (product.authorized_seller) {
+                const shield = document.createElement('img');
+                shield.src = './assets/images/brand_seller.svg';
+                shield.alt = 'Brand Authorized Seller';
+                shield.className = 'card-auth-shield';
+                imageBox.appendChild(shield);
+            }
+
+            imageBox.appendChild(wishlistBtn);
+            imageBox.appendChild(img);
+            imageBox.appendChild(ratingBadge);
+
+            // Info Box
+            const infoBox = document.createElement('div');
+            infoBox.className = 'product-info-box';
+
+            // Assured + Brand Row
+            const brandRow = document.createElement('div');
+            brandRow.className = 'brand-assured-row';
+            if ((product.brand || '').toUpperCase() === 'FLIPKART') {
+                brandRow.innerHTML = `
+                    <img src="./assets/images/f_assured.svg" alt="Flipkart Assured" class="assured-badge-img">
+                    <img src="./assets/images/flipkart_full_logo.svg" alt="Flipkart" style="height: 16px; width: auto; display: inline-block;">
+                `;
+            } else {
+                brandRow.innerHTML = `
+                    <span class="brand-name">${escapeHtml(product.brand || 'Flipkart Deal')}</span>
+                `;
+            }
+
+            // Product Title
+            const title = document.createElement('div');
+            title.className = 'product-title-text';
+            title.textContent = product.short_name || product.name || '';
+
+            // Pricing Row
+            const priceRow = document.createElement('div');
+            priceRow.className = 'pricing-row';
+
+            const discountLabel = product.discount_label || `↓ ${product.discount_percent || 90}%`;
+            const mrpValue = Number(product.mrp) || 0;
+            const sellingValue = Number(product.selling_price) || 0;
+
+            priceRow.innerHTML = `
+                <span class="discount-tag">${discountLabel}</span>
+                <span class="mrp-strikethrough">₹${currencyFormatter.format(mrpValue)}</span>
+                <span class="selling-price-bold">₹${currencyFormatter.format(sellingValue)}</span>
+            `;
+
+            // Delivery / Badge Line
+            const deliveryLine = document.createElement('div');
+            deliveryLine.className = 'delivery-info-text';
+            const deliveryText = product.delivery_text || 'Get it by 11 Oct';
+            deliveryLine.innerHTML = formatDeliveryText(deliveryText);
+
+            infoBox.appendChild(brandRow);
+            infoBox.appendChild(title);
+            infoBox.appendChild(priceRow);
+
+            if (product.badge) {
+                const badgeEl = document.createElement('div');
+                badgeEl.className = `card-event-badge ${product.badge.includes('Lowest') ? 'lowest-price' : 'bbd-price'}`;
+                badgeEl.textContent = product.badge;
+                infoBox.appendChild(badgeEl);
+            } else {
+                infoBox.appendChild(deliveryLine);
+            }
+
+            card.appendChild(imageBox);
+            card.appendChild(infoBox);
+
+            // Click navigates to Product Detail page
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => {
+                window.location.href = `product-detail.html?id=${encodeURIComponent(product.md5_id || product.id)}`;
+            });
+
+            return card;
+        }
+
+        function renderProducts(products) {
+            if (!productGrid) return;
+            productGrid.innerHTML = '';
+
+            if (products.length === 0) {
+                productGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; color: #878787;">
+                        <p style="font-size: 16px; font-weight: 700; color: #212121;">No products found</p>
+                        <p style="font-size: 13px; margin-top: 6px;">Try searching with different keywords</p>
+                        <button onclick="selectChip('all')" style="margin-top: 14px; background: #2874f0; color: #fff; border: none; padding: 8px 18px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer;">View All Deals</button>
+                    </div>
+                `;
+                return;
+            }
+
+            products.forEach((product) => {
+                productGrid.appendChild(createProductCard(product));
+            });
+        }
+
+        function filterProductsForCurrentCategory() {
+            const query = (searchInput?.value || '').trim().toLowerCase();
+            const cat = (currentCategory || 'all').toLowerCase();
+            const col = (currentCollection || '').toLowerCase();
+            let filtered = allCatalogProducts;
+
+            // 1. Collection level filtering if collection is specified
+            if (col) {
+                if (col.includes('mixer') || col.includes('grinder') || col.includes('blender') || col.includes('juicer')) {
+                    filtered = filtered.filter(p => {
+                        const name = (p.name || '').toLowerCase();
+                        return name.includes('mixer') || name.includes('grinder') || name.includes('blender') || name.includes('juicer');
+                    });
+                } else if (col.includes('gas') || col.includes('stove') || col.includes('hob')) {
+                    filtered = filtered.filter(p => {
+                        const name = (p.name || '').toLowerCase();
+                        return name.includes('stove') || name.includes('gas') || name.includes('burner') || name.includes('cooktop');
+                    });
+                } else if (col.includes('induction')) {
+                    filtered = filtered.filter(p => {
+                        const name = (p.name || '').toLowerCase();
+                        return name.includes('induction') || name.includes('cooktop');
+                    });
+                } else if (col.includes('kettle')) {
+                    filtered = filtered.filter(p => {
+                        const name = (p.name || '').toLowerCase();
+                        return name.includes('kettle');
+                    });
+                } else if (col.includes('sandwich') || col.includes('otg') || col.includes('toaster')) {
+                    filtered = filtered.filter(p => {
+                        const name = (p.name || '').toLowerCase();
+                        return name.includes('sandwich') || name.includes('otg') || name.includes('toaster') || name.includes('grill');
+                    });
+                } else if (col.includes('pressure') || col.includes('cooker')) {
+                    filtered = filtered.filter(p => {
+                        const name = (p.name || '').toLowerCase();
+                        return name.includes('cooker') || name.includes('pressure');
+                    });
+                } else if (col.includes('dinner') || col.includes('opalware')) {
+                    filtered = filtered.filter(p => {
+                        const name = (p.name || '').toLowerCase();
+                        return name.includes('dinner') || name.includes('opalware') || name.includes('plate') || name.includes('bowl');
+                    });
+                } else if (col.includes('kadai') || col.includes('pan') || col.includes('tawa')) {
+                    filtered = filtered.filter(p => {
+                        const name = (p.name || '').toLowerCase();
+                        return name.includes('kadai') || name.includes('pan') || name.includes('tawa') || name.includes('fry');
+                    });
+                } else if (col.includes('storage') || col.includes('container') || col.includes('box')) {
+                    filtered = filtered.filter(p => {
+                        const name = (p.name || '').toLowerCase();
+                        return name.includes('storage') || name.includes('container') || name.includes('box') || name.includes('casserole');
+                    });
+                } else if (col.includes('cookware')) {
+                    filtered = filtered.filter(p => {
+                        const name = (p.name || '').toLowerCase();
+                        return name.includes('cookware') || name.includes('cooker') || name.includes('pan') || name.includes('kadai') || name.includes('set');
+                    });
+                } else if (col.includes('live now') || col.includes('discover luxe') || col.includes('value 365') || col.includes('all')) {
+                    filtered = allCatalogProducts;
+                } else {
+                    // Try keyword match in name, brand, or category
+                    const matched = filtered.filter(p =>
+                        (p.name || '').toLowerCase().includes(col) ||
+                        (p.category || '').toLowerCase().includes(col) ||
+                        (p.brand || '').toLowerCase().includes(col)
+                    );
+                    filtered = matched.length > 0 ? matched : allCatalogProducts;
+                }
+
+                // If collection filter resulted in 0 items, show all catalog items so page is never empty
+                if (filtered.length === 0) {
+                    filtered = allCatalogProducts;
+                }
+            } else if (cat !== 'all' && cat !== 'for-you') {
+                // 2. Category level filtering if no collection
+                if (cat === 'appliances') {
+                    filtered = filtered.filter(p => {
+                        const name = (p.name || '').toLowerCase();
+                        return name.includes('mixer') || name.includes('grinder') || name.includes('blender') || name.includes('juicer') || name.includes('kettle') || name.includes('stove') || name.includes('cooktop') || name.includes('otg') || name.includes('sandwich');
+                    });
+                } else if (cat === 'cookware' || cat === 'dining') {
+                    filtered = filtered.filter(p => {
+                        const name = (p.name || '').toLowerCase();
+                        return name.includes('cookware') || name.includes('cooker') || name.includes('casserole') || name.includes('dinner set') || name.includes('pan') || name.includes('kadai') || name.includes('box') || name.includes('opalware');
+                    });
+                } else if (cat === 'kitchen' || cat === 'home') {
+                    filtered = allCatalogProducts;
+                } else {
+                    const subFiltered = filtered.filter(
+                        p => (p.category || '').toLowerCase() === cat || (p.name || '').toLowerCase().includes(cat) || (p.brand || '').toLowerCase().includes(cat)
+                    );
+                    filtered = subFiltered.length > 0 ? subFiltered : allCatalogProducts;
+                }
+            }
+
+            // Real-time search query filter
+            if (query) {
+                filtered = filtered.filter(p =>
+                    (p.name || '').toLowerCase().includes(query) ||
+                    (p.brand || '').toLowerCase().includes(query) ||
+                    (p.short_name || '').toLowerCase().includes(query) ||
+                    (p.category || '').toLowerCase().includes(query)
+                );
+            }
+
+            if (productCountBadge) {
+                const label = currentCollection || getCategoryDisplayName(currentCategory);
+                productCountBadge.textContent = `${filtered.length} Products in ${label}`;
+            }
+
+            renderProducts(filtered);
+        }
+
+        function getCategoryDisplayName(raw) {
+            if (!raw || raw.toLowerCase() === 'all' || raw.toLowerCase() === 'for-you') return 'All Categories';
+            if (raw.toLowerCase() === 'appliances') return 'Appliances';
+            if (raw.toLowerCase() === 'cookware') return 'Cookware & Dining';
+            if (raw.toLowerCase() === 'fashion') return 'Fashion';
+            if (raw.toLowerCase() === 'mobiles') return 'Mobiles';
+            if (raw.toLowerCase() === 'electronics') return 'Electronics';
+            if (raw.toLowerCase() === 'smart gadgets') return 'Smart Gadgets';
+            if (raw.toLowerCase() === 'beauty') return 'Beauty & Personal Care';
+            if (raw.toLowerCase() === 'home') return 'Home & Kitchen';
+            return raw;
+        }
+
+        function updateCategoryUI(catName, colName) {
+            currentCategory = catName || 'all';
+            currentCollection = colName || '';
+            const catDisplay = getCategoryDisplayName(currentCategory);
+            const titleDisplay = currentCollection || catDisplay;
+            
+            if (pageTitle) pageTitle.textContent = titleDisplay;
+            if (pageSubtitle) {
+                pageSubtitle.textContent = currentCollection ? `${catDisplay} • Big Billion Days Deals` : `Big Billion Days Sale • Best Deals`;
+            }
+            document.title = `${titleDisplay} - Flipkart`;
+
+            // Update Chip UI
+            document.querySelectorAll('.cat-chip').forEach(chip => {
+                const c = chip.dataset.cat;
+                if (c && c.toLowerCase() === currentCategory.toLowerCase()) {
+                    chip.classList.add('active');
+                } else if (!c && currentCategory === 'all') {
+                    chip.classList.add('active');
+                } else {
+                    chip.classList.remove('active');
+                }
+            });
+
+            // Update URL search params without reload
+            try {
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.set('cat', currentCategory);
+                if (currentCollection) {
+                    newUrl.searchParams.set('collection', currentCollection);
+                } else {
+                    newUrl.searchParams.delete('collection');
+                }
+                window.history.replaceState({}, '', newUrl.toString());
+            } catch(e) {}
+
+            filterProductsForCurrentCategory();
+        }
+
+        function selectChip(cat) {
+            currentCollection = '';
+            updateCategoryUI(cat, '');
+            showToast(`Showing ${getCategoryDisplayName(cat)}`);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Search Input Events
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                filterProductsForCurrentCategory();
+            });
+        }
+
+        // Initialize Catalog
+        async function initCategoryPage() {
+            updateCartBadges();
+
+            // Read category and collection from URL query param
+            const params = new URLSearchParams(window.location.search);
+            const initialCat = params.get('cat') || params.get('category') || 'all';
+            const initialCol = params.get('collection') || '';
+            currentCategory = initialCat;
+            currentCollection = initialCol;
+
+            try {
+                const res = await fetch('./data/products.json?v=' + Date.now());
+                if (!res.ok) throw new Error('Catalog failed');
+                const data = await res.json();
+                allCatalogProducts = data.products || [];
+            } catch(e) {
+                console.error('Failed to load products:', e);
+            }
+
+            updateCategoryUI(initialCat, initialCol);
+        }
+
+        window.addEventListener('DOMContentLoaded', initCategoryPage);
+    </script>
+</body>
+
+</html>
