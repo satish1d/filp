@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <!-- Background Cosmic Gradient -->
+    <linearGradient id="cosmicBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0c36"/>
+      <stop offset="35%" stop-color="#1f105c"/>
+      <stop offset="70%" stop-color="#3d1478"/>
+      <stop offset="100%" stop-color="#140938"/>
+    </linearGradient>
+
+    <!-- Portal Glow -->
+    <radialGradient id="portalGlow" cx="68%" cy="45%" r="40%">
+      <stop offset="0%" stop-color="#ffb3ff" stop-opacity="0.85"/>
+      <stop offset="30%" stop-color="#b845ff" stop-opacity="0.55"/>
+      <stop offset="65%" stop-color="#551a99" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Arch Gold Gradient -->
+    <linearGradient id="archGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe87a"/>
+      <stop offset="30%" stop-color="#ffbf24"/>
+      <stop offset="70%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#92400e"/>
+    </linearGradient>
+
+    <!-- Neon Arch Beam -->
+    <linearGradient id="neonBeam" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff4df5"/>
+      <stop offset="50%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+
+    <!-- Now or Never Gradient -->
+    <linearGradient id="textGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff8b3"/>
+      <stop offset="45%" stop-color="#ffca18"/>
+      <stop offset="100%" stop-color="#ff7a00"/>
+    </linearGradient>
+
+    <!-- BBD Badge Gradient -->
+    <linearGradient id="bbdBadge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe600"/>
+      <stop offset="100%" stop-color="#ffae00"/>
+    </linearGradient>
+
+    <filter id="glowFilter" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="450" fill="url(#cosmicBg)"/>
+
+  <!-- Cosmic light rays and nebula -->
+  <ellipse cx="550" cy="210" rx="260" ry="190" fill="url(#portalGlow)"/>
+  
+  <!-- Stars & sparkles -->
+  <g fill="#ffffff" opacity="0.8">
+    <circle cx="80" cy="50" r="1.5"/>
+    <circle cx="140" cy="90" r="2"/>
+    <circle cx="210" cy="40" r="1.5"/>
+    <circle cx="280" cy="80" r="1"/>
+    <circle cx="340" cy="35" r="2.5"/>
+    <circle cx="430" cy="65" r="1.5"/>
+    <circle cx="480" cy="30" r="2"/>
+    <circle cx="740" cy="50" r="2"/>
+    <circle cx="760" cy="110" r="1.5"/>
+    <circle cx="720" cy="180" r="2"/>
+    <circle cx="110" cy="170" r="1.5"/>
+    <circle cx="60" cy="240" r="2"/>
+  </g>
+
+  <!-- Neon Light Trail Arc -->
+  <path d="M 280 340 C 380 200, 520 80, 720 130" fill="none" stroke="url(#neonBeam)" stroke-width="6" opacity="0.75" filter="url(#glowFilter)"/>
+
+  <!-- Magical Archway Structure -->
+  <g transform="translate(430, 20)">
+    <!-- Outer Golden Arch Frame -->
+    <path d="M 60 380 L 60 160 A 130 130 0 0 1 320 160 L 320 380" fill="none" stroke="url(#archGold)" stroke-width="16" stroke-linecap="round"/>
+    <!-- Inner Neon Arch -->
+    <path d="M 72 380 L 72 160 A 118 118 0 0 1 308 160 L 308 380" fill="none" stroke="#ff4bf0" stroke-width="4" opacity="0.9" filter="url(#glowFilter)"/>
+    <path d="M 80 380 L 80 160 A 110 110 0 0 1 300 160 L 300 380" fill="none" stroke="#ffe97d" stroke-width="2"/>
+
+    <!-- Archway Base Pedestals -->
+    <rect x="44" y="370" width="34" height="20" rx="3" fill="url(#archGold)"/>
+    <rect x="302" y="370" width="34" height="20" rx="3" fill="url(#archGold)"/>
+
+    <!-- 4-Point Star at Arch Apex -->
+    <g transform="translate(190, 32)">
+      <circle cx="0" cy="0" r="18" fill="#ff70f8" opacity="0.6" filter="url(#glowFilter)"/>
+      <path d="M 0 -22 L 5 -5 L 22 0 L 5 5 L 0 22 L -5 5 L -22 0 L -5 -5 Z" fill="#ffffff"/>
+      <circle cx="0" cy="0" r="3.5" fill="#ffe97d"/>
+    </g>
+
+    <!-- Inside the Arch: Samsung Crystal 4K UHD 55" TV -->
+    <g transform="translate(85, 140)">
+      <!-- TV Bezel -->
+      <rect x="0" y="0" width="210" height="125" rx="3" fill="#050505" stroke="#4a5568" stroke-width="2"/>
+      <!-- Screen Display -->
+      <rect x="3" y="3" width="204" height="119" rx="2" fill="#0f172a"/>
+      <!-- Screen Visual Content (Cosmic explosion graphic) -->
+      <path d="M 3 3 L 207 3 L 207 122 L 3 122 Z" fill="#0d1117"/>
+      <!-- Crystal graphics -->
+      <path d="M 90 20 L 150 122 L 30 122 Z" fill="#e11d48" opacity="0.8"/>
+      <path d="M 120 40 L 180 122 L 80 122 Z" fill="#fb7185" opacity="0.85"/>
+      <path d="M 150 50 L 205 122 L 110 122 Z" fill="#f43f5e" opacity="0.9"/>
+      
+      <!-- TV Screen Overlay Specs Pill -->
+      <rect x="8" y="10" width="46" height="66" rx="4" fill="#000000" opacity="0.75"/>
+      <text x="12" y="24" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="7" font-weight="bold" fill="#ffffff">Crystal 4K</text>
+      <text x="12" y="34" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8" font-weight="900" fill="#38bdf8">55" <tspan fill="#fff" font-size="7">UHD</tspan></text>
+      <text x="12" y="44" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="6" fill="#cbd5e1">TV</tspan></text>
+      <text x="12" y="55" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="5" fill="#94a3b8">• AI Sound Pro</text>
+      <text x="12" y="64" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="5" fill="#94a3b8">• 4K Upscaling</text>
+
+      <!-- Samsung Logo on TV Screen -->
+      <text x="165" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="7.5" font-weight="900" fill="#ffffff" letter-spacing="0.5">SAMSUNG</text>
+
+      <!-- TV Stand Legs -->
+      <polygon points="40,125 45,138 35,138" fill="#334155"/>
+      <polygon points="170,125 175,138 165,138" fill="#334155"/>
+    </g>
+  </g>
+
+  <!-- Left Side Content: Headings, Badges, Prices -->
+  <!-- 1. The Big Billion Days Badge -->
+  <g transform="translate(44, 30)">
+    <circle cx="56" cy="56" r="54" fill="url(#bbdBadge)" stroke="#ffffff" stroke-width="3.5" filter="url(#glowFilter)"/>
+    <circle cx="56" cy="56" r="48" fill="none" stroke="#2874f0" stroke-width="2" stroke-dasharray="4 2"/>
+    <text x="56" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10" font-weight="900" fill="#1e3a8a" text-anchor="middle" letter-spacing="0.5">THE</text>
+    <text x="56" y="55" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" font-weight="900" fill="#1e3a8a" text-anchor="middle" letter-spacing="-0.5">BIG</text>
+    <text x="56" y="73" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="900" fill="#1e3a8a" text-anchor="middle" letter-spacing="-0.3">BILLION</text>
+    <text x="56" y="88" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="900" fill="#1e3a8a" text-anchor="middle" letter-spacing="1">DAYS</text>
+  </g>
+
+  <!-- 2. Top BBD Deals & Price Headline -->
+  <g transform="translate(48, 160)">
+    <text x="0" y="26" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="-0.3">Top BBD deals</text>
+    <text x="0" y="62" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="34" font-weight="900" fill="#ffffff" letter-spacing="-0.5">From ₹8,699*</text>
+  </g>
+
+  <!-- 3. NOW OR NEVER 3D Block Typography -->
+  <g transform="translate(48, 252)">
+    <!-- 3D Shadow -->
+    <text x="2" y="32" font-family="Impact, -apple-system, BlinkMacSystemFont, sans-serif" font-size="44" font-weight="900" fill="#7c2d12" letter-spacing="1">NOW OR</text>
+    <text x="180" y="32" font-family="Impact, -apple-system, BlinkMacSystemFont, sans-serif" font-size="44" font-weight="900" fill="#7c2d12" letter-spacing="1">NEVER</text>
+    <!-- Main Layer -->
+    <text x="0" y="30" font-family="Impact, -apple-system, BlinkMacSystemFont, sans-serif" font-size="44" font-weight="900" fill="url(#textGold)" letter-spacing="1">NOW OR</text>
+    <text x="178" y="30" font-family="Impact, -apple-system, BlinkMacSystemFont, sans-serif" font-size="44" font-weight="900" fill="url(#textGold)" letter-spacing="1">NEVER</text>
+
+    <!-- Sub-badge: PRICES WON'T BE THIS LOW AGAIN -->
+    <g transform="translate(182, 8)">
+      <rect x="0" y="0" width="180" height="26" rx="4" fill="#000000" stroke="#f59e0b" stroke-width="1.2"/>
+      <text x="90" y="17" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="900" fill="#fde047" text-anchor="middle" letter-spacing="0.4">PRICES WON'T BE THIS LOW AGAIN</text>
+    </g>
+  </g>
+
+  <!-- 4. Bank Discount Partners Strip (Bottom) -->
+  <g transform="translate(48, 385)">
+    <!-- Container Pill -->
+    <rect x="0" y="0" width="470" height="38" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    
+    <!-- Axis Bank -->
+    <rect x="8" y="6" width="94" height="26" rx="4" fill="#97144d"/>
+    <text x="55" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" font-weight="800" fill="#ffffff" text-anchor="middle">▲ AXIS BANK</text>
+
+    <!-- ICICI Bank -->
+    <rect x="108" y="6" width="96" height="26" rx="4" fill="#f37023"/>
+    <text x="156" y="23" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9.5" font-weight="800" fill="#ffffff" text-anchor="middle">i ICICI Bank</text>
+
+    <!-- 10% Instant Discount Tag -->
+    <rect x="208" y="6" width="60" height="26" rx="3" fill="#eff6ff" stroke="#93c5fd" stroke-width="1"/>
+    <text x="238" y="17" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="7.5" font-weight="800" fill="#1e40af" text-anchor="middle">10% Instant</text>
+    <text x="238" y="26" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="6.5" font-weight="700" fill="#1e40af" text-anchor="middle">Discount*</text>
+
+    <!-- Divider -->
+    <line x1="274" y1="6" x2="274" y2="32" stroke="#e2e8f0" stroke-width="1.5"/>
+
+    <!-- Flipkart Axis Bank Credit Card -->
+    <rect x="282" y="6" width="34" height="26" rx="3" fill="#1e293b"/>
+    <rect x="286" y="11" width="10" height="8" rx="1" fill="#f59e0b"/>
+    <text x="322" y="17" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8" font-weight="800" fill="#0f172a">Get 10% Savings*</text>
+    <text x="322" y="26" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="7" font-weight="600" fill="#64748b">with FLIPKART AXIS BANK Credit Card</text>
+  </g>
+</svg>

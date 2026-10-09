@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#2874f0" id="themeColor">
+    <title>My Account - Flipkart</title>
+    <meta name="description" content="Manage your Flipkart account, view orders, track deliveries, and check saved addresses.">
+    
+    <link rel="stylesheet" href="./assets/css/custom.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f1f3f6;
+            color: #212121;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        #account-app {
+            width: 100%;
+            max-width: 480px;
+            background: #f1f3f6;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 70px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 1. Header */
+        .acc-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #2874f0;
+            color: #ffffff;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .acc-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .acc-back-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+        }
+
+        .acc-header-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.2px;
+        }
+
+        .acc-header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .acc-icon-link {
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* 2. User Profile Banner */
+        .acc-profile-card {
+            background: #ffffff;
+            padding: 16px 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .acc-profile-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .acc-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2874f0, #1e40af);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            box-shadow: 0 2px 6px rgba(40,116,240,0.3);
+        }
+
+        .acc-user-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #212121;
+            margin-bottom: 2px;
+        }
+
+        .acc-user-phone {
+            font-size: 12.5px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .acc-plus-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #fef08a;
+            color: #854d0e;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        /* 3. SuperCoins Strip */
+        .acc-coins-strip {
+            background: #ffffff;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .acc-coins-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #212121;
+        }
+
+        /* 4. 4-Grid Quick Actions */
+        .acc-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            padding: 0 8px;
+            margin-bottom: 8px;
+        }
+
+        .acc-action-card {
+            background: #ffffff;
+            padding: 14px 12px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            text-decoration: none;
+            color: #212121;
+            transition: transform 0.15s ease;
+        }
+
+        .acc-action-card:active {
+            transform: scale(0.98);
+        }
+
+        .acc-action-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #eff6ff;
+            color: #2874f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .acc-action-text {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #212121;
+        }
+
+        /* 5. Recent Order Card */
+        .acc-section-card {
+            background: #ffffff;
+            padding: 14px;
+            margin-bottom: 8px;
+        }
+
+        .acc-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .acc-section-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #212121;
+        }
+
+        .acc-order-box {
+            display: flex;
+            gap: 12px;
+            padding: 10px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .acc-order-img {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .acc-order-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .acc-order-status {
+            font-size: 12px;
+            font-weight: 800;
+            color: #108432;
+            margin-bottom: 3px;
+        }
+
+        .acc-order-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #212121;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 4px;
+        }
+
+        /* 6. Settings Menu List */
+        .acc-menu-list {
+            background: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .acc-menu-item {
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            text-decoration: none;
+            color: #212121;
+        }
+
+        .acc-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .acc-menu-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #212121;
+        }
+
+        .acc-menu-chevron {
+            color: #94a3b8;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* Bottom Fixed Navigation Bar */
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 60px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid #e2e8f0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+            z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            box-sizing: border-box;
+        }
+
+        .nav-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            text-decoration: none;
+            color: #64748b;
+            cursor: pointer;
+            transition: color 0.15s ease;
+        }
+
+        .nav-item.active {
+            color: #2874f0;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .nav-item.active .nav-label {
+            font-weight: 700;
+            color: #2874f0;
+        }
+
+        .bottom-cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: #fb641b;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 800;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+            border: 1.5px solid #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="account-app">
+        <!-- 1. Header -->
+        <header class="acc-header">
+            <div class="acc-header-left">
+                <button class="acc-back-btn" onclick="window.location.href='index.html'" aria-label="Go Back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </button>
+                <span class="acc-header-title">My Account</span>
+            </div>
+            <div class="acc-header-right">
+                <a href="index.html" class="acc-icon-link" aria-label="Search">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </a>
+                <a href="checkout.html" class="acc-icon-link" aria-label="Cart">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span id="top-cart-badge" class="bottom-cart-badge" style="display: none;">0</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- 2. Profile Card -->
+        <div class="acc-profile-card">
+            <div class="acc-profile-left">
+                <div class="acc-avatar">S</div>
+                <div>
+                    <div class="acc-user-name" id="user-display-name">Satish Baldaniya</div>
+                    <div class="acc-user-phone">+91 98765 43210</div>
+                </div>
+            </div>
+            <div class="acc-plus-badge">
+                <span>★</span> Plus Member
+            </div>
+        </div>
+
+        <!-- 3. SuperCoins Strip -->
+        <div class="acc-coins-strip">
+            <div class="acc-coins-left">
+                <span style="color: #eab308; font-size: 18px;">🟡</span>
+                <span>248 SuperCoins available</span>
+            </div>
+            <a href="javascript:void(0)" onclick="showToast('SuperCoins can be used for extra discounts at checkout!')" style="font-size: 12.5px; color: #2874f0; font-weight: 700; text-decoration: none;">View Details &gt;</a>
+        </div>
+
+        <!-- 4. 4 Quick Actions Grid -->
+        <div class="acc-actions-grid">
+            <div class="acc-action-card" onclick="scrollToOrders()">
+                <div class="acc-action-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                </div>
+                <span class="acc-action-text">Orders</span>
+            </div>
+
+            <div class="acc-action-card" onclick="showToast('Wishlist: 3 items saved')">
+                <div class="acc-action-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </div>
+                <span class="acc-action-text">Wishlist</span>
+            </div>
+
+            <div class="acc-action-card" onclick="showToast('Coupons: BBD50 (Extra ₹50 Off) is Active')">
+                <div class="acc-action-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                        <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                    </svg>
+                </div>
+                <span class="acc-action-text">Coupons</span>
+            </div>
+
+            <div class="acc-action-card" onclick="showToast('24x7 Flipkart Customer Care: Active')">
+                <div class="acc-action-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <span class="acc-action-text">Help Center</span>
+            </div>
+        </div>
+
+        <!-- 5. Recent Active Order -->
+        <div class="acc-section-card" id="orders-section">
+            <div class="acc-section-header">
+                <span class="acc-section-title">My Recent Order</span>
+                <span style="font-size: 11px; font-weight: 700; color: #108432; background: #e8f7ec; padding: 2px 6px; border-radius: 4px;">In Transit</span>
+            </div>
+            <div class="acc-order-box" onclick="window.location.href='checkout.html'">
+                <img src="./assets/images/chair_opt.jpg" alt="Order product" class="acc-order-img" id="order-thumb">
+                <div class="acc-order-info">
+                    <div class="acc-order-status">Arriving by Sunday, 12 Oct</div>
+                    <div class="acc-order-name" id="order-title">ACTIVA Gracia 1200 MM BLDC Fan with Remote</div>
+                    <div style="font-size: 12px; color: #64748b;">Order ID: <strong id="order-id-disp">OD48291048201</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Account Settings & Details -->
+        <div class="acc-menu-list">
+            <div class="acc-menu-item" onclick="window.location.href='checkout.html'">
+                <div class="acc-menu-left">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2874f0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <div>
+                        <div>Saved Delivery Addresses</div>
+                        <div style="font-size: 11.5px; color: #64748b; font-weight: 400;" id="saved-addr-snippet">Flat 402, Green Avenue, Mumbai - 400001</div>
+                    </div>
+                </div>
+                <span class="acc-menu-chevron">&gt;</span>
+            </div>
+
+            <div class="acc-menu-item" onclick="showToast('UPI IDs & Saved Cards are verified with 256-bit encryption')">
+                <div class="acc-menu-left">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2874f0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                    </svg>
+                    <div>Saved Cards &amp; UPI</div>
+                </div>
+                <span class="acc-menu-chevron">&gt;</span>
+            </div>
+
+            <div class="acc-menu-item" onclick="showToast('Language: English (Default)')">
+                <div class="acc-menu-left">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2874f0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                    <div>Select Language (English / हिन्दी)</div>
+                </div>
+                <span class="acc-menu-chevron">&gt;</span>
+            </div>
+
+            <div class="acc-menu-item" onclick="showToast('You are securely logged in as Satish')">
+                <div class="acc-menu-left">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <div style="color: #ef4444; font-weight: 700;">Log Out</div>
+                </div>
+                <span class="acc-menu-chevron">&gt;</span>
+            </div>
+        </div>
+
+        <!-- 7. Fixed Bottom Navigation Bar (4 Tabs) -->
+        <nav class="bottom-nav-bar">
+            <a href="index.html" class="nav-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                <span class="nav-label">Home</span>
+            </a>
+            <a href="categories.html" class="nav-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span class="nav-label">Categories</span>
+            </a>
+            <a href="account.html" class="nav-item active">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#2874f0">
+                    <path d="M12 2a5 5 0 1 0 5 5 5 5 0 0 0-5-5zm0 12c-5.33 0-8 2.67-8 5.33V22h16v-2.67c0-2.66-2.67-5.33-8-5.33z"/>
+                </svg>
+                <span class="nav-label">Account</span>
+            </a>
+            <a href="checkout.html" class="nav-item">
+                <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span id="bottom-cart-badge" class="bottom-cart-badge" style="display: none;">0</span>
+                </div>
+                <span class="nav-label">Cart</span>
+            </a>
+        </nav>
+
+        <!-- Toast Notice -->
+        <div id="toast" class="toast-notice">Action Successful</div>
+    </div>
+
+    <script>
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2200);
+        }
+
+        function scrollToOrders() {
+            document.getElementById('orders-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadAccountData() {
+            // Update cart badges
+            try {
+                const raw = localStorage.getItem('flipkart_cart');
+                const cart = raw ? JSON.parse(raw) : [];
+                const count = Array.isArray(cart) ? cart.reduce((acc, item) => acc + (item.quantity || 1), 0) : 0;
+                
+                const topBadge = document.getElementById('top-cart-badge');
+                if (topBadge) {
+                    topBadge.textContent = count;
+                    topBadge.style.display = count > 0 ? 'flex' : 'none';
+                }
+
+                const botBadge = document.getElementById('bottom-cart-badge');
+                if (botBadge) {
+                    botBadge.textContent = count;
+                    botBadge.style.display = count > 0 ? 'flex' : 'none';
+                }
+            } catch(e) {}
+
+            // Load saved address snippet
+            try {
+                const rawAddr = localStorage.getItem('flipkart_saved_address');
+                if (rawAddr) {
+                    const addr = JSON.parse(rawAddr);
+                    if (addr.name) document.getElementById('user-display-name').textContent = addr.name;
+                    document.getElementById('saved-addr-snippet').textContent = `${addr.bldg || ''}, ${addr.city || 'Mumbai'} - ${addr.pincode || '400001'}`;
+                }
+            } catch(e) {}
+
+            // Load recent item for orders
+            try {
+                const rawItem = localStorage.getItem('flipkart_checkout_item');
+                if (rawItem) {
+                    const item = JSON.parse(rawItem);
+                    if (item.name) document.getElementById('order-title').textContent = item.name;
+                    if (item.img) document.getElementById('order-thumb').src = item.img;
+                }
+            } catch(e) {}
+        }
+
+        window.addEventListener('DOMContentLoaded', loadAccountData);
+    </script>
+</body>
+
+</html>

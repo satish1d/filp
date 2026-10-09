@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff" id="themeColor">
+    <title>All Categories - Flipkart</title>
+    <meta name="description" content="Explore all product categories, popular stores, and new launches on Flipkart.">
+    
+    <link rel="stylesheet" href="./assets/css/custom.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f1f3f6;
+            color: #212121;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        #categories-app {
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 65px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 1. Header (Exact from IMG_1695.jpg) */
+        .cat-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #ffffff;
+            color: #212121;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .cat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .cat-back-btn {
+            background: none;
+            border: none;
+            color: #212121;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+        }
+
+        .cat-header-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #212121;
+            letter-spacing: -0.2px;
+        }
+
+        .cat-header-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .cat-header-icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            color: #212121;
+            text-decoration: none;
+        }
+
+        .cat-cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: #fb641b;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 800;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+            border: 1.5px solid #ffffff;
+        }
+
+        /* 2. Split Screen: Left Sidebar + Right Content */
+        .cat-body-layout {
+            display: flex;
+            flex: 1;
+            min-height: calc(100vh - 120px);
+        }
+
+        /* Left Sidebar (Vertical Navigation) */
+        .cat-sidebar {
+            width: 86px;
+            flex-shrink: 0;
+            background: #f8fafc;
+            border-right: 1px solid #edf2f7;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        .cat-sidebar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .cat-side-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 12px 4px;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.15s ease;
+            user-select: none;
+        }
+
+        .cat-side-item.active {
+            background: #ffffff;
+        }
+
+        .cat-side-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            bottom: 6px;
+            width: 4px;
+            background: #2874f0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .cat-side-icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .cat-side-icon-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cat-side-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #475569;
+            line-height: 1.25;
+            padding: 0 2px;
+        }
+
+        .cat-side-item.active .cat-side-label {
+            color: #2874f0;
+            font-weight: 700;
+        }
+
+        /* Right Content Pane */
+        .cat-content-pane {
+            flex: 1;
+            padding: 14px 12px;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+
+        .cat-section-heading {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+            letter-spacing: -0.2px;
+        }
+
+        /* Popular Store Grid */
+        .popular-stores-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px 10px;
+            margin-bottom: 24px;
+        }
+
+        .store-tile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .store-tile-img-box {
+            width: 76px;
+            height: 76px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #f8fafc;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #f1f5f9;
+            transition: transform 0.15s ease;
+        }
+
+        .store-tile:active .store-tile-img-box {
+            transform: scale(0.96);
+        }
+
+        .store-tile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .store-tile-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #212121;
+            line-height: 1.2;
+        }
+
+        /* New & Upcoming Launches Grid (3 Columns) */
+        .launches-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px 10px;
+        }
+
+        .launch-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .launch-card-img-box {
+            width: 82px;
+            height: 82px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #f8fafc;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 6px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.15s ease;
+        }
+
+        .launch-card:active .launch-card-img-box {
+            transform: scale(0.96);
+        }
+
+        .launch-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .launch-card-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #212121;
+            line-height: 1.25;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        /* 3. Bottom Navigation Bar */
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            height: 60px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            border-top: 1px solid #e2e8f0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+            z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            box-sizing: border-box;
+        }
+
+        .nav-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            text-decoration: none;
+            color: #64748b;
+            cursor: pointer;
+            transition: color 0.15s ease;
+        }
+
+        .nav-item.active {
+            color: #2874f0;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .nav-item.active .nav-label {
+            font-weight: 700;
+            color: #2874f0;
+        }
+
+        .bottom-cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -8px;
+            background: #fb641b;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 800;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+            border: 1.5px solid #ffffff;
+        }
+
+        /* Toast Notice */
+        .toast-notice {
+            position: fixed;
+            bottom: 75px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1f2937;
+            color: #ffffff;
+            padding: 9px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.25s ease;
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            white-space: nowrap;
+        }
+
+        .toast-notice.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="categories-app">
+        <!-- 1. Header (Exact from IMG_1695.jpg) -->
+        <header class="cat-header">
+            <div class="cat-header-left">
+                <button class="cat-back-btn" onclick="window.location.href='index.html'" aria-label="Back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </button>
+                <span class="cat-header-title">All Categories</span>
+            </div>
+            <div class="cat-header-right">
+                <button class="cat-header-icon-btn" onclick="window.location.href='index.html'" aria-label="Search">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+                <a href="checkout.html" class="cat-header-icon-btn" aria-label="Cart">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span id="top-cart-badge" class="cat-cart-badge" style="display: none;">0</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- 2. Split Screen: Left Sidebar + Right Content -->
+        <div class="cat-body-layout">
+            <!-- Left Sidebar Navigation (Exact from IMG_1695.jpg) -->
+            <aside class="cat-sidebar">
+                <!-- 1. For You -->
+                <div class="cat-side-item active" data-cat="for-you" onclick="selectCategory('for-you')">
+                    <div class="cat-side-icon-box" style="background: #eff6ff;">
+                        <svg width="30" height="30" viewBox="0 0 40 40" fill="none">
+                            <rect x="6" y="8" width="28" height="26" rx="6" fill="#a855f7"/>
+                            <path d="M14 14 C14 10, 26 10, 26 14" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+                            <circle cx="14" cy="8" r="5" fill="#f43f5e"/>
+                            <text x="14" y="11" font-size="7" font-weight="bold" fill="#fff" text-anchor="middle">%</text>
+                        </svg>
+                    </div>
+                    <span class="cat-side-label">For You</span>
+                </div>
+
+                <!-- 2. Fashion -->
+                <div class="cat-side-item" data-cat="Fashion" onclick="selectCategory('Fashion')">
+                    <div class="cat-side-icon-box">
+                        <img src="./assets/images/cat_men.jpg" alt="Fashion" onerror="this.src='./assets/images/chair_opt.jpg';">
+                    </div>
+                    <span class="cat-side-label">Fashion</span>
+                </div>
+
+                <!-- 3. Mobiles -->
+                <div class="cat-side-item" data-cat="Mobiles" onclick="selectCategory('Mobiles')">
+                    <div class="cat-side-icon-box">
+                        <img src="./assets/images/tech_phone_card.svg" alt="Mobiles" style="object-fit: contain; padding: 4px;">
+                    </div>
+                    <span class="cat-side-label">Mobiles</span>
+                </div>
+
+                <!-- 4. Appliances -->
+                <div class="cat-side-item" data-cat="Appliances" onclick="selectCategory('Appliances')">
+                    <div class="cat-side-icon-box">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect x="2" y="5" width="16" height="12" rx="2" fill="#ef4444"/>
+                            <rect x="18" y="10" width="12" height="18" rx="2" fill="#0284c7"/>
+                            <circle cx="24" cy="19" r="4" fill="#ffffff" opacity="0.8"/>
+                        </svg>
+                    </div>
+                    <span class="cat-side-label">Appliances</span>
+                </div>
+
+                <!-- 5. Electronics -->
+                <div class="cat-side-item" data-cat="Electronics" onclick="selectCategory('Electronics')">
+                    <div class="cat-side-icon-box">
+                        <img src="./assets/images/tech_laptop_card.svg" alt="Electronics" style="object-fit: contain; padding: 4px;">
+                    </div>
+                    <span class="cat-side-label">Electronics</span>
+                </div>
+
+                <!-- 6. Smart Gadgets -->
+                <div class="cat-side-item" data-cat="Smart Gadgets" onclick="selectCategory('Smart Gadgets')">
+                    <div class="cat-side-icon-box">
+                        <img src="./assets/images/cat_launch_fitbit.svg" alt="Smart Gadgets" style="object-fit: contain; padding: 4px;">
+                    </div>
+                    <span class="cat-side-label">Smart Gadgets</span>
+                </div>
+
+                <!-- 7. Home -->
+                <div class="cat-side-item" data-cat="Home" onclick="selectCategory('Home')">
+                    <div class="cat-side-icon-box">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect x="4" y="6" width="24" height="10" rx="5" fill="#38bdf8"/>
+                            <rect x="6" y="18" width="20" height="11" rx="4" fill="#1e293b"/>
+                        </svg>
+                    </div>
+                    <span class="cat-side-label">Home</span>
+                </div>
+
+                <!-- 8. Beauty & Personal Care -->
+                <div class="cat-side-item" data-cat="Beauty" onclick="selectCategory('Beauty')">
+                    <div class="cat-side-icon-box">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect x="6" y="10" width="8" height="18" rx="2" fill="#f59e0b"/>
+                            <rect x="18" y="14" width="9" height="14" rx="4" fill="#ef4444"/>
+                        </svg>
+                    </div>
+                    <span class="cat-side-label">Beauty &amp; Personal Care</span>
+                </div>
+            </aside>
+
+            <!-- Right Content Pane (Exact from IMG_1695.jpg) -->
+            <main class="cat-content-pane" id="cat-main-content">
+                <!-- 1. Popular Store -->
+                <h3 class="cat-section-heading">Popular Store</h3>
+                <div class="popular-stores-grid">
+                    <!-- Live now (BBD) -->
+                    <div class="store-tile" onclick="window.location.href='index.html'">
+                        <div class="store-tile-img-box">
+                            <svg width="76" height="76" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="46" fill="#ffe000" stroke="#ffffff" stroke-width="3"/>
+                                <circle cx="50" cy="50" r="40" fill="none" stroke="#2874f0" stroke-width="2" stroke-dasharray="4 2"/>
+                                <text x="50" y="34" font-family="-apple-system, sans-serif" font-size="10" font-weight="900" fill="#1e3a8a" text-anchor="middle">THE</text>
+                                <text x="50" y="52" font-family="-apple-system, sans-serif" font-size="16" font-weight="900" fill="#1e3a8a" text-anchor="middle">BIG</text>
+                                <text x="50" y="70" font-family="-apple-system, sans-serif" font-size="13" font-weight="900" fill="#1e3a8a" text-anchor="middle">BILLION</text>
+                                <text x="50" y="84" font-family="-apple-system, sans-serif" font-size="10" font-weight="900" fill="#1e3a8a" text-anchor="middle">DAYS</text>
+                            </svg>
+                        </div>
+                        <span class="store-tile-label">Live now</span>
+                    </div>
+
+                    <!-- Discover Luxe -->
+                    <div class="store-tile" onclick="window.location.href='index.html'">
+                        <div class="store-tile-img-box">
+                            <img src="./assets/images/cat_store_luxe.svg" alt="Discover Luxe" class="store-tile-img">
+                        </div>
+                        <span class="store-tile-label">Discover Luxe</span>
+                    </div>
+
+                    <!-- Value 365 -->
+                    <div class="store-tile" onclick="window.location.href='index.html'">
+                        <div class="store-tile-img-box">
+                            <img src="./assets/images/cat_store_value365.svg" alt="Value 365" class="store-tile-img">
+                        </div>
+                        <span class="store-tile-label">Value 365</span>
+                    </div>
+
+                    <!-- Flights -->
+                    <div class="store-tile" onclick="showToast('Flipkart Flights: Big Billion Days fares live!')">
+                        <div class="store-tile-img-box">
+                            <img src="./assets/images/cat_store_flights.svg" alt="Flights" class="store-tile-img">
+                        </div>
+                        <span class="store-tile-label">Flights</span>
+                    </div>
+                </div>
+
+                <!-- 2. New & Upcoming Launches -->
+                <h3 class="cat-section-heading">New &amp; Upcoming Launches</h3>
+                <div class="launches-grid">
+                    <!-- 1. PS5 Console -->
+                    <div class="launch-card" onclick="window.location.href='product-detail.html?id=1'">
+                        <div class="launch-card-img-box">
+                            <img src="./assets/images/cat_launch_ps5.svg" alt="PS5 console" class="launch-card-img">
+                        </div>
+                        <span class="launch-card-title">PS5 console</span>
+                    </div>
+
+                    <!-- 2. Google Fitbit Air -->
+                    <div class="launch-card" onclick="window.location.href='product-detail.html?id=113'">
+                        <div class="launch-card-img-box">
+                            <img src="./assets/images/cat_launch_fitbit.svg" alt="Google Fitbit Air" class="launch-card-img">
+                        </div>
+                        <span class="launch-card-title">Google Fitbit Air</span>
+                    </div>
+
+                    <!-- 3. Native door locks -->
+                    <div class="launch-card" onclick="window.location.href='product-detail.html?id=3'">
+                        <div class="launch-card-img-box">
+                            <img src="./assets/images/cat_launch_doorlock.svg" alt="Native door locks" class="launch-card-img">
+                        </div>
+                        <span class="launch-card-title">Native door locks</span>
+                    </div>
+
+                    <!-- 4. iPhone 18 Pro -->
+                    <div class="launch-card" onclick="window.location.href='product-detail.html?id=113'">
+                        <div class="launch-card-img-box">
+                            <img src="./assets/images/cat_launch_iphone.svg" alt="iPhone 18 Pro" class="launch-card-img">
+                        </div>
+                        <span class="launch-card-title">iPhone 18 Pro</span>
+                    </div>
+
+                    <!-- 5. boAt Airdopes Prime Supreme -->
+                    <div class="launch-card" onclick="window.location.href='product-detail.html?id=113'">
+                        <div class="launch-card-img-box">
+                            <img src="./assets/images/cat_launch_airdopes.svg" alt="boAt Airdopes Prime Supreme" class="launch-card-img">
+                        </div>
+                        <span class="launch-card-title">boAt Airdopes Prime Supreme</span>
+                    </div>
+
+                    <!-- 6. Acer Iconia Tab -->
+                    <div class="launch-card" onclick="window.location.href='product-detail.html?id=2'">
+                        <div class="launch-card-img-box">
+                            <img src="./assets/images/cat_launch_tablet.svg" alt="Acer Iconia Tab" class="launch-card-img">
+                        </div>
+                        <span class="launch-card-title">Acer Iconia Tab</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- 3. Fixed Bottom Navigation Bar (4 Tabs: Home, Categories, Account, Cart) -->
+        <nav class="bottom-nav-bar">
+            <a href="index.html" class="nav-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                <span class="nav-label">Home</span>
+            </a>
+            <a href="categories.html" class="nav-item active">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#2874f0">
+                    <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                    <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                    <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                    <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                </svg>
+                <span class="nav-label">Categories</span>
+            </a>
+            <a href="account.html" class="nav-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span class="nav-label">Account</span>
+            </a>
+            <a href="checkout.html" class="nav-item">
+                <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    <span id="bottom-cart-badge" class="bottom-cart-badge" style="display: none;">0</span>
+                </div>
+                <span class="nav-label">Cart</span>
+            </a>
+        </nav>
+
+        <!-- Toast Notice -->
+        <div id="toast" class="toast-notice">Action Successful</div>
+    </div>
+
+    <!-- Interactive Script -->
+    <script>
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2200);
+        }
+
+        function updateCartBadges() {
+            try {
+                const raw = localStorage.getItem('flipkart_cart');
+                const cart = raw ? JSON.parse(raw) : [];
+                const count = Array.isArray(cart) ? cart.reduce((acc, item) => acc + (item.quantity || 1), 0) : 0;
+                
+                const topBadge = document.getElementById('top-cart-badge');
+                if (topBadge) {
+                    topBadge.textContent = count;
+                    topBadge.style.display = count > 0 ? 'flex' : 'none';
+                }
+
+                const botBadge = document.getElementById('bottom-cart-badge');
+                if (botBadge) {
+                    botBadge.textContent = count;
+                    botBadge.style.display = count > 0 ? 'flex' : 'none';
+                }
+            } catch(e) {}
+        }
+
+        function selectCategory(catName) {
+            document.querySelectorAll('.cat-side-item').forEach(el => el.classList.remove('active'));
+            const target = document.querySelector(`.cat-side-item[data-cat="${catName}"]`);
+            if (target) target.classList.add('active');
+
+            if (catName === 'for-you') {
+                document.getElementById('cat-main-content').scrollTop = 0;
+            } else {
+                showToast(`Viewing ${catName} Collection`);
+                // Smooth scroll to launches or navigate to homepage with category filter
+                setTimeout(() => {
+                    window.location.href = `index.html?cat=${encodeURIComponent(catName)}`;
+                }, 400);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', updateCartBadges);
+    </script>
+</body>
+
+</html>

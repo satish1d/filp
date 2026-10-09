@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 340" width="100%" height="100%">
+  <!-- Card Background -->
+  <rect width="280" height="340" rx="16" fill="#e3f6ea"/>
+  
+  <!-- Subtle background glow -->
+  <circle cx="140" cy="180" r="100" fill="#cbf0d8" opacity="0.6"/>
+
+  <!-- Phone Mockup -->
+  <g transform="translate(30, 25)">
+    <!-- Back of Phone (Lavender / Lilac color) -->
+    <rect x="0" y="30" width="75" height="260" rx="20" fill="#d8d4f8" stroke="#b0a8e8" stroke-width="2"/>
+    <!-- Triple Camera Island -->
+    <rect x="12" y="45" width="22" height="72" rx="11" fill="#ede9fe" stroke="#c4b5fd" stroke-width="1.5"/>
+    <circle cx="23" cy="57" r="7" fill="#1e1b4b" stroke="#6366f1" stroke-width="2"/>
+    <circle cx="23" cy="80" r="7" fill="#1e1b4b" stroke="#6366f1" stroke-width="2"/>
+    <circle cx="23" cy="103" r="7" fill="#1e1b4b" stroke="#6366f1" stroke-width="2"/>
+    <text x="38" y="270" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="7" font-weight="700" fill="#6d28d9" text-anchor="middle">SAMSUNG</text>
+
+    <!-- Front Phone Display (Facing User) -->
+    <g transform="translate(45, 10)">
+      <rect x="0" y="0" width="145" height="275" rx="22" fill="#09090b" stroke="#27272a" stroke-width="3"/>
+      <!-- Screen Inner Area -->
+      <rect x="4" y="4" width="137" height="267" rx="18" fill="#ffffff"/>
+      <!-- Punch Hole Selfie Camera -->
+      <circle cx="72" cy="14" r="3.5" fill="#18181b"/>
+
+      <!-- Screen Wallpaper / Content -->
+      <rect x="4" y="24" width="137" height="247" fill="#f4fbf7"/>
+      
+      <!-- Content Details matching screenshot -->
+      <text x="72" y="48" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="800" fill="#0f172a" text-anchor="middle">Galaxy A36 5G</text>
+
+      <!-- Segment's most complete camera banner -->
+      <rect x="12" y="60" width="121" height="28" rx="6" fill="#bbf7d0"/>
+      <text x="72" y="74" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" font-weight="700" fill="#14532d" text-anchor="middle">Segment's most</text>
+      <text x="72" y="84" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8" font-weight="800" fill="#15803d" text-anchor="middle">complete camera*</text>
+
+      <!-- Spec Pill 1 -->
+      <rect x="16" y="105" width="113" height="34" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+      <text x="72" y="120" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8" font-weight="800" fill="#0f172a" text-anchor="middle">Snapdragon</text>
+      <text x="72" y="131" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="7.5" font-weight="600" fill="#2563eb" text-anchor="middle">4nm processor</text>
+
+      <!-- Spec Pill 2 -->
+      <rect x="16" y="150" width="113" height="32" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+      <text x="72" y="165" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" font-weight="800" fill="#0f172a" text-anchor="middle">5 Gen OS</text>
+      <text x="72" y="175" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="7" font-weight="600" fill="#475569" text-anchor="middle">Upgrades</text>
+
+      <!-- Visual Bottom Wave Graphic -->
+      <path d="M 4 210 Q 40 195 72 210 T 141 210 L 141 271 L 4 271 Z" fill="#86efac" opacity="0.6"/>
+    </g>
+  </g>
+</svg>

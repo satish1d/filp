@@ -272,8 +272,8 @@ if (btnPlaceOrder) {
       showToast('Your cart is empty');
       return;
     }
-    // Proceed to Step 2: Address
-    window.location.href = 'checkout-address.html';
+    // Proceed to Checkout (Address & Payment)
+    window.location.href = 'checkout.html';
   });
 }
 

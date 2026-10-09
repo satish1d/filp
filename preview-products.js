@@ -342,7 +342,7 @@ if (tabFlipkart && tabTravel) {
 }
 
 function updateHomeCartBadge() {
-  const badge = document.getElementById('home-cart-badge');
+  const badge = document.getElementById('bottom-cart-badge');
   if (badge) {
     try {
       const raw = localStorage.getItem('flipkart_cart');
@@ -357,6 +357,29 @@ function updateHomeCartBadge() {
   }
 }
 
+// Delivery Location Selector Interactive Handler
+const btnSelectLocation = document.getElementById('btn-select-location');
+const locationTextTitle = document.querySelector('.location-text-title');
+if (btnSelectLocation) {
+  // Load saved location if any
+  const savedLoc = localStorage.getItem('flipkart_user_location');
+  if (savedLoc) {
+    if (locationTextTitle) locationTextTitle.textContent = `Deliver to ${savedLoc}`;
+    btnSelectLocation.innerHTML = `Change <span style="font-weight: 700; font-size: 14px;">&gt;</span>`;
+  }
+
+  btnSelectLocation.addEventListener('click', () => {
+    const loc = prompt('Enter Delivery Pincode or City (e.g. Mumbai 400001, Delhi, Bangalore):', savedLoc || '400001');
+    if (loc && loc.trim()) {
+      const trimmed = loc.trim();
+      localStorage.setItem('flipkart_user_location', trimmed);
+      if (locationTextTitle) locationTextTitle.textContent = `Deliver to ${trimmed}`;
+      btnSelectLocation.innerHTML = `Change <span style="font-weight: 700; font-size: 14px;">&gt;</span>`;
+      showToast(`Delivery location set to ${trimmed} 📍`);
+    }
+  });
+}
+
 // 8. Fetch Catalog Data
 async function loadCatalog() {
   try {
@@ -365,7 +388,24 @@ async function loadCatalog() {
     if (!res.ok) throw new Error('Catalog failed to load');
     const data = await res.json();
     allProducts = data.products || [];
-    renderProducts(allProducts);
+
+    // Check URL parameter for active category from categories page
+    const urlParams = new URLSearchParams(window.location.search);
+    const catParam = urlParams.get('cat') || urlParams.get('category');
+    if (catParam) {
+      currentCategory = catParam;
+      if (categoryNav) {
+        categoryNav.querySelectorAll('.category-item').forEach((item) => {
+          if (item.dataset.category && item.dataset.category.toLowerCase() === catParam.toLowerCase()) {
+            categoryNav.querySelectorAll('.category-item').forEach((c) => c.classList.remove('active'));
+            item.classList.add('active');
+          }
+        });
+      }
+      filterProducts();
+    } else {
+      renderProducts(allProducts);
+    }
   } catch (err) {
     console.error('Failed to load products:', err);
     if (productGrid) {

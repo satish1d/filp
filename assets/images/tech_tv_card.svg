@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 340" width="100%" height="100%">
+  <!-- Card Background -->
+  <rect width="280" height="340" rx="16" fill="#fde5db"/>
+  
+  <!-- Subtle circular background glow -->
+  <circle cx="140" cy="180" r="110" fill="#fed7aa" opacity="0.6"/>
+
+  <!-- LG Nano 4K UHD Smart TV (Matching IMG_1694.jpg) -->
+  <g transform="translate(15, 65)">
+    <!-- TV Outer Frame & Thin Bezel -->
+    <rect x="10" y="10" width="230" height="150" rx="3" fill="#09090b" stroke="#3f3f46" stroke-width="2"/>
+    <!-- TV Screen Display Area -->
+    <rect x="13" y="13" width="224" height="144" rx="2" fill="#0f172a"/>
+
+    <!-- Screen Wallpaper: Cosmic / Abstract Art from screenshot -->
+    <path d="M 13 13 L 237 13 L 237 157 L 13 157 Z" fill="#0f172a"/>
+    <!-- Red, violet, pink waves -->
+    <path d="M 13 80 Q 90 20 160 90 T 237 40 L 237 157 L 13 157 Z" fill="#e11d48" opacity="0.85"/>
+    <path d="M 13 110 Q 110 50 180 120 T 237 80 L 237 157 L 13 157 Z" fill="#9333ea" opacity="0.85"/>
+    <path d="M 13 130 Q 120 90 200 140 L 237 157 L 13 157 Z" fill="#fb7185" opacity="0.7"/>
+
+    <!-- Specs Overlay Box on TV Screen (Exact layout from IMG_1694.jpg) -->
+    <g transform="translate(24, 25)">
+      <rect x="0" y="0" width="56" height="106" rx="4" fill="#000000" opacity="0.78"/>
+      
+      <!-- 43" 108 cm tag -->
+      <rect x="4" y="5" width="22" height="12" rx="2" fill="#dc2626"/>
+      <text x="15" y="14" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="7" font-weight="900" fill="#ffffff" text-anchor="middle">43"</text>
+      <text x="30" y="12" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="6" font-weight="bold" fill="#ffffff">108 cm</text>
+
+      <!-- AI Sound Pro -->
+      <text x="6" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="6" font-weight="700" fill="#ffffff">AI Sound Pro</text>
+      <text x="6" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="5" fill="#cbd5e1">(9.1.2 Up-mix)</text>
+
+      <!-- Dolby Atmos -->
+      <text x="6" y="52" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="6.5" font-weight="900" fill="#ffffff">Dolby</text>
+      <text x="6" y="59" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="5.5" font-weight="700" fill="#94a3b8">Atmos</text>
+
+      <!-- Gemini Copilot -->
+      <text x="6" y="73" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="5" fill="#38bdf8">✨ Gemini</text>
+      <text x="6" y="80" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="5" fill="#94a3b8">+ Copilot</text>
+
+      <!-- LG Shield / LG Channels -->
+      <text x="6" y="93" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="5" fill="#facc15">🛡️ LG Shield</text>
+      <text x="6" y="101" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="5" fill="#ffffff">LG Channels</text>
+    </g>
+
+    <!-- TV Branding on Top Right -->
+    <text x="228" y="28" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="7" font-weight="900" fill="#ffffff" text-anchor="end">LG NANO 4K UHD AI</text>
+    <text x="228" y="38" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="9" font-weight="900" fill="#ef4444" text-anchor="end">2026</text>
+
+    <!-- TV Stand Legs -->
+    <polygon points="50,160 55,178 44,178" fill="#18181b"/>
+    <polygon points="200,160 206,178 195,178" fill="#18181b"/>
+
+    <!-- TV Drop Shadow -->
+    <ellipse cx="125" cy="182" rx="90" ry="5" fill="#78350f" opacity="0.2"/>
+  </g>
+</svg>

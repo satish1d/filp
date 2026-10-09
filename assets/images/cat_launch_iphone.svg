@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <!-- Light Grey Studio Background -->
+  <rect width="120" height="120" rx="20" fill="#f1f5f9"/>
+
+  <!-- iPhone 18 Pro (Deep Titanium / Bronze Reddish Tint from IMG_1695.jpg) -->
+  <g transform="translate(36, 12)">
+    <!-- Back of Phone -->
+    <rect x="0" y="0" width="48" height="80" rx="10" fill="#581c2d" stroke="#881337" stroke-width="1.5"/>
+    <!-- Triple Camera Island in Triangular setup -->
+    <rect x="4" y="5" width="24" height="24" rx="6" fill="#4c0519"/>
+    <circle cx="12" cy="12" r="4.5" fill="#18181b" stroke="#9f1239" stroke-width="1"/>
+    <circle cx="21" cy="21" r="4.5" fill="#18181b" stroke="#9f1239" stroke-width="1"/>
+    <circle cx="12" cy="21" r="4.5" fill="#18181b" stroke="#9f1239" stroke-width="1"/>
+    <!-- Apple Logo -->
+    <circle cx="24" cy="46" r="4" fill="#9f1239" opacity="0.6"/>
+  </g>
+
+  <!-- Green Pill Badge at Bottom: BUY NOW -->
+  <rect x="16" y="94" width="88" height="20" rx="5" fill="#059669"/>
+  <text x="60" y="108" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="8.5" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="0.5">BUY NOW</text>
+</svg>
