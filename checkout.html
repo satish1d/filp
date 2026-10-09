@@ -925,22 +925,17 @@
                 </div>
             </div>
 
-            <!-- Cash on Delivery -->
-            <div class="co-payment-option" id="opt-cod">
-                <div class="co-payment-header" onclick="selectPaymentMethod('cod')">
+            <!-- Cash on Delivery (Unavailable) -->
+            <div class="co-payment-option disabled-option" id="opt-cod" onclick="handleCodUnavailable(event)" style="opacity: 0.62; background: #f8fafc; border-color: #e2e8f0; cursor: not-allowed;">
+                <div class="co-payment-header" style="cursor: not-allowed; background: transparent;">
                     <div class="co-payment-left">
-                        <input type="radio" name="payment_method" value="cod" class="co-radio">
-                        <span class="co-payment-name">Cash on Delivery (COD)</span>
+                        <input type="radio" name="payment_method" value="cod" class="co-radio" disabled style="cursor: not-allowed;">
+                        <div>
+                            <span class="co-payment-name" style="color: #64748b; text-decoration: line-through;">Cash on Delivery (COD)</span>
+                            <div style="font-size: 11px; color: #dc2626; font-weight: 700; margin-top: 1px;">Currently unavailable for this order</div>
+                        </div>
                     </div>
-                </div>
-                <div class="co-payment-body">
-                    <div style="font-size: 13px; color: #475569; margin-bottom: 8px;">
-                        Pay cash when order is delivered at your doorstep.
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 18px; font-weight: 900; background: #e2e8f0; padding: 4px 10px; border-radius: 4px; letter-spacing: 2px;" id="cod-captcha">482</span>
-                        <input type="text" id="cod-captcha-input" class="co-input" style="width: 100px;" placeholder="Code" value="482">
-                    </div>
+                    <span style="font-size: 10.5px; font-weight: 800; color: #dc2626; background: #fee2e2; padding: 2px 7px; border-radius: 4px; letter-spacing: 0.3px;">UNAVAILABLE</span>
                 </div>
             </div>
 
@@ -1300,7 +1295,19 @@
         }
 
         // Payment Method Management
+        function handleCodUnavailable(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            showToast('Cash on Delivery is unavailable for this deal. Please select UPI or Card.');
+        }
+
         function selectPaymentMethod(method) {
+            if (method === 'cod') {
+                handleCodUnavailable();
+                return;
+            }
             selectedPayment = method;
             document.querySelectorAll('.co-payment-option').forEach(el => el.classList.remove('active'));
             const target = document.getElementById(`opt-${method}`);
