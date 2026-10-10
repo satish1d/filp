@@ -40,7 +40,7 @@
             width: 100%;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            overflow-x: clip;
             background-color: #f1f2f4;
             -webkit-text-size-adjust: 100%;
         }
@@ -60,7 +60,7 @@
             min-height: 100vh;
             position: relative;
             padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px));
-            overflow-x: hidden;
+            overflow-x: clip;
         }
 
         @media (max-width: 480px) {
@@ -71,6 +71,7 @@
 
         /* Top Nav Header */
         .pd-header {
+            position: -webkit-sticky;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -240,35 +241,12 @@
         }
 
         .pd-rating-overlay {
-            position: absolute;
-            bottom: 12px;
-            left: 12px;
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(4px);
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-            z-index: 10;
+            display: none !important;
         }
 
         /* Fixed Brand Seller Shield Badge: Exactly 28px wide */
         .pd-auth-seller-badge {
-            position: absolute !important;
-            bottom: 12px !important;
-            right: 12px !important;
-            width: 28px !important;
-            height: 32px !important;
-            max-width: 28px !important;
-            max-height: 32px !important;
-            object-fit: contain !important;
-            z-index: 15 !important;
-            display: none;
-            pointer-events: none;
+            display: none !important;
         }
 
         .pd-carousel-dots {
@@ -374,60 +352,115 @@
             position: relative;
         }
 
-        /* Brand & Product Title */
+        /* Brand & Product Title (Image 2 style) */
         .pd-brand-store-link {
-            font-size: 13px;
-            font-weight: 700;
-            color: #2874f0;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 4px;
-            cursor: pointer;
+            display: none !important;
         }
 
         .pd-product-title {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 500;
-            color: #212121;
-            line-height: 1.35;
+            color: #111111;
+            line-height: 22px;
             margin-bottom: 8px;
+        }
+
+        .pd-rating-assured-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        .pd-rating-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pd-rating-green-badge {
+            background: #388e3c;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            line-height: 16px;
+        }
+
+        .pd-reviews-count-text {
+            color: #717478;
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        .pd-assured-badge-img {
+            height: 20px;
+            width: auto;
+            display: block;
         }
 
         .pd-bbd-price-tag {
-            background: #6a1b9a;
-            color: #ffffff;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-bottom: 8px;
+            display: none !important;
         }
 
-        /* Price Row */
+        /* Price Row: 99% off  ₹1,24,999  ₹1,276 */
         .pd-pricing-row {
             display: flex;
             align-items: baseline;
-            gap: 8px;
-            margin-bottom: 14px;
+            gap: 10px;
+            margin-bottom: 6px;
         }
 
         .pd-discount-percent {
-            color: #108432;
-            font-size: 18px;
-            font-weight: 800;
+            color: #388e3c;
+            font-size: 19px;
+            font-weight: 700;
+            white-space: nowrap;
         }
 
         .pd-mrp-strike {
-            color: #878787;
+            color: #717478;
             text-decoration: line-through;
-            font-size: 16px;
+            font-size: 17px;
+            font-weight: 400;
+            white-space: nowrap;
         }
 
         .pd-selling-price {
-            color: #212121;
-            font-size: 24px;
+            color: #111111;
+            font-size: 28px;
             font-weight: 800;
+            white-space: nowrap;
+        }
+
+        /* Secured Packaging Row */
+        .pd-packaging-row {
+            font-size: 13.5px;
+            color: #212121;
+            line-height: 18px;
+            margin-bottom: 6px;
+        }
+
+        .pd-packaging-strike {
+            color: #717478;
+            text-decoration: line-through;
+        }
+
+        /* Delivery Row */
+        .pd-free-delivery-row {
+            font-size: 14px;
+            color: #212121;
+            line-height: 18px;
+            margin-bottom: 14px;
+        }
+
+        .pd-free-delivery-row b {
+            font-weight: 700;
         }
 
         /* WOW! DEAL Box */
@@ -735,7 +768,8 @@
         .pd-similar-img-box img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            padding: 6px;
         }
 
         .pd-similar-rating {
@@ -1120,18 +1154,39 @@
                 </div>
             </div>
 
-            <!-- Brand Store Link & Title -->
-            <a class="pd-brand-store-link" id="pd-brand-store">Visit brand store</a>
+            <!-- Product Title (Top of details, exactly matching Image 2) -->
             <h1 class="pd-product-title" id="pd-title">MUFTI Men Slim Fit Checkered Spread Collar Casual Shirt</h1>
-            <div>
-                <span class="pd-bbd-price-tag" id="pd-badge">Big Billion Days Price</span>
+
+            <!-- Rating & Assured Row (Image 2) -->
+            <div class="pd-rating-assured-row">
+                <div class="pd-rating-left">
+                    <span class="pd-rating-green-badge">
+                        <span id="pd-rating-val">4.5</span> ★
+                    </span>
+                    <span class="pd-reviews-count-text">
+                        <span id="pd-review-val">500</span> Ratings &amp; Reviews
+                    </span>
+                </div>
+                <div class="pd-assured-right">
+                    <img src="./assets/images/f_assured.svg" alt="Flipkart Assured" class="pd-assured-badge-img">
+                </div>
             </div>
 
-            <!-- Price Row -->
+            <!-- Price Row (Image 2: 99% off  ₹1,24,999  ₹1,276) -->
             <div class="pd-pricing-row">
-                <span class="pd-discount-percent" id="pd-discount">↓ 67%</span>
-                <span class="pd-mrp-strike" id="pd-mrp">₹2,999</span>
-                <span class="pd-selling-price" id="pd-price">₹999</span>
+                <span class="pd-discount-percent" id="pd-discount">99% off</span>
+                <span class="pd-mrp-strike" id="pd-mrp">₹1,24,999</span>
+                <span class="pd-selling-price" id="pd-price">₹1,276</span>
+            </div>
+
+            <!-- Secured Packaging Row (Image 2: + ₹99 Secured Packaging Free) -->
+            <div class="pd-packaging-row">
+                + <span class="pd-packaging-strike">₹99</span> Secured Packaging Free
+            </div>
+
+            <!-- Delivery Row (Image 2: Free delivery by 2 Days) -->
+            <div class="pd-free-delivery-row" id="pd-delivery-line">
+                Free delivery by <b id="pd-delivery-days">2 Days</b>
             </div>
 
             <!-- WOW! DEAL Box -->
@@ -1384,6 +1439,9 @@
         <div id="toast" class="toast-notice">Added to Cart 🛒</div>
     </div>
 
+    <!-- Supabase Production Client & Realtime -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabaseClient.js"></script>
     <script defer src="./preview-detail.js"></script>
 </body>
 

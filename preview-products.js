@@ -48,60 +48,49 @@ if (viewersElement) {
   }, 3500);
 }
 
-// 3. Render Product Cards (Exact Replica of Screenshots)
+// Green 5-star rating helper (e.g. ★★★★☆)
+function getStarRatingHtml(ratingVal) {
+  const r = parseFloat(ratingVal) || 4.2;
+  const full = Math.min(5, Math.floor(r));
+  let stars = '';
+  for (let i = 0; i < 5; i++) {
+    stars += i < full ? '★' : '☆';
+  }
+  return stars;
+}
+
+// Format Delivery Date (e.g. "Delivery by 12th Oct")
+function formatDeliveryDate(rawDelivery) {
+  if (!rawDelivery || typeof rawDelivery !== 'string') {
+    return 'Delivery by <b>12th Oct</b>';
+  }
+  let cleaned = rawDelivery.trim();
+  cleaned = cleaned.replace(/,\s*[A-Za-z]+$/i, '').trim();
+  cleaned = cleaned.replace(/^Free delivery\s*(by)?\s*/i, '').trim();
+  cleaned = cleaned.replace(/^Delivery by\s*/i, '').trim();
+
+  if (!cleaned) {
+    return 'Delivery by <b>12th Oct</b>';
+  }
+
+  cleaned = cleaned.replace(/\b(\d{1,2})\b(?!\s*(st|nd|rd|th))(?=\s+[A-Za-z]+)/gi, (match, dStr) => {
+    const d = parseInt(dStr, 10);
+    const suffix = (d % 10 === 1 && d !== 11) ? 'st' : (d % 10 === 2 && d !== 12) ? 'nd' : (d % 10 === 3 && d !== 13) ? 'rd' : 'th';
+    return `${d}${suffix}`;
+  });
+
+  return `Delivery by <b>${cleaned}</b>`;
+}
+
+// 3. Render Product Cards (Exact Replica of Uploaded Image PHOTO-2026-10-10-14-01-21.jpg)
 function createProductCard(product) {
   const card = document.createElement('div');
   card.className = 'product-card';
 
-  // Image Box
+  // Image Box (Clean square, NO heart icon, NO rating overlay, NO ad/shield)
   const imageBox = document.createElement('div');
   imageBox.className = 'product-image-box';
 
-  // Wishlist Button
-  const wishlistBtn = document.createElement('button');
-  wishlistBtn.className = 'wishlist-btn';
-  wishlistBtn.setAttribute('aria-label', 'Add to Wishlist');
-  wishlistBtn.innerHTML = `
-    <svg viewBox="0 0 24 24">
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-    </svg>
-  `;
-
-  // Wishlist State from LocalStorage
-  const savedWishlist = JSON.parse(localStorage.getItem('flipkart_wishlist') || '[]');
-  const isWishlisted = savedWishlist.includes(product.id);
-  if (isWishlisted) {
-    wishlistBtn.classList.add('active');
-  }
-
-  wishlistBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    const list = JSON.parse(localStorage.getItem('flipkart_wishlist') || '[]');
-    const index = list.indexOf(product.id);
-    if (index > -1) {
-      list.splice(index, 1);
-      wishlistBtn.classList.remove('active');
-      showToast('Removed from Wishlist');
-    } else {
-      list.push(product.id);
-      wishlistBtn.classList.add('active');
-      showToast('Added to Wishlist ❤️');
-    }
-    localStorage.setItem('flipkart_wishlist', JSON.stringify(list));
-  });
-
-  // Rating Pill Badge (Bottom-Left)
-  const ratingBadge = document.createElement('div');
-  ratingBadge.className = 'product-rating-badge';
-  ratingBadge.innerHTML = `
-    <span>${product.rating || '4.5'}</span>
-    <span class="rating-star-icon">★</span>
-    <span class="rating-divider">|</span>
-    <span class="rating-count">${product.review_count || '1k+'}</span>
-  `;
-
-  // Product Image
   const img = document.createElement('img');
   img.className = 'product-img';
   img.src = product.img1 || '';
@@ -116,87 +105,76 @@ function createProductCard(product) {
     }
   };
 
-  // AD tag (Image 1 top left)
-  if (product.ad) {
-    const adTag = document.createElement('span');
-    adTag.className = 'card-ad-tag';
-    adTag.textContent = 'AD';
-    imageBox.appendChild(adTag);
-  }
-
-  // Brand Authorized Seller Shield (Image 1 bottom right)
-  if (product.authorized_seller) {
-    const shield = document.createElement('img');
-    shield.src = './assets/images/brand_seller.svg';
-    shield.alt = 'Brand Authorized Seller';
-    shield.className = 'card-auth-shield';
-    imageBox.appendChild(shield);
-  }
-
-  imageBox.appendChild(wishlistBtn);
   imageBox.appendChild(img);
-  imageBox.appendChild(ratingBadge);
 
   // Info Box
   const infoBox = document.createElement('div');
   infoBox.className = 'product-info-box';
 
-  // Assured + Brand Row
-  const brandRow = document.createElement('div');
-  brandRow.className = 'brand-assured-row';
-  if ((product.brand || '').toUpperCase() === 'FLIPKART') {
-    brandRow.innerHTML = `
-      <img src="./assets/images/f_assured.svg" alt="Flipkart Assured" class="assured-badge-img">
-      <img src="./assets/images/flipkart_full_logo.svg" alt="Flipkart" style="height: 16px; width: auto; display: inline-block;">
-    `;
-  } else if (product.assured) {
-    brandRow.innerHTML = `
-      <span class="brand-name">${escapeHtml(product.brand || '')}</span>
-    `;
-  } else {
-    brandRow.innerHTML = `
-      <span class="brand-name">${escapeHtml(product.brand || '')}</span>
-    `;
-  }
-
-  // Truncated Product Title
+  // 1. Product Title (2-line clamp, clean font)
   const title = document.createElement('div');
   title.className = 'product-title-text';
-  title.textContent = product.short_name || product.name || '';
+  let cleanTitle = product.name || product.short_name || '';
+  if (cleanTitle.endsWith('...') && product.name && product.name.length > cleanTitle.length) {
+    cleanTitle = product.name;
+  }
+  title.textContent = cleanTitle;
 
-  // Pricing Line
+  // 2. Rating + Reviews + Assured Row: ★★★★☆ (500) 🛡️Assured
+  const ratingRow = document.createElement('div');
+  ratingRow.className = 'card-rating-assured-row';
+  const starsHtml = getStarRatingHtml(product.rating || product.rating_stars || 4.2);
+  const rawCount = product.review_count || '500';
+  const cleanCount = String(rawCount).replace(/[()]/g, '').trim();
+  ratingRow.innerHTML = `
+    <span class="card-stars-green">${starsHtml}</span>
+    <span class="card-reviews-count">(${cleanCount})</span>
+    <img src="./assets/images/f_assured_shield.svg" alt="Assured" class="card-assured-shield-img">
+  `;
+
+  // 3. Pricing Row: ↓79% ₹464 ₹99
   const priceRow = document.createElement('div');
   priceRow.className = 'pricing-row';
 
-  const discountLabel = product.discount_label || `↓ ${product.discount_percent || 90}%`;
   const mrpValue = Number(product.mrp) || 0;
   const sellingValue = Number(product.selling_price) || 0;
+  let discountPercent = product.discount_percent;
+  if (!discountPercent && mrpValue > sellingValue && mrpValue > 0) {
+    discountPercent = Math.round(((mrpValue - sellingValue) / mrpValue) * 100);
+  }
+  if (!discountPercent) discountPercent = 70;
 
   priceRow.innerHTML = `
-    <span class="discount-tag">${discountLabel}</span>
-    <span class="mrp-strikethrough">₹${currencyFormatter.format(mrpValue)}</span>
-    <span class="selling-price-bold">₹${currencyFormatter.format(sellingValue)}</span>
+    <span class="card-discount-arrow">↓${discountPercent}%</span>
+    ${mrpValue > sellingValue ? `<span class="card-mrp-strike">₹${currencyFormatter.format(mrpValue)}</span>` : ''}
+    <span class="card-final-price">₹${currencyFormatter.format(sellingValue)}</span>
   `;
 
-  // Delivery Line
-  const deliveryLine = document.createElement('div');
-  deliveryLine.className = 'delivery-info-text';
-  const deliveryText = product.delivery_text || 'Get it by 11 Oct';
-  deliveryLine.innerHTML = formatDeliveryText(deliveryText);
+  // 4. WOW Offer Row: [WOW!] ₹99 with offer
+  const wowRow = document.createElement('div');
+  wowRow.className = 'card-wow-offer-row';
+  const offerPrice = product.deal_price || sellingValue;
+  wowRow.innerHTML = `
+    <span class="card-wow-badge">WOW!</span>
+    <span class="card-wow-offer-text"><b>₹${currencyFormatter.format(offerPrice)}</b> with offer</span>
+  `;
 
-  infoBox.appendChild(brandRow);
+  // 5. Super deals Row
+  const superDeals = document.createElement('div');
+  superDeals.className = 'card-super-deals-text';
+  superDeals.textContent = 'Super deals';
+
+  // 6. Delivery Date Row: Delivery by 12th Oct
+  const deliveryRow = document.createElement('div');
+  deliveryRow.className = 'card-delivery-row';
+  deliveryRow.innerHTML = formatDeliveryDate(product.delivery_text);
+
   infoBox.appendChild(title);
+  infoBox.appendChild(ratingRow);
   infoBox.appendChild(priceRow);
-
-  // Big Billion Days / Event Price Badge (Image 1)
-  if (product.badge) {
-    const badgeEl = document.createElement('div');
-    badgeEl.className = `card-event-badge ${product.badge.includes('Lowest') ? 'lowest-price' : 'bbd-price'}`;
-    badgeEl.textContent = product.badge;
-    infoBox.appendChild(badgeEl);
-  } else {
-    infoBox.appendChild(deliveryLine);
-  }
+  infoBox.appendChild(wowRow);
+  infoBox.appendChild(superDeals);
+  infoBox.appendChild(deliveryRow);
 
   card.appendChild(imageBox);
   card.appendChild(infoBox);
@@ -400,14 +378,32 @@ if (btnSelectLocation) {
   });
 }
 
-// 8. Fetch Catalog Data
+// 8. Fetch Catalog Data from Supabase
+let realtimeSubscribed = false;
+
 async function loadCatalog() {
   try {
     updateHomeCartBadge();
-    const res = await fetch('./data/products.json?v=' + Date.now());
-    if (!res.ok) throw new Error('Catalog failed to load');
-    const data = await res.json();
-    allProducts = data.products || [];
+
+    let products = [];
+    if (typeof FilpSupabase !== 'undefined') {
+      const result = await FilpSupabase.getProducts();
+      products = result.products || [];
+      if (!realtimeSubscribed) {
+        realtimeSubscribed = true;
+        FilpSupabase.subscribeToProducts(() => {
+          console.log('[Storefront] Realtime update detected from admin, refreshing products...');
+          loadCatalog();
+        });
+      }
+    } else {
+      const res = await fetch('./data/products.json?v=' + Date.now());
+      if (!res.ok) throw new Error('Catalog failed to load');
+      const data = await res.json();
+      products = data.products || [];
+    }
+
+    allProducts = products;
 
     const countBadge = document.getElementById('product-count-badge');
     if (countBadge) {

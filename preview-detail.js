@@ -120,18 +120,27 @@ if (cartBtn) {
 
 if (btnAddCart) {
   btnAddCart.addEventListener('click', () => {
-    const cart = JSON.parse(localStorage.getItem('flipkart_cart') || '[]');
-    cart.push({
-      id: currentProduct?.id || 1,
+    const checkoutItem = {
+      id: currentProduct?.id,
+      md5_id: currentProduct?.md5_id,
       name: currentProduct?.name || 'Product',
-      size: selectedSize || '1 Unit',
+      brand: currentProduct?.brand || 'Brand',
+      size: selectedSize || 'Standard',
       price: currentSellingPrice,
+      mrp: currentProduct?.mrp || (currentSellingPrice * 2),
+      discount_label: currentProduct?.discount_label || '↓ 50%',
+      discount_percent: currentProduct?.discount_percent || 50,
       img: currentProduct?.img1 || '',
-    });
+      delivery_text: currentProduct?.delivery_text || 'Free Delivery by 12 Oct',
+      seller_name: currentProduct?.seller_name || 'RetailNet',
+      quantity: 1,
+    };
+    localStorage.setItem('flipkart_checkout_item', JSON.stringify(checkoutItem));
+    const cart = JSON.parse(localStorage.getItem('flipkart_cart') || '[]');
+    cart.push(checkoutItem);
     localStorage.setItem('flipkart_cart', JSON.stringify(cart));
     updateCartBadge();
-    const toastMsg = currentProduct?.sizes ? `Added Size ${selectedSize} to Cart 🛒` : `Added to Cart 🛒`;
-    showToast(toastMsg);
+    window.location.href = `checkout.html?id=${encodeURIComponent(currentProduct?.md5_id || currentProduct?.id || 1)}`;
   });
 }
 
@@ -275,20 +284,42 @@ if (btnBuyNow) {
   });
 }
 
-// 11. Load Product Data from products.json
+// 11. Load Product Data from Supabase / Catalog
+let detailRealtimeSubscribed = false;
+
 async function loadProduct() {
   try {
-    const res = await fetch('./data/products.json?v=' + Date.now());
-    if (!res.ok) throw new Error('Catalog failed to load');
-    const data = await res.json();
-    const products = data.products || [];
-    const similarProducts = data.similar_products || [];
+    let products = [];
+    let prod = null;
 
     const urlParams = new URLSearchParams(window.location.search);
     const paramId = urlParams.get('id');
 
-    let prod = null;
-    if (paramId) {
+    if (typeof FilpSupabase !== 'undefined') {
+      if (paramId) {
+        const singleRes = await FilpSupabase.getProductById(paramId);
+        if (singleRes && singleRes.success && singleRes.product) {
+          prod = singleRes.product;
+        }
+      }
+      const catalogRes = await FilpSupabase.getProducts();
+      products = catalogRes.products || [];
+
+      if (!detailRealtimeSubscribed && typeof FilpSupabase.subscribeToProducts === 'function') {
+        detailRealtimeSubscribed = true;
+        FilpSupabase.subscribeToProducts((payload) => {
+          console.log('[Product Detail] Realtime update detected from Supabase:', payload);
+          loadProduct();
+        });
+      }
+    } else {
+      const res = await fetch('./data/products.json?v=' + Date.now());
+      if (!res.ok) throw new Error('Catalog failed to load');
+      const data = await res.json();
+      products = data.products || [];
+    }
+
+    if (!prod && paramId) {
       prod = products.find((p) => String(p.md5_id) === String(paramId) || String(p.id) === String(paramId));
     }
     // Default to first product in catalog if not matched
@@ -456,10 +487,16 @@ async function loadProduct() {
     if (ratingVal) ratingVal.textContent = prod.rating || '4.5';
 
     const reviewVal = document.getElementById('pd-review-val');
-    if (reviewVal) reviewVal.textContent = prod.review_count || '1,248';
+    const cleanReviewCount = (prod.review_count || '500').replace(/[^0-9,kK+]/g, '') || '500';
+    if (reviewVal) reviewVal.textContent = cleanReviewCount;
 
     const discountEl = document.getElementById('pd-discount');
-    if (discountEl) discountEl.textContent = prod.discount_label || `↓ ${prod.discount_percent}%`;
+    let discountPercent = prod.discount_percent;
+    if (!discountPercent && prod.mrp && currentSellingPrice && prod.mrp > currentSellingPrice) {
+      discountPercent = Math.round(((prod.mrp - currentSellingPrice) / prod.mrp) * 100);
+    }
+    if (!discountPercent) discountPercent = 70;
+    if (discountEl) discountEl.textContent = `${discountPercent}% off`;
 
     const mrpEl = document.getElementById('pd-mrp');
     if (mrpEl) mrpEl.textContent = `₹${currencyFormatter.format(prod.mrp || 2999)}`;
@@ -467,13 +504,28 @@ async function loadProduct() {
     const priceEl = document.getElementById('pd-price');
     if (priceEl) priceEl.textContent = `₹${currencyFormatter.format(currentSellingPrice)}`;
 
+    const deliveryDaysEl = document.getElementById('pd-delivery-days');
+    if (deliveryDaysEl) {
+      let daysText = '2 Days';
+      if (prod.delivery_text) {
+        if (prod.delivery_text.toLowerCase().includes('tomorrow')) {
+          daysText = 'Tomorrow';
+        } else if (prod.delivery_text.toLowerCase().includes('day')) {
+          daysText = prod.delivery_text.replace(/Free delivery\s*(by)?\s*/i, '').replace(/Delivery by\s*/i, '').trim();
+        } else {
+          daysText = '2 Days';
+        }
+      }
+      deliveryDaysEl.textContent = daysText || '2 Days';
+    }
+
     if (btnBuyNow) {
       btnBuyNow.textContent = `Buy at ₹${currencyFormatter.format(currentSellingPrice)}`;
     }
 
     const badgeEl = document.getElementById('pd-badge');
     if (badgeEl) {
-      badgeEl.textContent = prod.badge || 'Big Billion Days Price';
+      badgeEl.style.display = 'none';
     }
 
     const deliveryEl = document.getElementById('pd-delivery-text');
@@ -497,7 +549,7 @@ async function loadProduct() {
 
     const authBadgeEl = document.getElementById('pd-auth-badge');
     if (authBadgeEl) {
-      authBadgeEl.style.display = prod.authorized_seller ? 'block' : 'none';
+      authBadgeEl.style.display = 'none';
     }
 
     const dealPriceText = document.getElementById('pd-deal-price-text');
@@ -904,18 +956,22 @@ async function loadProduct() {
       similarList.forEach((item) => {
         const itemCard = document.createElement('div');
         itemCard.className = 'pd-similar-card';
+        const sMrp = Number(item.mrp) || 0;
+        const sSelling = Number(item.selling_price) || 0;
+        const sDiscount = item.discount_percent || (sMrp > sSelling ? Math.round(((sMrp - sSelling) / sMrp) * 100) : 0);
         itemCard.innerHTML = `
           <div class="pd-similar-img-box">
-            <img src="${item.img1}" alt="${escapeHtml(item.name)}" onerror="this.onerror=null; if(this.src.includes('?')){this.src=this.src.split('?')[0];}">
-            <span class="pd-similar-rating">${item.rating} ★</span>
+            <img src="${item.img1}" alt="${escapeHtml(item.name)}" style="object-fit: contain; padding: 6px;" onerror="this.onerror=null; if(this.src.includes('?')){this.src=this.src.split('?')[0];}">
+            <span class="pd-similar-rating">${item.rating || '4.5'} <span style="color: #388e3c;">★</span></span>
           </div>
           <div class="pd-similar-info">
-            <div class="pd-similar-title-txt">${escapeHtml(item.short_name || item.name)}</div>
-            <div class="pd-similar-price-row">
-              <span class="pd-similar-discount">${escapeHtml(item.discount_label)}</span>
-              <span class="pd-similar-price">₹${currencyFormatter.format(item.selling_price)}</span>
+            <div class="pd-similar-title-txt" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 30px;">${escapeHtml(item.short_name || item.name)}</div>
+            <div class="pd-similar-price-row" style="display: flex; align-items: baseline; gap: 4px; margin-top: 3px; flex-wrap: wrap;">
+              <span class="pd-similar-price" style="font-weight: 800; font-size: 13.5px; color: #212121;">₹${currencyFormatter.format(sSelling)}</span>
+              ${sMrp > sSelling ? `<span style="font-size: 10.5px; color: #878787; text-decoration: line-through;">₹${currencyFormatter.format(sMrp)}</span>` : ''}
+              ${sDiscount ? `<span style="font-size: 11px; color: #388e3c; font-weight: 700;">${sDiscount}% off</span>` : ''}
             </div>
-            ${item.badge ? `<div style="background: #6a1b9a; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; margin-top: 4px; display: inline-block;">${escapeHtml(item.badge)}</div>` : ''}
+            ${item.badge ? `<div style="background: #6a1b9a; color: #fff; font-size: 8.5px; font-weight: 700; padding: 1px 4px; border-radius: 3px; margin-top: 4px; display: inline-block;">${escapeHtml(item.badge)}</div>` : ''}
           </div>
         `;
         itemCard.addEventListener('click', () => {
@@ -944,63 +1000,49 @@ async function loadProduct() {
   }
 }
 
-function formatDeliveryText(text) {
-  return text.replace(/(\d+\s+[A-Za-z]+)/g, '<b>$1</b>');
+// Green 5-star rating helper (e.g. ★★★★☆)
+function getStarRatingHtml(ratingVal) {
+  const r = parseFloat(ratingVal) || 4.2;
+  const full = Math.min(5, Math.floor(r));
+  let stars = '';
+  for (let i = 0; i < 5; i++) {
+    stars += i < full ? '★' : '☆';
+  }
+  return stars;
 }
 
-// Create Home Page Style Product Card
+// Format Delivery Date (e.g. "Delivery by 12th Oct")
+function formatDeliveryDate(rawDelivery) {
+  if (!rawDelivery || typeof rawDelivery !== 'string') {
+    return 'Delivery by <b>12th Oct</b>';
+  }
+  let cleaned = rawDelivery.trim();
+  cleaned = cleaned.replace(/,\s*[A-Za-z]+$/i, '').trim();
+  cleaned = cleaned.replace(/^Free delivery\s*(by)?\s*/i, '').trim();
+  cleaned = cleaned.replace(/^Delivery by\s*/i, '').trim();
+
+  if (!cleaned) {
+    return 'Delivery by <b>12th Oct</b>';
+  }
+
+  cleaned = cleaned.replace(/\b(\d{1,2})\b(?!\s*(st|nd|rd|th))(?=\s+[A-Za-z]+)/gi, (match, dStr) => {
+    const d = parseInt(dStr, 10);
+    const suffix = (d % 10 === 1 && d !== 11) ? 'st' : (d % 10 === 2 && d !== 12) ? 'nd' : (d % 10 === 3 && d !== 13) ? 'rd' : 'th';
+    return `${d}${suffix}`;
+  });
+
+  return `Delivery by <b>${cleaned}</b>`;
+}
+
+// Create Home Page Style Product Card (Exact Replica of Uploaded Image PHOTO-2026-10-10-14-01-21.jpg)
 function createProductCard(product) {
   const card = document.createElement('div');
   card.className = 'product-card';
 
-  // Image Box
+  // Image Box (Clean square, NO heart icon, NO rating overlay, NO ad/shield)
   const imageBox = document.createElement('div');
   imageBox.className = 'product-image-box';
 
-  // Wishlist Button
-  const wishlistBtn = document.createElement('button');
-  wishlistBtn.className = 'wishlist-btn';
-  wishlistBtn.setAttribute('aria-label', 'Add to Wishlist');
-  wishlistBtn.innerHTML = `
-    <svg viewBox="0 0 24 24">
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-    </svg>
-  `;
-
-  const savedWishlist = JSON.parse(localStorage.getItem('flipkart_wishlist') || '[]');
-  const isWishlisted = savedWishlist.includes(product.id);
-  if (isWishlisted) {
-    wishlistBtn.classList.add('active');
-  }
-
-  wishlistBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    const list = JSON.parse(localStorage.getItem('flipkart_wishlist') || '[]');
-    const index = list.indexOf(product.id);
-    if (index > -1) {
-      list.splice(index, 1);
-      wishlistBtn.classList.remove('active');
-      showToast('Removed from Wishlist');
-    } else {
-      list.push(product.id);
-      wishlistBtn.classList.add('active');
-      showToast('Added to Wishlist ❤️');
-    }
-    localStorage.setItem('flipkart_wishlist', JSON.stringify(list));
-  });
-
-  // Rating Pill Badge (Bottom-Left)
-  const ratingBadge = document.createElement('div');
-  ratingBadge.className = 'product-rating-badge';
-  ratingBadge.innerHTML = `
-    <span>${product.rating || '4.5'}</span>
-    <span class="rating-star-icon">★</span>
-    <span class="rating-divider">|</span>
-    <span class="rating-count">${product.review_count || '1k+'}</span>
-  `;
-
-  // Product Image
   const img = document.createElement('img');
   img.className = 'product-img';
   img.src = product.img1 || '';
@@ -1015,83 +1057,76 @@ function createProductCard(product) {
     }
   };
 
-  // AD tag
-  if (product.ad) {
-    const adTag = document.createElement('span');
-    adTag.className = 'card-ad-tag';
-    adTag.textContent = 'AD';
-    imageBox.appendChild(adTag);
-  }
-
-  // Brand Authorized Seller Shield
-  if (product.authorized_seller) {
-    const shield = document.createElement('img');
-    shield.src = './assets/images/brand_seller.svg';
-    shield.alt = 'Brand Authorized Seller';
-    shield.className = 'card-auth-shield';
-    imageBox.appendChild(shield);
-  }
-
-  imageBox.appendChild(wishlistBtn);
   imageBox.appendChild(img);
-  imageBox.appendChild(ratingBadge);
 
   // Info Box
   const infoBox = document.createElement('div');
   infoBox.className = 'product-info-box';
 
-  // Assured + Brand Row
-  const brandRow = document.createElement('div');
-  brandRow.className = 'brand-assured-row';
-  if ((product.brand || '').toUpperCase() === 'FLIPKART') {
-    brandRow.innerHTML = `
-      <img src="./assets/images/f_assured.svg" alt="Flipkart Assured" class="assured-badge-img">
-      <img src="./assets/images/flipkart_full_logo.svg" alt="Flipkart" style="height: 16px; width: auto; display: inline-block;">
-    `;
-  } else {
-    brandRow.innerHTML = `
-      <span class="brand-name">${escapeHtml(product.brand || '')}</span>
-    `;
-  }
-
-  // Truncated Product Title
+  // 1. Product Title (2-line clamp, clean font)
   const title = document.createElement('div');
   title.className = 'product-title-text';
-  title.textContent = product.short_name || product.name || '';
+  let cleanTitle = product.name || product.short_name || '';
+  if (cleanTitle.endsWith('...') && product.name && product.name.length > cleanTitle.length) {
+    cleanTitle = product.name;
+  }
+  title.textContent = cleanTitle;
 
-  // Pricing Line
+  // 2. Rating + Reviews + Assured Row: ★★★★☆ (500) 🛡️Assured
+  const ratingRow = document.createElement('div');
+  ratingRow.className = 'card-rating-assured-row';
+  const starsHtml = getStarRatingHtml(product.rating || product.rating_stars || 4.2);
+  const rawCount = product.review_count || '500';
+  const cleanCount = String(rawCount).replace(/[()]/g, '').trim();
+  ratingRow.innerHTML = `
+    <span class="card-stars-green">${starsHtml}</span>
+    <span class="card-reviews-count">(${cleanCount})</span>
+    <img src="./assets/images/f_assured_shield.svg" alt="Assured" class="card-assured-shield-img">
+  `;
+
+  // 3. Pricing Row: ↓79% ₹464 ₹99
   const priceRow = document.createElement('div');
   priceRow.className = 'pricing-row';
 
-  const discountLabel = product.discount_label || `↓ ${product.discount_percent || 90}%`;
   const mrpValue = Number(product.mrp) || 0;
   const sellingValue = Number(product.selling_price) || 0;
+  let discountPercent = product.discount_percent;
+  if (!discountPercent && mrpValue > sellingValue && mrpValue > 0) {
+    discountPercent = Math.round(((mrpValue - sellingValue) / mrpValue) * 100);
+  }
+  if (!discountPercent) discountPercent = 70;
 
   priceRow.innerHTML = `
-    <span class="discount-tag">${discountLabel}</span>
-    <span class="mrp-strikethrough">₹${currencyFormatter.format(mrpValue)}</span>
-    <span class="selling-price-bold">₹${currencyFormatter.format(sellingValue)}</span>
+    <span class="card-discount-arrow">↓${discountPercent}%</span>
+    ${mrpValue > sellingValue ? `<span class="card-mrp-strike">₹${currencyFormatter.format(mrpValue)}</span>` : ''}
+    <span class="card-final-price">₹${currencyFormatter.format(sellingValue)}</span>
   `;
 
-  // Delivery Line
-  const deliveryLine = document.createElement('div');
-  deliveryLine.className = 'delivery-info-text';
-  const deliveryText = product.delivery_text || 'Get it by 11 Oct';
-  deliveryLine.innerHTML = formatDeliveryText(deliveryText);
+  // 4. WOW Offer Row: [WOW!] ₹99 with offer
+  const wowRow = document.createElement('div');
+  wowRow.className = 'card-wow-offer-row';
+  const offerPrice = product.deal_price || sellingValue;
+  wowRow.innerHTML = `
+    <span class="card-wow-badge">WOW!</span>
+    <span class="card-wow-offer-text"><b>₹${currencyFormatter.format(offerPrice)}</b> with offer</span>
+  `;
 
-  infoBox.appendChild(brandRow);
+  // 5. Super deals Row
+  const superDeals = document.createElement('div');
+  superDeals.className = 'card-super-deals-text';
+  superDeals.textContent = 'Super deals';
+
+  // 6. Delivery Date Row: Delivery by 12th Oct
+  const deliveryRow = document.createElement('div');
+  deliveryRow.className = 'card-delivery-row';
+  deliveryRow.innerHTML = formatDeliveryDate(product.delivery_text);
+
   infoBox.appendChild(title);
+  infoBox.appendChild(ratingRow);
   infoBox.appendChild(priceRow);
-
-  // Event Price Badge
-  if (product.badge) {
-    const badgeEl = document.createElement('div');
-    badgeEl.className = `card-event-badge ${product.badge.includes('Lowest') ? 'lowest-price' : 'bbd-price'}`;
-    badgeEl.textContent = product.badge;
-    infoBox.appendChild(badgeEl);
-  } else {
-    infoBox.appendChild(deliveryLine);
-  }
+  infoBox.appendChild(wowRow);
+  infoBox.appendChild(superDeals);
+  infoBox.appendChild(deliveryRow);
 
   card.appendChild(imageBox);
   card.appendChild(infoBox);

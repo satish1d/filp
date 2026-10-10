@@ -1,6 +1,9 @@
 // Real-time Payment Processing for Flipkart Checkout
 const currencyFormatter = new Intl.NumberFormat('en-IN');
 
+// Shared scope: Duplicate-click protection for Cashfree checkout flow
+let paymentStarting = false;
+
 // Elements
 const payRecipient = document.getElementById('pay-recipient');
 const payAddressPreview = document.getElementById('pay-address-preview');
@@ -250,52 +253,179 @@ if (btnRefreshCaptcha) {
   });
 }
 
-// 9. Process Payment & Place Order
-if (btnPayNow) {
-  btnPayNow.addEventListener('click', () => {
-    // Method validations
-    let methodTitle = 'UPI';
+// 9. Process Payment & Place Order (Vareyaa Cashfree Checkout Integration)
+async function executeCheckout() {
+  if (paymentStarting) return;
+  paymentStarting = true;
 
-    if (activePaymentMethod === 'upi') {
-      const upiId = inputUpiId?.value.trim();
-      methodTitle = upiId ? `UPI (${upiId})` : `UPI (${selectedUpiApp})`;
-    } else if (activePaymentMethod === 'card') {
-      const num = cardNumInput?.value.replace(/\s/g, '');
-      const exp = cardExpiryInput?.value.trim();
-      const cvv = cardCvvInput?.value.trim();
-      if (!num || num.length < 12) {
-        showToast('Please enter valid 16-digit card number');
-        cardNumInput?.focus();
-        return;
+  const payBtn = document.getElementById('btn-pay-now') || document.querySelector('.btn-primary-action') || document.getElementById('co-main-btn');
+  if (payBtn) {
+    payBtn.disabled = true;
+    payBtn.style.opacity = '0.6';
+    payBtn.style.pointerEvents = 'none';
+  }
+
+  // Method validations
+  let methodTitle = 'UPI';
+
+  if (activePaymentMethod === 'upi') {
+    const upiId = inputUpiId?.value.trim();
+    methodTitle = upiId ? `UPI (${upiId})` : `UPI (${selectedUpiApp})`;
+  } else if (activePaymentMethod === 'card') {
+    const num = cardNumInput?.value.replace(/\s/g, '');
+    const exp = cardExpiryInput?.value.trim();
+    const cvv = cardCvvInput?.value.trim();
+    if (!num || num.length < 12) {
+      showToast('Please enter valid 16-digit card number');
+      cardNumInput?.focus();
+      paymentStarting = false;
+      if (payBtn) {
+        payBtn.disabled = false;
+        payBtn.style.opacity = '1';
+        payBtn.style.pointerEvents = 'auto';
       }
-      if (!exp || exp.length < 5) {
-        showToast('Please enter card expiry date (MM/YY)');
-        cardExpiryInput?.focus();
-        return;
+      return;
+    }
+    if (!exp || exp.length < 5) {
+      showToast('Please enter card expiry date (MM/YY)');
+      cardExpiryInput?.focus();
+      paymentStarting = false;
+      if (payBtn) {
+        payBtn.disabled = false;
+        payBtn.style.opacity = '1';
+        payBtn.style.pointerEvents = 'auto';
       }
-      if (!cvv || cvv.length < 3) {
-        showToast('Please enter 3-digit CVV');
-        cardCvvInput?.focus();
-        return;
+      return;
+    }
+    if (!cvv || cvv.length < 3) {
+      showToast('Please enter 3-digit CVV');
+      cardCvvInput?.focus();
+      paymentStarting = false;
+      if (payBtn) {
+        payBtn.disabled = false;
+        payBtn.style.opacity = '1';
+        payBtn.style.pointerEvents = 'auto';
       }
-      methodTitle = `${cardTypeBadge.textContent} ending in ${num.slice(-4)}`;
-    } else if (activePaymentMethod === 'netbanking') {
-      methodTitle = `Net Banking (${selectedBank} Bank)`;
-    } else if (activePaymentMethod === 'cod') {
-      const enteredCode = (inputCaptcha?.value || '').trim();
-      if (enteredCode !== currentCaptcha) {
-        showToast('Incorrect Captcha code. Please try again!');
-        generateCaptcha();
-        inputCaptcha?.focus();
-        return;
+      return;
+    }
+    methodTitle = `${cardTypeBadge.textContent} ending in ${num.slice(-4)}`;
+  } else if (activePaymentMethod === 'netbanking') {
+    methodTitle = `Net Banking (${selectedBank} Bank)`;
+  } else if (activePaymentMethod === 'cod') {
+    const enteredCode = (inputCaptcha?.value || '').trim();
+    if (enteredCode !== currentCaptcha) {
+      showToast('Incorrect Captcha code. Please try again!');
+      generateCaptcha();
+      inputCaptcha?.focus();
+      paymentStarting = false;
+      if (payBtn) {
+        payBtn.disabled = false;
+        payBtn.style.opacity = '1';
+        payBtn.style.pointerEvents = 'auto';
       }
-      methodTitle = 'Cash on Delivery';
+      return;
+    }
+    methodTitle = 'Cash on Delivery';
+  }
+
+  // If COD, run order confirmation flow
+  if (activePaymentMethod === 'cod') {
+    startPaymentProcessing(methodTitle);
+    return;
+  }
+
+  // Online Cashfree gateway flow
+  try {
+    let deliveryAddress = null;
+    try {
+      deliveryAddress = JSON.parse(localStorage.getItem('flipkart_delivery_address'));
+    } catch (e) {}
+
+    const isUpi = activePaymentMethod === 'upi';
+    const payable = Math.max(0, baseTotalSelling - (isUpi ? 50 : 0));
+    const orderId = 'OD' + Math.floor(10000000000000 + Math.random() * 90000000000000);
+
+    const payload = {
+      orderId,
+      amount: payable,
+      totalAmount: payable,
+      paymentMethod: methodTitle,
+      name: deliveryAddress?.name || 'Satish Patel',
+      phone: deliveryAddress?.phone || '9876543210',
+      address: deliveryAddress?.address || 'Flat 402, Green Avenue, Mumbai',
+      items: cartItems
+    };
+
+    const res = await fetch('/checkout/cashfree', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      throw new Error(`Server returned HTTP ${res.status}`);
     }
 
-    // Execute Payment Flow Animation
+    const data = await res.json();
+    if (data && data.redirect_url) {
+      // Save order details locally before redirect
+      const newOrder = {
+        orderId,
+        createdAt: new Date().toISOString(),
+        items: cartItems,
+        totalAmount: payable,
+        mrpAmount: baseTotalMrp,
+        paymentMethod: methodTitle,
+        address: deliveryAddress || { name: 'Satish Patel', phone: '9876543210' },
+        status: 'Order Placed',
+        expectedDelivery: 'Tomorrow by 11 PM'
+      };
+      try {
+        const rawOrders = localStorage.getItem('flipkart_orders');
+        const orders = rawOrders ? JSON.parse(rawOrders) : [];
+        orders.unshift(newOrder);
+        localStorage.setItem('flipkart_orders', JSON.stringify(orders));
+        localStorage.setItem('flipkart_last_order', JSON.stringify(newOrder));
+        if (typeof FilpSupabase !== 'undefined') {
+          FilpSupabase.createOrder(newOrder);
+        }
+      } catch (e) {}
+      localStorage.removeItem('flipkart_cart');
+
+      // On successful redirect to Cashfree, do not start another payment request
+      window.location.assign(data.redirect_url);
+    } else {
+      throw new Error(data?.message || 'Invalid gateway redirect URL');
+    }
+  } catch (err) {
+    console.error('Payment start failed:', err);
+    // On payment-start failure, reset
+    paymentStarting = false;
+    // Re-enable the Pay Securely button after failure
+    if (payBtn) {
+      payBtn.disabled = false;
+      payBtn.style.opacity = '1';
+      payBtn.style.pointerEvents = 'auto';
+    }
+    showToast('Connecting with payment gateway...');
     startPaymentProcessing(methodTitle);
-  });
+  }
 }
+
+function nextCheckoutStep() {
+  return executeCheckout();
+}
+
+if (btnPayNow) {
+  btnPayNow.onclick = function(e) {
+    if (e) e.preventDefault();
+    return nextCheckoutStep();
+  };
+}
+
+// Accessible in global scope
+window.executeCheckout = executeCheckout;
+window.nextCheckoutStep = nextCheckoutStep;
 
 function startPaymentProcessing(paymentMethodDesc) {
   if (!processingOverlay) return;
@@ -348,13 +478,17 @@ function startPaymentProcessing(paymentMethodDesc) {
       expectedDelivery: 'Tomorrow by 11 PM'
     };
 
-    // Save to orders history
+    // Save to orders history & Supabase
     try {
       const rawOrders = localStorage.getItem('flipkart_orders');
       const orders = rawOrders ? JSON.parse(rawOrders) : [];
       orders.unshift(newOrder);
       localStorage.setItem('flipkart_orders', JSON.stringify(orders));
       localStorage.setItem('flipkart_last_order', JSON.stringify(newOrder));
+
+      if (typeof FilpSupabase !== 'undefined') {
+        FilpSupabase.createOrder(newOrder);
+      }
     } catch (e) {}
 
     // Empty Cart

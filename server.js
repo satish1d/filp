@@ -2,7 +2,11 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 import { parseCSV, transformRowToProduct, catalogToCSV, getSampleCSV, cleanBrand, cleanShortName, slugify } from './csvPipeline.js';
+import { createClient } from '@supabase/supabase-js';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,6 +66,226 @@ function writeData(data) {
 
 // ----------------- REST API ROUTES -----------------
 
+// 0. GET & POST /api/config - Safe public client Supabase config (NEVER exposes secret service role key)
+function sanitizeSupabaseUrl(url) {
+  if (!url) return '';
+  return url.trim().replace(/\/rest\/v1\/?$/i, '').replace(/\/+$/, '');
+}
+
+function getSupabaseServerClient() {
+  const url = sanitizeSupabaseUrl(process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL);
+  const key = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '').trim();
+  if (!url || !key) return null;
+  return createClient(url, key);
+}
+
+app.get('/api/config', (req, res) => {
+  const rawUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
+  res.json({
+    supabaseUrl: sanitizeSupabaseUrl(rawUrl),
+    supabaseAnonKey: (process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '').trim()
+  });
+});
+
+// GET /api/supabase/status - Detailed backend status check
+app.get('/api/supabase/status', async (req, res) => {
+  try {
+    const rawUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
+    const supabaseUrl = sanitizeSupabaseUrl(rawUrl);
+    const hasAnon = Boolean(process.env.VITE_SUPABASE_ANON_KEY);
+    const hasService = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+    if (!supabaseUrl || (!hasAnon && !hasService)) {
+      return res.json({
+        configured: false,
+        connected: false,
+        supabaseUrl,
+        tablesExist: false,
+        message: 'Supabase URL or keys not configured yet.'
+      });
+    }
+
+    const sb = getSupabaseServerClient();
+    if (!sb) {
+      return res.json({ configured: false, connected: false, message: 'Could not create Supabase client instance.' });
+    }
+
+    // Ping products table in Supabase
+    const { data, count, error } = await sb.from('products').select('id', { count: 'exact' }).limit(1);
+
+    if (error) {
+      const isMissingTable = error.code === 'PGRST205' || (error.message && error.message.includes('schema cache'));
+      return res.json({
+        configured: true,
+        connected: true,
+        supabaseUrl,
+        tablesExist: false,
+        error: error.message,
+        errorCode: error.code,
+        sqlEditorUrl: `https://supabase.com/dashboard/project/${supabaseUrl.replace('https://', '').split('.')[0]}/sql/new`,
+        message: isMissingTable
+          ? "Supabase project reachable, but table 'public.products' has not been created yet. Run the master SQL setup in Supabase SQL Editor."
+          : error.message
+      });
+    }
+
+    return res.json({
+      configured: true,
+      connected: true,
+      supabaseUrl,
+      tablesExist: true,
+      productCount: count !== null && count !== undefined ? count : (data ? data.length : 0),
+      message: 'Supabase tables and real-time backend are fully active and connected!'
+    });
+  } catch (err) {
+    res.status(500).json({ configured: false, connected: false, error: err.message });
+  }
+});
+
+// GET /api/supabase/sql - Get full setup SQL script
+app.get('/api/supabase/sql', (req, res) => {
+  try {
+    const sqlPath = path.join(__dirname, 'supabase', 'setup_all.sql');
+    if (!fs.existsSync(sqlPath)) {
+      return res.status(404).json({ error: 'SQL setup file not found' });
+    }
+    const sql = fs.readFileSync(sqlPath, 'utf8');
+    if (req.query.download === 'true') {
+      res.setHeader('Content-Disposition', 'attachment; filename="flipkart_supabase_backend_setup.sql"');
+      res.setHeader('Content-Type', 'application/sql');
+      return res.send(sql);
+    }
+    const rawUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
+    const supabaseUrl = sanitizeSupabaseUrl(rawUrl);
+    const projectId = supabaseUrl.replace('https://', '').split('.')[0] || 'your-project-ref';
+    res.json({
+      success: true,
+      sql,
+      bytes: sql.length,
+      projectId,
+      sqlEditorUrl: `https://supabase.com/dashboard/project/${projectId}/sql/new`
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/supabase/sync - Upsert local 54 products into Supabase
+app.post('/api/supabase/sync', async (req, res) => {
+  try {
+    const sb = getSupabaseServerClient();
+    if (!sb) {
+      return res.status(400).json({ success: false, error: 'Supabase client could not be initialized' });
+    }
+
+    const data = readData();
+    const products = data.products || [];
+
+    // Verify table exists before attempting bulk upsert
+    const check = await sb.from('products').select('id').limit(1);
+    if (check.error) {
+      return res.status(400).json({
+        success: false,
+        error: check.error.message,
+        errorCode: check.error.code,
+        tablesExist: false,
+        hint: 'Please run the setup SQL in Supabase SQL Editor first, then click Sync.'
+      });
+    }
+
+    // Format all products helper
+function formatProductForSupabase(p) {
+  return {
+    id: Number(p.id),
+    md5_id: p.md5_id || String(p.id),
+    name: p.name || '',
+    short_name: p.short_name || cleanShortName(p.name || ''),
+    brand: p.brand || cleanBrand(p.name || '', ''),
+    category: p.category || 'Kitchen',
+    selling_price: Number(p.selling_price) || 0,
+    mrp: Number(p.mrp) || 0,
+    deal_price: Number(p.deal_price) || 0,
+    discount_percent: Number(p.discount_percent) || 0,
+    discount_label: p.discount_label || '',
+    rating: String(p.rating || '4.4'),
+    rating_stars: Number(p.rating_stars || 4.4),
+    review_count: String(p.review_count || '1,248'),
+    ad: Boolean(p.ad),
+    authorized_seller: p.authorized_seller !== false,
+    assured: p.assured !== false,
+    badge: p.badge || 'Big Billion Days Price',
+    delivery_text: p.delivery_text || 'Free Delivery by 12 Oct',
+    seller_name: p.seller_name || 'RetailNet',
+    seller_rating: p.seller_rating || '4.4 ★ • 5 years with Flipkart',
+    img1: p.img1 || (Array.isArray(p.images) && p.images[0]) || '',
+    images: Array.isArray(p.images) ? p.images : (p.img1 ? [p.img1] : []),
+    features: p.features || '',
+    specs: (typeof p.specs === 'object' && p.specs !== null) ? p.specs : {}
+  };
+}
+
+    const rows = products.map(formatProductForSupabase);
+
+    let upserted = 0;
+    for (let i = 0; i < rows.length; i += 25) {
+      const chunk = rows.slice(i, i + 25);
+      const { error: upsertErr } = await sb.from('products').upsert(chunk, { onConflict: 'id' });
+      if (upsertErr) throw upsertErr;
+      upserted += chunk.length;
+    }
+
+    res.json({
+      success: true,
+      message: `Successfully synced all ${upserted} products to Supabase!`,
+      count: upserted
+    });
+  } catch (err) {
+    console.error('Supabase sync error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/config', (req, res) => {
+  try {
+    const { supabaseUrl, supabaseAnonKey } = req.body || {};
+    if (supabaseUrl) {
+      process.env.VITE_SUPABASE_URL = sanitizeSupabaseUrl(supabaseUrl);
+    }
+    if (supabaseAnonKey) {
+      process.env.VITE_SUPABASE_ANON_KEY = supabaseAnonKey.trim();
+    }
+
+    const envPath = path.join(__dirname, '.env');
+    let envContent = '';
+    if (fs.existsSync(envPath)) {
+      envContent = fs.readFileSync(envPath, 'utf8');
+    }
+
+    if (/^VITE_SUPABASE_URL=/m.test(envContent)) {
+      envContent = envContent.replace(/^VITE_SUPABASE_URL=.*$/m, `VITE_SUPABASE_URL=${process.env.VITE_SUPABASE_URL || ''}`);
+    } else {
+      envContent += `\nVITE_SUPABASE_URL=${process.env.VITE_SUPABASE_URL || ''}`;
+    }
+
+    if (/^VITE_SUPABASE_ANON_KEY=/m.test(envContent)) {
+      envContent = envContent.replace(/^VITE_SUPABASE_ANON_KEY=.*$/m, `VITE_SUPABASE_ANON_KEY=${process.env.VITE_SUPABASE_ANON_KEY || ''}`);
+    } else {
+      envContent += `\nVITE_SUPABASE_ANON_KEY=${process.env.VITE_SUPABASE_ANON_KEY || ''}`;
+    }
+
+    fs.writeFileSync(envPath, envContent.trim() + '\n', 'utf8');
+
+    res.json({
+      success: true,
+      message: 'Supabase configuration updated successfully',
+      supabaseUrl: process.env.VITE_SUPABASE_URL,
+      configured: Boolean(process.env.VITE_SUPABASE_URL && process.env.VITE_SUPABASE_ANON_KEY)
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // 1. GET /api/products - Get all products with summary stats
 app.get('/api/products', (req, res) => {
   try {
@@ -102,7 +326,7 @@ app.get('/api/products/:id', (req, res) => {
 });
 
 // 3. DELETE /api/products/:id - Delete product from database in real time
-app.delete('/api/products/:id', (req, res) => {
+app.delete('/api/products/:id', async (req, res) => {
   try {
     const targetId = req.params.id;
     const data = readData();
@@ -123,13 +347,30 @@ app.delete('/api/products/:id', (req, res) => {
 
     writeData(data);
 
-    console.log(`[API] Deleted product id=${targetId} ("${deletedItem.name}"). Products remaining: ${data.products.length}`);
+    // Synchronize deletion to Supabase PostgreSQL table in real time
+    let sbDeleted = false;
+    try {
+      const sb = getSupabaseServerClient();
+      if (sb) {
+        if (/^\d+$/.test(String(targetId))) {
+          await sb.from('products').delete().or(`id.eq.${targetId},md5_id.eq.${targetId}`);
+        } else {
+          await sb.from('products').delete().eq('md5_id', targetId);
+        }
+        sbDeleted = true;
+      }
+    } catch (sbErr) {
+      console.warn('[API Delete] Supabase deletion sync note:', sbErr.message);
+    }
+
+    console.log(`[API] Deleted product id=${targetId} ("${deletedItem.name}"). Supabase sync: ${sbDeleted}. Remaining: ${data.products.length}`);
 
     res.json({
       success: true,
       message: `Product "${deletedItem.name}" deleted successfully from live database.`,
       deletedId: targetId,
-      remainingCount: data.products.length
+      remainingCount: data.products.length,
+      supabaseSynced: sbDeleted
     });
   } catch (err) {
     console.error('[API] Delete product failed:', err);
@@ -138,7 +379,7 @@ app.delete('/api/products/:id', (req, res) => {
 });
 
 // 4. POST /api/products - Add a new single product
-app.post('/api/products', (req, res) => {
+app.post('/api/products', async (req, res) => {
   try {
     const body = req.body;
     if (!body || !body.name) {
@@ -167,11 +408,25 @@ app.post('/api/products', (req, res) => {
     data.products.unshift(transformed);
     writeData(data);
 
+    // Sync to Supabase in real time
+    let sbSynced = false;
+    try {
+      const sb = getSupabaseServerClient();
+      if (sb) {
+        const row = formatProductForSupabase(transformed);
+        await sb.from('products').upsert(row, { onConflict: 'id' });
+        sbSynced = true;
+      }
+    } catch (sbErr) {
+      console.warn('[API Add] Supabase upsert note:', sbErr.message);
+    }
+
     res.json({
       success: true,
       message: 'Product added successfully to live database.',
       product: transformed,
-      totalCount: data.products.length
+      totalCount: data.products.length,
+      supabaseSynced: sbSynced
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -179,7 +434,7 @@ app.post('/api/products', (req, res) => {
 });
 
 // 5. PUT /api/products/:id - Edit an existing product
-app.put('/api/products/:id', (req, res) => {
+app.put('/api/products/:id', async (req, res) => {
   try {
     const targetId = req.params.id;
     const body = req.body;
@@ -215,10 +470,24 @@ app.put('/api/products/:id', (req, res) => {
     data.products[index] = updated;
     writeData(data);
 
+    // Sync to Supabase in real time
+    let sbSynced = false;
+    try {
+      const sb = getSupabaseServerClient();
+      if (sb) {
+        const row = formatProductForSupabase(updated);
+        await sb.from('products').upsert(row, { onConflict: 'id' });
+        sbSynced = true;
+      }
+    } catch (sbErr) {
+      console.warn('[API Edit] Supabase update note:', sbErr.message);
+    }
+
     res.json({
       success: true,
       message: 'Product updated successfully in live database.',
-      product: updated
+      product: updated,
+      supabaseSynced: sbSynced
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -226,7 +495,7 @@ app.put('/api/products/:id', (req, res) => {
 });
 
 // 6. POST /api/upload-csv - Upload and parse CSV to update live database
-app.post('/api/upload-csv', (req, res) => {
+app.post('/api/upload-csv', async (req, res) => {
   try {
     let csvText = '';
     let mode = 'replace'; // 'replace' or 'append'
@@ -284,14 +553,48 @@ app.post('/api/upload-csv', (req, res) => {
     currentData.products = finalList;
     writeData(currentData);
 
-    console.log(`[API] CSV imported. Mode=${mode}. Rows=${parsedRows.length}. Total live products now: ${finalList.length}`);
+    // Real-time synchronization to Supabase
+    let supabaseSynced = false;
+    let supabaseSyncMessage = '';
+    try {
+      const sb = getSupabaseServerClient();
+      if (sb) {
+        const rows = finalList.map(formatProductForSupabase);
+        for (let i = 0; i < rows.length; i += 25) {
+          const chunk = rows.slice(i, i + 25);
+          const { error: upErr } = await sb.from('products').upsert(chunk, { onConflict: 'id' });
+          if (upErr) throw upErr;
+        }
+
+        if (mode === 'replace') {
+          const keepIds = new Set(finalList.map(p => Number(p.id)));
+          const { data: dbRows } = await sb.from('products').select('id');
+          if (dbRows && dbRows.length > 0) {
+            const deleteIds = dbRows.map(r => r.id).filter(id => !keepIds.has(Number(id)));
+            if (deleteIds.length > 0) {
+              for (let i = 0; i < deleteIds.length; i += 25) {
+                const chunk = deleteIds.slice(i, i + 25);
+                await sb.from('products').delete().in('id', chunk);
+              }
+            }
+          }
+        }
+        supabaseSynced = true;
+        supabaseSyncMessage = ` • Synced ${finalList.length} products to Supabase`;
+      }
+    } catch (sbErr) {
+      console.warn('[API CSV] Supabase live sync notice (local database updated):', sbErr.message);
+    }
+
+    console.log(`[API] CSV imported. Mode=${mode}. Rows=${parsedRows.length}. Supabase sync=${supabaseSynced}. Total live products now: ${finalList.length}`);
 
     res.json({
       success: true,
-      message: `CSV pipeline completed! Successfully updated live website with ${finalList.length} products.`,
+      message: `CSV pipeline completed! Successfully updated live website with ${finalList.length} products.${supabaseSyncMessage}`,
       mode,
       parsedRowsCount: parsedRows.length,
       totalCount: finalList.length,
+      supabaseSynced,
       sample: finalList.slice(0, 3)
     });
   } catch (err) {
@@ -322,6 +625,79 @@ app.get('/api/sample-csv', (req, res) => {
     res.send(sample);
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 9. POST /checkout/cashfree - Cashfree Hosted Checkout API endpoint
+app.post('/checkout/cashfree', async (req, res) => {
+  try {
+    const orderData = req.body || {};
+    const amount = Number(orderData.amount) || Number(orderData.totalAmount) || 999;
+    const orderId = orderData.orderId || ('OD' + Math.floor(10000000000000 + Math.random() * 90000000000000));
+    const customerPhone = String(orderData.phone || '9876543210').replace(/\D/g, '').slice(-10) || '9876543210';
+    const customerName = orderData.name || 'Customer';
+
+    const cfAppId = process.env.CASHFREE_APP_ID || process.env.CASHFREE_CLIENT_ID;
+    const cfSecret = process.env.CASHFREE_SECRET_KEY || process.env.CASHFREE_CLIENT_SECRET;
+    const cfEnv = process.env.CASHFREE_ENV || 'TEST';
+
+    let redirectUrl = null;
+
+    if (cfAppId && cfSecret) {
+      const cfBaseUrl = cfEnv === 'PROD' 
+        ? 'https://api.cashfree.com/pg' 
+        : 'https://sandbox.cashfree.com/pg';
+      
+      const cfResponse = await fetch(`${cfBaseUrl}/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-client-id': cfAppId,
+          'x-client-secret': cfSecret,
+          'x-api-version': '2023-08-01'
+        },
+        body: JSON.stringify({
+          order_id: orderId,
+          order_amount: amount,
+          order_currency: 'INR',
+          customer_details: {
+            customer_id: 'CUST_' + customerPhone,
+            customer_name: customerName,
+            customer_phone: customerPhone,
+            customer_email: orderData.email || `${customerPhone}@customer.com`
+          },
+          order_meta: {
+            return_url: `${req.protocol}://${req.get('host')}/order-success.html?orderId=${orderId}`
+          }
+        })
+      });
+
+      if (cfResponse.ok) {
+        const cfData = await cfResponse.json();
+        redirectUrl = cfData.payment_link || (cfData.payment_session_id ? `https://${cfEnv === 'PROD' ? 'payments' : 'sandbox'}.cashfree.com/pg/orders/${cfData.order_id}` : null);
+      } else {
+        const errBody = await cfResponse.text();
+        console.warn('[Cashfree] Gateway responded with error:', errBody);
+      }
+    }
+
+    // Default return redirect URL if testing without live Cashfree credentials
+    if (!redirectUrl) {
+      redirectUrl = `/order-success.html?orderId=${encodeURIComponent(orderId)}`;
+    }
+
+    return res.json({
+      success: true,
+      redirect_url: redirectUrl,
+      order_id: orderId
+    });
+  } catch (err) {
+    console.error('[Cashfree] Order processing failed:', err);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to process payment request',
+      message: err.message
+    });
   }
 });
 

@@ -676,6 +676,10 @@
         <div id="toast" class="toast-notice">Action Successful</div>
     </div>
 
+    <!-- Supabase Production Client & Realtime -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabaseClient.js"></script>
+
     <!-- Interactive Script -->
     <script>
         let cachedCatalog = [];
@@ -709,11 +713,29 @@
             } catch(e) {}
         }
 
+        let categoriesRealtimeSubscribed = false;
         async function loadCatalogData() {
             try {
-                const res = await fetch('./data/products.json?v=' + Date.now());
-                const data = await res.json();
-                cachedCatalog = data.products || [];
+                if (typeof FilpSupabase !== 'undefined') {
+                    const result = await FilpSupabase.getProducts();
+                    cachedCatalog = result.products || [];
+
+                    if (!categoriesRealtimeSubscribed && typeof FilpSupabase.subscribeToProducts === 'function') {
+                        categoriesRealtimeSubscribed = true;
+                        FilpSupabase.subscribeToProducts(() => {
+                            console.log('[Categories Page] Realtime update from Supabase, refreshing...');
+                            loadCatalogData().then(() => {
+                                const activeItem = document.querySelector('.cat-side-item.active');
+                                const catId = activeItem ? activeItem.dataset.cat : 'all';
+                                renderSubcategories(catId);
+                            });
+                        });
+                    }
+                } else {
+                    const res = await fetch('./data/products.json?v=' + Date.now());
+                    const data = await res.json();
+                    cachedCatalog = data.products || [];
+                }
             } catch(e) {
                 console.error('Failed to load catalog:', e);
             }

@@ -8,9 +8,6 @@
     <title>Flipkart Admin Panel - Live Product & CSV Catalog Manager</title>
     <meta name="description" content="Manage product catalog in real-time, upload CSV, and delete products directly from the database.">
     <link rel="stylesheet" href="./assets/css/custom.css">
-    <!-- Supabase Production Client & Realtime -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./supabaseClient.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -823,16 +820,6 @@
         </div>
 
         <div class="admin-actions-top">
-            <span id="supabase-status-badge" style="font-size: 11.5px; background: rgba(255, 255, 255, 0.15); color: #fff; padding: 5px 11px; border-radius: 20px; font-weight: 600; border: 1px solid rgba(255,255,255,0.3); display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
-                <span id="supabase-status-dot" style="width: 7px; height: 7px; border-radius: 50%; background: #10b981;"></span>
-                <span id="supabase-status-label">Supabase DB</span>
-            </span>
-            <button id="btn-supabase-setup" class="btn-top-nav" style="background: rgba(37, 99, 235, 0.45); border: 1px solid rgba(255,255,255,0.4); font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                ⚡ <span>Supabase Backend Setup</span>
-            </button>
-            <button id="btn-admin-auth-toggle" class="btn-top-nav" style="background: rgba(0,0,0,0.2);">
-                🔐 <span id="admin-user-display">Admin Login</span>
-            </button>
             <a href="index.html" class="btn-top-nav">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -853,30 +840,6 @@
     </header>
 
     <div class="admin-container">
-        <!-- Live Supabase Backend Status Banner -->
-        <div id="admin-supabase-banner" style="background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%); color: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
-            <div style="display: flex; align-items: center; gap: 14px;">
-                <div style="width: 44px; height: 44px; background: rgba(255,255,255,0.18); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px;">⚡</div>
-                <div>
-                    <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.2px; display: flex; align-items: center; gap: 8px;" id="admin-banner-title">
-                        <span>Supabase Real-Time Backend Active</span>
-                        <span id="admin-banner-pill" style="font-size: 10.5px; background: #10b981; color: #fff; padding: 2px 8px; border-radius: 12px; font-weight: 700;">LIVE</span>
-                    </div>
-                    <div style="font-size: 12.5px; opacity: 0.92; margin-top: 3px;" id="admin-banner-subtitle">
-                        Target Project: <code id="admin-banner-project-code" style="background: rgba(0,0,0,0.25); padding: 2px 7px; border-radius: 4px; font-size: 11.5px; font-weight: 600;">auooqsvemnpmedbdfknb.supabase.co</code> • All 54 products & real-time sync
-                    </div>
-                </div>
-            </div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <button id="btn-open-sql-setup-banner" style="background: #fff; color: #1e40af; border: none; font-weight: 700; padding: 9px 16px; border-radius: 8px; font-size: 12.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-                    📋 1-Click Database Setup & SQL
-                </button>
-                <button id="btn-banner-sync" style="background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.4); font-weight: 600; padding: 9px 14px; border-radius: 8px; font-size: 12.5px; cursor: pointer;">
-                    🔄 Verify & Sync
-                </button>
-            </div>
-        </div>
-
         <!-- Stats Summary -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -1161,144 +1124,6 @@
         </div>
     </div>
 
-    <!-- Modal: Supabase Connection & Admin Authentication -->
-    <div id="auth-modal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 560px;">
-            <div class="modal-header">
-                <div style="display: flex; gap: 4px; align-items: center; flex-wrap: wrap;">
-                    <button type="button" id="tab-btn-setup" style="background: none; border: none; font-size: 13px; font-weight: 700; color: #2563eb; border-bottom: 2px solid #2563eb; padding: 6px 10px; cursor: pointer;">🛠️ 1-Click DB Setup</button>
-                    <button type="button" id="tab-btn-connection" style="background: none; border: none; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; padding: 6px 10px; cursor: pointer;">⚡ Connection</button>
-                    <button type="button" id="tab-btn-auth" style="background: none; border: none; font-size: 13px; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; padding: 6px 10px; cursor: pointer;">🔐 Admin Auth</button>
-                </div>
-                <button type="button" class="modal-close-btn" id="btn-close-auth-modal">&times;</button>
-            </div>
-            
-            <!-- Tab 1: 1-Click Complete Database Setup & Master SQL -->
-            <div id="tab-content-setup" class="modal-body" style="padding: 20px; display: block;">
-                <div id="setup-status-box" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
-                    <div style="font-weight: 700; font-size: 13px; color: #1e40af; display: flex; align-items: center; justify-content: space-between;">
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <span id="setup-status-dot" style="width: 8px; height: 8px; border-radius: 50%; background: #3b82f6;"></span>
-                            <span id="setup-status-heading">Supabase: auooqsvemnpmedbdfknb</span>
-                        </span>
-                        <span id="setup-status-badge-text" style="font-size: 11px; background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 12px; font-weight: 600;">Checking...</span>
-                    </div>
-                    <div style="font-size: 12px; color: #3b82f6; margin-top: 4px;" id="setup-status-subheading">
-                        Checking live database tables in Supabase...
-                    </div>
-                </div>
-
-                <div style="margin-bottom: 16px;">
-                    <div style="font-size: 12.5px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">🚀 3 Easy Steps to Complete Supabase Backend:</div>
-                    <ol style="margin: 0; padding-left: 18px; font-size: 12px; color: #475569; line-height: 1.6;">
-                        <li>Click <b>"📋 Copy Master SQL Script"</b> below (copies all tables, RLS policies, realtime publication & all 54 products).</li>
-                        <li>Click <b>"🚀 Open Supabase SQL Editor"</b> (opens your project dashboard directly).</li>
-                        <li>Press <kbd style="background:#e2e8f0; padding:1px 5px; border-radius:3px; font-weight:600;">Ctrl + V</kbd> (or Cmd + V) to paste and click <b style="color:#16a34a;">"RUN"</b>. Done!</li>
-                    </ol>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
-                    <button type="button" id="btn-copy-master-sql" style="background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 12px 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 6px rgba(37,99,235,0.25);">
-                        📋 Copy Master SQL
-                    </button>
-                    <a id="btn-open-supabase-dashboard" href="https://supabase.com/dashboard/project/auooqsvemnpmedbdfknb/sql/new" target="_blank" rel="noopener noreferrer" style="background: #10b981; color: #fff; text-decoration: none; border-radius: 8px; padding: 12px 10px; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 6px rgba(16,185,129,0.25);">
-                        🚀 Open SQL Editor ↗
-                    </a>
-                </div>
-
-                <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-                    <button type="button" id="btn-sync-now" style="flex: 1; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 12px; font-weight: 600; cursor: pointer;">
-                        🔄 Verify & Sync Products
-                    </button>
-                    <a id="btn-download-sql" href="/api/supabase/sql?download=true" download style="flex: 1; background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px; font-size: 12px; font-weight: 600; text-align: center; text-decoration: none;">
-                        📥 Download .sql File
-                    </a>
-                </div>
-
-                <div id="setup-sync-result" style="display: none; padding: 10px; border-radius: 6px; font-size: 11.5px; margin-bottom: 12px;"></div>
-
-                <details style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: #475569;">
-                    <summary style="font-weight: 600; cursor: pointer; color: #2563eb;">View Included Database Schema & Seed Data</summary>
-                    <div style="margin-top: 8px; line-height: 1.5;">
-                        • <b>Tables:</b> <code>products</code>, <code>admin_users</code>, <code>orders</code>, <code>categories</code>, <code>reviews</code>, <code>site_settings</code><br>
-                        • <b>Indexes:</b> <code>md5_id</code>, <code>category</code>, <code>brand</code>, <code>selling_price</code><br>
-                        • <b>Security:</b> Full Row Level Security (RLS) policies configured<br>
-                        • <b>Real-time:</b> Subscribed to <code>supabase_realtime</code> publication<br>
-                        • <b>Dataset:</b> All 54 official products with images, features, specs and pricing
-                    </div>
-                </details>
-            </div>
-
-            <!-- Tab 2: Supabase DB & Real-time Connection -->
-            <div id="tab-content-connection" class="modal-body" style="padding: 20px; display: none;">
-                <div id="connection-status-banner" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <div style="font-size: 12px; font-weight: 700; color: #166534;" id="banner-status-title">● Live Supabase Connection Active</div>
-                        <div style="font-size: 11px; color: #15803d; margin-top: 2px;" id="banner-status-desc">Real-time sync enabled for products table</div>
-                    </div>
-                    <span id="banner-realtime-tag" style="background: #22c55e; color: #fff; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 12px;">REALTIME ON</span>
-                </div>
-
-                <form id="supabase-config-form">
-                    <div class="form-group" style="margin-bottom: 12px;">
-                        <label class="form-label">Supabase Project URL (VITE_SUPABASE_URL)</label>
-                        <input type="url" id="sb-input-url" class="form-input" placeholder="https://your-project.supabase.co" required>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label class="form-label">Supabase Public Anon Key (VITE_SUPABASE_ANON_KEY)</label>
-                        <input type="text" id="sb-input-key" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required>
-                    </div>
-
-                    <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                        <button type="submit" id="btn-save-sb-config" class="btn-top-primary" style="flex: 2; height: 40px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;">
-                            💾 Save & Connect Supabase
-                        </button>
-                        <button type="button" id="btn-test-sb-connection" style="flex: 1; height: 40px; background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;">
-                            ⚡ Test Sync
-                        </button>
-                    </div>
-                </form>
-
-                <div id="sb-test-result" style="display: none; padding: 10px; border-radius: 6px; font-size: 11.5px; margin-top: 10px;"></div>
-
-                <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #64748b; line-height: 1.4;">
-                    💡 <b>Realtime Sync:</b> Any product added, edited, or deleted in this panel instantly reflects on the storefront without refreshing the browser.
-                </div>
-            </div>
-
-            <!-- Tab 2: Admin Authentication -->
-            <div id="tab-content-auth" class="modal-body" style="padding: 20px; display: none;">
-                <p style="font-size: 13px; color: #64748b; margin-bottom: 12px; line-height: 1.4;">
-                    Sign in with your authorized Supabase admin credentials to execute protected database operations governed by Row Level Security (RLS).
-                </p>
-                
-                <div id="auth-logged-in-box" style="display: none; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 14px; text-align: center; margin-bottom: 12px;">
-                    <div style="font-size: 12px; color: #065f46; font-weight: 700; margin-bottom: 4px;">✓ Authenticated as Administrator</div>
-                    <div style="font-size: 13px; color: #047857; font-weight: 600;" id="auth-user-email">admin@flipkart.com</div>
-                    <button type="button" id="btn-admin-logout" style="margin-top: 10px; background: #ef4444; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">Sign Out</button>
-                </div>
-
-                <form id="auth-login-form">
-                    <div class="form-group" style="margin-bottom: 12px;">
-                        <label class="form-label">Admin Email</label>
-                        <input type="email" id="auth-input-email" class="form-input" placeholder="admin@example.com" required>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 16px;">
-                        <label class="form-label">Password</label>
-                        <input type="password" id="auth-input-password" class="form-input" placeholder="••••••••" required>
-                    </div>
-                    <button type="submit" id="btn-auth-submit" class="btn-top-primary" style="width: 100%; height: 42px; border-radius: 6px; font-size: 14px; cursor: pointer;">
-                        Sign In as Admin
-                    </button>
-                </form>
-
-                <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #94a3b8; line-height: 1.4;">
-                    🛡️ Protected by Supabase Row Level Security (RLS). Public users cannot modify the database.
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Toast Notification -->
     <div id="admin-toast" class="toast">
         <span id="toast-icon">✓</span>
@@ -1309,7 +1134,6 @@
         let liveProducts = [];
         let rawCsvContent = '';
         let pendingDeleteId = null;
-        let isRealtimeActive = false;
 
         // Elements
         const productsTbody = document.getElementById('products-tbody');
@@ -1337,18 +1161,6 @@
         const deleteModal = document.getElementById('delete-modal');
         const btnConfirmDelete = document.getElementById('btn-confirm-delete');
 
-        // Auth Elements
-        const authModal = document.getElementById('auth-modal');
-        const btnAdminAuthToggle = document.getElementById('btn-admin-auth-toggle');
-        const btnCloseAuthModal = document.getElementById('btn-close-auth-modal');
-        const authLoginForm = document.getElementById('auth-login-form');
-        const authLoggedInBox = document.getElementById('auth-logged-in-box');
-        const authUserEmail = document.getElementById('auth-user-email');
-        const btnAdminLogout = document.getElementById('btn-admin-logout');
-        const adminUserDisplay = document.getElementById('admin-user-display');
-        const supabaseStatusLabel = document.getElementById('supabase-status-label');
-        const supabaseStatusDot = document.getElementById('supabase-status-dot');
-
         // Toast helper
         function showToast(message, type = 'success') {
             const toast = document.getElementById('admin-toast');
@@ -1364,73 +1176,25 @@
             }, 3500);
         }
 
-        // Check & Update Admin Authentication State
-        async function updateAuthUI() {
-            if (typeof FilpSupabase === 'undefined') return;
-
-            const user = await FilpSupabase.getAdminUser();
-            if (user && user.email) {
-                adminUserDisplay.textContent = user.email.split('@')[0];
-                authUserEmail.textContent = user.email;
-                authLoggedInBox.style.display = 'block';
-                authLoginForm.style.display = 'none';
-                supabaseStatusDot.style.background = '#10b981';
-                supabaseStatusLabel.textContent = 'Admin Connected';
-            } else {
-                adminUserDisplay.textContent = 'Admin Login';
-                authLoggedInBox.style.display = 'none';
-                authLoginForm.style.display = 'block';
-                if (FilpSupabase.isReady()) {
-                    supabaseStatusDot.style.background = '#10b981';
-                    supabaseStatusLabel.textContent = 'Supabase DB';
-                } else {
-                    supabaseStatusDot.style.background = '#f59e0b';
-                    supabaseStatusLabel.textContent = 'Local Mode';
-                }
-            }
-        }
-
-        // Fetch Live Catalog via Supabase
+        // Fetch Live Catalog
         async function fetchProducts() {
             try {
                 statLastSynced.textContent = 'Syncing...';
-
-                let data = null;
-                if (typeof FilpSupabase !== 'undefined') {
-                    const sbRes = await FilpSupabase.getProducts();
-                    if (sbRes.success) {
-                        data = sbRes;
-                    }
-                }
-
-                if (!data) {
-                    const res = await fetch('/api/products?t=' + Date.now());
-                    if (!res.ok) throw new Error('Failed to fetch products');
-                    data = await res.json();
-                }
+                const res = await fetch('/api/products?t=' + Date.now());
+                if (!res.ok) throw new Error('Failed to fetch products');
+                const data = await res.json();
 
                 liveProducts = data.products || [];
                 statTotal.textContent = liveProducts.length;
                 statKitchen.textContent = data.kitchenCount || liveProducts.filter(p => (p.category || '').toLowerCase() === 'kitchen').length;
                 statBrands.textContent = (data.brands || []).length;
-                
-                const sourceTag = data.source === 'supabase' ? 'Supabase DB' : 'Local Catalog';
-                statLastSynced.textContent = `${new Date().toLocaleTimeString()} • ${sourceTag}`;
+                statLastSynced.textContent = new Date().toLocaleTimeString();
 
                 populateBrandFilter(data.brands || []);
                 renderProductsTable();
-
-                // Setup realtime listener once
-                if (!isRealtimeActive && typeof FilpSupabase !== 'undefined') {
-                    isRealtimeActive = true;
-                    FilpSupabase.subscribeToProducts((payload) => {
-                        console.log('[Admin Realtime] Change received:', payload);
-                        fetchProducts();
-                    });
-                }
             } catch (err) {
                 console.error('Fetch error:', err);
-                productsTbody.innerHTML = `<tr><td colspan="9" class="empty-state" style="color: #ef4444;">Failed to connect to catalog: ${err.message}</td></tr>`;
+                productsTbody.innerHTML = `<tr><td colspan="9" class="empty-state" style="color: #ef4444;">Failed to connect to backend: ${err.message}</td></tr>`;
             }
         }
 
@@ -1534,16 +1298,13 @@
             btnConfirmDelete.textContent = 'Deleting...';
 
             try {
-                if (typeof FilpSupabase !== 'undefined') {
-                    await FilpSupabase.deleteProduct(idToDelete);
-                } else {
-                    const res = await fetch(`/api/products/${idToDelete}`, {
-                        method: 'DELETE'
-                    });
-                    const result = await res.json();
-                    if (!res.ok || !result.success) {
-                        throw new Error(result.error || 'Failed to delete product');
-                    }
+                const res = await fetch(`/api/products/${idToDelete}`, {
+                    method: 'DELETE'
+                });
+                const result = await res.json();
+
+                if (!res.ok || !result.success) {
+                    throw new Error(result.error || 'Failed to delete product');
                 }
 
                 showToast(`Product #${idToDelete} deleted permanently from database!`, 'success');
@@ -1598,48 +1359,34 @@
         productForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const editId = document.getElementById('form-product-id').value;
-            const sp = Number(document.getElementById('form-price').value);
-            const mrp = Number(document.getElementById('form-mrp').value);
-            const disc = mrp > sp ? Math.max(5, Math.min(95, Math.round((1 - (sp / mrp)) * 100))) : 50;
-
             const payload = {
                 name: document.getElementById('form-name').value.trim(),
                 category: document.getElementById('form-category').value.trim() || 'Kitchen',
                 brand: document.getElementById('form-brand').value.trim(),
-                selling_price: sp,
-                mrp: mrp,
-                deal_price: Math.max(49, sp - 30),
-                discount_percent: disc,
-                discount_label: `↓ ${disc}%`,
+                selling_price: Number(document.getElementById('form-price').value),
+                mrp: Number(document.getElementById('form-mrp').value),
                 img1: document.getElementById('form-image').value.trim(),
                 rating: document.getElementById('form-rating').value.trim() || '4.5',
                 review_count: document.getElementById('form-reviews').value.trim() || '1,248'
             };
 
+            const url = editId ? `/api/products/${editId}` : '/api/products';
+            const method = editId ? 'PUT' : 'POST';
+
             try {
-                if (typeof FilpSupabase !== 'undefined') {
-                    if (editId) {
-                        await FilpSupabase.updateProduct(Number(editId), payload);
-                    } else {
-                        await FilpSupabase.addProduct(payload);
-                    }
-                } else {
-                    const url = editId ? `/api/products/${editId}` : '/api/products';
-                    const method = editId ? 'PUT' : 'POST';
-                    const res = await fetch(url, {
-                        method,
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    const result = await res.json();
-                    if (!res.ok || !result.success) {
-                        throw new Error(result.error || 'Failed to save product');
-                    }
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if (!res.ok || !result.success) {
+                    throw new Error(result.error || 'Failed to save product');
                 }
 
                 showToast(editId ? 'Product updated in database!' : 'New product added to database!', 'success');
                 productModal.style.display = 'none';
-                await fetchProducts();
+                fetchProducts();
             } catch (err) {
                 showToast(`Error: ${err.message}`, 'error');
             }
@@ -1650,319 +1397,6 @@
         document.getElementById('btn-cancel-product-form').addEventListener('click', () => productModal.style.display = 'none');
         document.getElementById('btn-close-delete-modal').addEventListener('click', () => deleteModal.style.display = 'none');
         document.getElementById('btn-cancel-delete').addEventListener('click', () => deleteModal.style.display = 'none');
-
-        // Auth & Connection Modal Handlers
-        const tabBtnSetup = document.getElementById('tab-btn-setup');
-        const tabBtnConnection = document.getElementById('tab-btn-connection');
-        const tabBtnAuth = document.getElementById('tab-btn-auth');
-        const tabContentSetup = document.getElementById('tab-content-setup');
-        const tabContentConnection = document.getElementById('tab-content-connection');
-        const tabContentAuth = document.getElementById('tab-content-auth');
-        const sbInputUrl = document.getElementById('sb-input-url');
-        const sbInputKey = document.getElementById('sb-input-key');
-        const supabaseConfigForm = document.getElementById('supabase-config-form');
-        const btnTestSbConnection = document.getElementById('btn-test-sb-connection');
-        const sbTestResult = document.getElementById('sb-test-result');
-        const bannerStatusTitle = document.getElementById('banner-status-title');
-        const bannerStatusDesc = document.getElementById('banner-status-desc');
-        const bannerRealtimeTag = document.getElementById('banner-realtime-tag');
-
-        function switchAuthModalTab(tab) {
-            [tabContentSetup, tabContentConnection, tabContentAuth].forEach(el => { if (el) el.style.display = 'none'; });
-            [tabBtnSetup, tabBtnConnection, tabBtnAuth].forEach(el => {
-                if (el) {
-                    el.style.color = '#64748b';
-                    el.style.borderBottomColor = 'transparent';
-                    el.style.fontWeight = '600';
-                }
-            });
-
-            if (tab === 'setup') {
-                if (tabContentSetup) tabContentSetup.style.display = 'block';
-                if (tabBtnSetup) {
-                    tabBtnSetup.style.color = '#2563eb';
-                    tabBtnSetup.style.borderBottomColor = '#2563eb';
-                    tabBtnSetup.style.fontWeight = '700';
-                }
-                checkSupabaseBackendStatus();
-            } else if (tab === 'connection') {
-                if (tabContentConnection) tabContentConnection.style.display = 'block';
-                if (tabBtnConnection) {
-                    tabBtnConnection.style.color = '#2563eb';
-                    tabBtnConnection.style.borderBottomColor = '#2563eb';
-                    tabBtnConnection.style.fontWeight = '700';
-                }
-                populateConnectionUI();
-            } else {
-                if (tabContentAuth) tabContentAuth.style.display = 'block';
-                if (tabBtnAuth) {
-                    tabBtnAuth.style.color = '#2563eb';
-                    tabBtnAuth.style.borderBottomColor = '#2563eb';
-                    tabBtnAuth.style.fontWeight = '700';
-                }
-            }
-        }
-
-        if (tabBtnSetup) tabBtnSetup.addEventListener('click', () => switchAuthModalTab('setup'));
-        if (tabBtnConnection) tabBtnConnection.addEventListener('click', () => switchAuthModalTab('connection'));
-        if (tabBtnAuth) tabBtnAuth.addEventListener('click', () => switchAuthModalTab('auth'));
-
-        const btnSupabaseSetup = document.getElementById('btn-supabase-setup');
-        if (btnSupabaseSetup) {
-            btnSupabaseSetup.addEventListener('click', () => {
-                authModal.style.display = 'flex';
-                switchAuthModalTab('setup');
-            });
-        }
-
-        const btnOpenSqlSetupBanner = document.getElementById('btn-open-sql-setup-banner');
-        if (btnOpenSqlSetupBanner) {
-            btnOpenSqlSetupBanner.addEventListener('click', () => {
-                authModal.style.display = 'flex';
-                switchAuthModalTab('setup');
-            });
-        }
-
-        // Copy Master SQL to clipboard
-        const btnCopyMasterSql = document.getElementById('btn-copy-master-sql');
-        if (btnCopyMasterSql) {
-            btnCopyMasterSql.addEventListener('click', async () => {
-                const originalText = btnCopyMasterSql.innerHTML;
-                btnCopyMasterSql.disabled = true;
-                btnCopyMasterSql.innerHTML = '⏳ Fetching SQL...';
-
-                try {
-                    const res = await fetch('/api/supabase/sql');
-                    const json = await res.json();
-                    if (!json.success || !json.sql) throw new Error(json.error || 'Failed to retrieve SQL');
-
-                    await navigator.clipboard.writeText(json.sql);
-                    btnCopyMasterSql.innerHTML = '✓ Copied 82KB SQL!';
-                    btnCopyMasterSql.style.background = '#10b981';
-                    showToast('Full SQL Script Copied! Paste into Supabase SQL Editor and click RUN 🚀', 'success');
-                    setTimeout(() => {
-                        btnCopyMasterSql.innerHTML = originalText;
-                        btnCopyMasterSql.style.background = '#2563eb';
-                        btnCopyMasterSql.disabled = false;
-                    }, 3000);
-                } catch (err) {
-                    // Fallback to downloading
-                    window.location.href = '/api/supabase/sql?download=true';
-                    showToast('SQL file downloading to your device.', 'info');
-                    btnCopyMasterSql.innerHTML = originalText;
-                    btnCopyMasterSql.disabled = false;
-                }
-            });
-        }
-
-        // Check backend status & update dashboard banner
-        async function checkSupabaseBackendStatus() {
-            try {
-                const res = await fetch('/api/supabase/status');
-                if (!res.ok) return;
-                const status = await res.json();
-
-                const bannerTitle = document.getElementById('admin-banner-title');
-                const bannerSub = document.getElementById('admin-banner-subtitle');
-                const bannerPill = document.getElementById('admin-banner-pill');
-                const setupBoxDot = document.getElementById('setup-status-dot');
-                const setupHeading = document.getElementById('setup-status-heading');
-                const setupSub = document.getElementById('setup-status-subheading');
-                const setupBadge = document.getElementById('setup-status-badge-text');
-
-                if (status.tablesExist) {
-                    if (bannerTitle) bannerTitle.innerHTML = `<span>Supabase Real-Time Backend Active</span>`;
-                    if (bannerPill) {
-                        bannerPill.textContent = `LIVE (${status.productCount || liveProducts.length} PRODUCTS)`;
-                        bannerPill.style.background = '#10b981';
-                    }
-                    if (bannerSub) bannerSub.innerHTML = `Connected to PostgreSQL • Real-Time active • Tables & RLS verified`;
-                    if (setupBoxDot) setupBoxDot.style.background = '#10b981';
-                    if (setupHeading) setupHeading.textContent = `Supabase Connected: All Tables Active (${status.productCount} Products)`;
-                    if (setupSub) setupSub.textContent = `Real-time catalog is operating live on PostgreSQL with Row Level Security.`;
-                    if (setupBadge) {
-                        setupBadge.textContent = 'TABLES ACTIVE';
-                        setupBadge.style.background = '#dcfce7';
-                        setupBadge.style.color = '#15803d';
-                    }
-                } else if (status.connected) {
-                    if (bannerTitle) bannerTitle.innerHTML = `<span>Supabase Connected — Tables Pending Setup</span>`;
-                    if (bannerPill) {
-                        bannerPill.textContent = 'SETUP REQUIRED';
-                        bannerPill.style.background = '#f59e0b';
-                    }
-                    if (bannerSub) bannerSub.innerHTML = `Project reachable at <code>${status.supabaseUrl}</code>. Click "1-Click Setup" to create tables & populate all 54 products.`;
-                    if (setupBoxDot) setupBoxDot.style.background = '#f59e0b';
-                    if (setupHeading) setupHeading.textContent = `Supabase Connected: Tables Pending in Database`;
-                    if (setupSub) setupSub.textContent = `Copy the SQL below, paste into Supabase SQL Editor and click RUN.`;
-                    if (setupBadge) {
-                        setupBadge.textContent = 'PENDING SQL RUN';
-                        setupBadge.style.background = '#fef3c7';
-                        setupBadge.style.color = '#b45309';
-                    }
-                }
-            } catch (e) {
-                console.warn('Backend status check failed:', e);
-            }
-        }
-
-        // Verify & Sync button handlers
-        async function triggerSupabaseSync(btn) {
-            if (btn) {
-                btn.disabled = true;
-                btn.textContent = 'Syncing...';
-            }
-            try {
-                const res = await fetch('/api/supabase/sync', { method: 'POST' });
-                const json = await res.json();
-                if (json.success) {
-                    showToast(`✓ Synced all ${json.count} products to Supabase!`, 'success');
-                    await checkSupabaseBackendStatus();
-                    await fetchProducts();
-                } else {
-                    showToast(json.hint || json.error || 'Sync failed. Make sure SQL setup was run in Supabase.', 'error');
-                }
-            } catch (err) {
-                showToast(`Sync error: ${err.message}`, 'error');
-            } finally {
-                if (btn) {
-                    btn.disabled = false;
-                    btn.textContent = '🔄 Verify & Sync';
-                }
-            }
-        }
-
-        const btnBannerSync = document.getElementById('btn-banner-sync');
-        if (btnBannerSync) btnBannerSync.addEventListener('click', () => triggerSupabaseSync(btnBannerSync));
-
-        const btnSyncNow = document.getElementById('btn-sync-now');
-        if (btnSyncNow) btnSyncNow.addEventListener('click', () => triggerSupabaseSync(btnSyncNow));
-
-        function populateConnectionUI() {
-            if (typeof FilpSupabase === 'undefined') return;
-            const cfg = FilpSupabase.getConfig();
-            if (cfg.url) sbInputUrl.value = cfg.url;
-            if (cfg.anonKey) sbInputKey.value = cfg.anonKey;
-
-            const isReady = FilpSupabase.isReady();
-            const rtStatus = (FilpSupabase.getRealtimeStatus && FilpSupabase.getRealtimeStatus()) || 'DISCONNECTED';
-
-            if (isReady) {
-                bannerStatusTitle.textContent = '● Live Supabase Database Connected';
-                bannerStatusTitle.style.color = '#166534';
-                bannerStatusDesc.textContent = `Target: ${cfg.url || 'Configured Project'} • Realtime: ${rtStatus}`;
-                bannerRealtimeTag.textContent = rtStatus === 'SUBSCRIBED' ? 'REALTIME ON' : 'CONNECTING';
-                bannerRealtimeTag.style.background = '#22c55e';
-            } else {
-                bannerStatusTitle.textContent = '○ Supabase Not Configured';
-                bannerStatusTitle.style.color = '#b45309';
-                bannerStatusDesc.textContent = 'Enter your Supabase URL & Anon Key below to enable shared database & live sync.';
-                bannerRealtimeTag.textContent = 'OFFLINE';
-                bannerRealtimeTag.style.background = '#f59e0b';
-            }
-        }
-
-        const supabaseStatusBadge = document.getElementById('supabase-status-badge');
-        if (supabaseStatusBadge) {
-            supabaseStatusBadge.style.cursor = 'pointer';
-            supabaseStatusBadge.addEventListener('click', () => {
-                authModal.style.display = 'flex';
-                switchAuthModalTab('connection');
-            });
-        }
-
-        btnAdminAuthToggle.addEventListener('click', () => {
-            authModal.style.display = 'flex';
-            switchAuthModalTab('auth');
-            updateAuthUI();
-        });
-        btnCloseAuthModal.addEventListener('click', () => authModal.style.display = 'none');
-
-        // Handle Save Supabase Config
-        supabaseConfigForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const url = sbInputUrl.value.trim();
-            const key = sbInputKey.value.trim();
-            const btn = document.getElementById('btn-save-sb-config');
-
-            btn.disabled = true;
-            btn.textContent = 'Connecting...';
-
-            try {
-                await FilpSupabase.setCredentials(url, key);
-                showToast('Supabase Connected! Live Database & Real-Time Active ⚡', 'success');
-                populateConnectionUI();
-                await updateAuthUI();
-                await fetchProducts();
-            } catch (err) {
-                showToast(`Connection failed: ${err.message}`, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = '💾 Save & Connect Supabase';
-            }
-        });
-
-        // Handle Test Supabase Sync
-        btnTestSbConnection.addEventListener('click', async () => {
-            btnTestSbConnection.disabled = true;
-            btnTestSbConnection.textContent = 'Testing...';
-            sbTestResult.style.display = 'block';
-            sbTestResult.style.background = '#f1f5f9';
-            sbTestResult.style.color = '#334155';
-            sbTestResult.textContent = 'Pinging Supabase database and checking realtime channel...';
-
-            try {
-                const test = await FilpSupabase.testConnection();
-                if (test.ok) {
-                    sbTestResult.style.background = '#ecfdf5';
-                    sbTestResult.style.color = '#065f46';
-                    sbTestResult.style.border = '1px solid #a7f3d0';
-                    sbTestResult.innerHTML = `✓ <b>Success:</b> Connected in ${test.latencyMs}ms! Database contains <b>${test.totalProducts}</b> products. Realtime: <b>${test.realtimeStatus || 'ACTIVE'}</b>.`;
-                    showToast('Connection Test Passed! 🚀', 'success');
-                } else {
-                    sbTestResult.style.background = '#fef2f2';
-                    sbTestResult.style.color = '#991b1b';
-                    sbTestResult.style.border = '1px solid #fecaca';
-                    sbTestResult.innerHTML = `✗ <b>Error:</b> ${test.error}`;
-                }
-            } catch (err) {
-                sbTestResult.style.background = '#fef2f2';
-                sbTestResult.style.color = '#991b1b';
-                sbTestResult.textContent = `✗ Error: ${err.message}`;
-            } finally {
-                btnTestSbConnection.disabled = false;
-                btnTestSbConnection.textContent = '⚡ Test Sync';
-            }
-        });
-
-        authLoginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('auth-input-email').value.trim();
-            const password = document.getElementById('auth-input-password').value;
-            const btn = document.getElementById('btn-auth-submit');
-
-            btn.disabled = true;
-            btn.textContent = 'Authenticating...';
-
-            try {
-                await FilpSupabase.adminSignIn(email, password);
-                showToast('Admin Authenticated Successfully! 🔐', 'success');
-                authModal.style.display = 'none';
-                await updateAuthUI();
-                await fetchProducts();
-            } catch (err) {
-                showToast(`Auth Failed: ${err.message}`, 'error');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Sign In as Admin';
-            }
-        });
-
-        btnAdminLogout.addEventListener('click', async () => {
-            await FilpSupabase.adminSignOut();
-            showToast('Signed out of admin session', 'success');
-            await updateAuthUI();
-        });
 
         // CSV File Handling
         function handleFileSelection(file) {
@@ -2026,7 +1460,7 @@
             btnRunPipeline.disabled = true;
             btnRunPipeline.innerHTML = '⏳ Processing CSV Pipeline...';
             pipelineLogs.style.display = 'block';
-            pipelineLogs.textContent = `[Pipeline] Initiating CSV upload...\n[Pipeline] Mode: ${mode.toUpperCase()}\n[Pipeline] Sending payload to database...`;
+            pipelineLogs.textContent = `[Pipeline] Initiating CSV upload...\n[Pipeline] Mode: ${mode.toUpperCase()}\n[Pipeline] Sending payload to server...`;
 
             try {
                 const res = await fetch('/api/upload-csv', {
@@ -2045,11 +1479,6 @@
 
                 pipelineLogs.textContent += `\n[Pipeline] ✓ ${data.message}\n[Pipeline] Total live products: ${data.totalCount}\n[Pipeline] Database written atomically. Changes are LIVE on storefront!`;
                 showToast(`Success! ${data.totalCount} products live on website!`, 'success');
-
-                // Real-time broadcast to all open storefront tabs
-                if (typeof FilpSupabase !== 'undefined' && FilpSupabase.broadcastChange) {
-                    FilpSupabase.broadcastChange({ eventType: 'CATALOG_SYNC', count: data.totalCount });
-                }
 
                 // Refresh catalog table
                 await fetchProducts();
@@ -2072,8 +1501,6 @@
         });
 
         // Initialize
-        updateAuthUI();
-        checkSupabaseBackendStatus();
         fetchProducts();
     </script>
 </body>

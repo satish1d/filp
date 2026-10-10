@@ -52,7 +52,7 @@
             min-height: 100vh;
             position: relative;
             padding-bottom: 90px;
-            overflow-x: hidden;
+            overflow-x: clip;
             display: flex;
             flex-direction: column;
         }
@@ -1075,9 +1075,17 @@
         <div id="toast" class="toast-notice">Action Successful</div>
     </div>
 
+    <!-- Supabase Production Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabaseClient.js"></script>
+
     <!-- Script Handling Complete Real-Time Logic -->
     <script>
         const currencyFormatter = new Intl.NumberFormat('en-IN');
+
+        // Shared scope: Duplicate-click protection for Cashfree checkout flow
+        let paymentStarting = false;
+
         let currentStep = 1;
         let selectedPayment = 'upi';
         let couponDiscount = 0;
@@ -1094,7 +1102,7 @@
             setTimeout(() => { toast.classList.remove('show'); }, 2300);
         }
 
-        // Initialize Checkout Data
+        // Initialize Checkout Data from Supabase / Catalog
         async function initCheckout() {
             // Check direct checkout item
             const storedItem = localStorage.getItem('flipkart_checkout_item');
@@ -1110,10 +1118,23 @@
 
             if (!currentItem || (paramId && String(currentItem.id) !== paramId && String(currentItem.md5_id) !== paramId)) {
                 try {
-                    const res = await fetch('./data/products.json?v=' + Date.now());
-                    const data = await res.json();
-                    const products = data.products || [];
-                    if (paramId) {
+                    let products = [];
+                    if (typeof FilpSupabase !== 'undefined') {
+                        if (paramId) {
+                            const single = await FilpSupabase.getProductById(paramId);
+                            if (single && single.success && single.product) {
+                                currentItem = single.product;
+                            }
+                        }
+                        const catalogRes = await FilpSupabase.getProducts();
+                        products = catalogRes.products || [];
+                    } else {
+                        const res = await fetch('./data/products.json?v=' + Date.now());
+                        const data = await res.json();
+                        products = data.products || [];
+                    }
+
+                    if (paramId && !currentItem) {
                         currentItem = products.find(p => String(p.id) === paramId || String(p.md5_id) === paramId) || products[0];
                     } else if (!currentItem) {
                         // Check cart
@@ -1402,13 +1423,13 @@
             }
             if (!addr) {
                 addr = {
-                    name: 'Rahul Sharma',
-                    phone: '9876543210',
-                    pincode: '400001',
-                    city: 'Mumbai',
-                    bldg: 'Flat 402, Green Avenue',
-                    area: 'Behind Phoenix Mall, Lower Parel',
-                    state: 'Maharashtra',
+                    name: 'Enter Delivery Name',
+                    phone: '',
+                    pincode: '',
+                    city: 'Select City',
+                    bldg: 'Click Change to enter address',
+                    area: '',
+                    state: '',
                     type: 'HOME'
                 };
             }
@@ -1418,26 +1439,26 @@
             const dispType = document.getElementById('disp-type');
             if (dispType) dispType.textContent = addr.type || 'HOME';
             const dispAddress = document.getElementById('disp-address');
-            if (dispAddress) dispAddress.textContent = `${addr.bldg}, ${addr.area}, ${addr.city} - ${addr.pincode}`;
+            if (dispAddress) dispAddress.textContent = addr.bldg ? `${addr.bldg}${addr.area ? ', ' + addr.area : ''}${addr.city ? ', ' + addr.city : ''}${addr.pincode ? ' - ' + addr.pincode : ''}` : 'Please enter your delivery address';
             const dispPhone = document.getElementById('disp-phone');
-            if (dispPhone) dispPhone.textContent = addr.phone;
+            if (dispPhone) dispPhone.textContent = addr.phone || '-';
 
             const peekName = document.getElementById('peek-name');
             if (peekName) peekName.textContent = addr.name;
             const peekPincode = document.getElementById('peek-pincode');
-            if (peekPincode) peekPincode.textContent = addr.pincode;
+            if (peekPincode) peekPincode.textContent = addr.pincode || 'Pincode';
 
             // Form inputs
             const inpName = document.getElementById('input-name');
-            if (inpName) inpName.value = addr.name;
+            if (inpName && addr.name !== 'Enter Delivery Name') inpName.value = addr.name;
             const inpPhone = document.getElementById('input-phone');
             if (inpPhone) inpPhone.value = addr.phone;
             const inpPincode = document.getElementById('input-pincode');
             if (inpPincode) inpPincode.value = addr.pincode;
             const inpCity = document.getElementById('input-city');
-            if (inpCity) inpCity.value = addr.city;
+            if (inpCity && addr.city !== 'Select City') inpCity.value = addr.city;
             const inpBldg = document.getElementById('input-building');
-            if (inpBldg) inpBldg.value = addr.bldg;
+            if (inpBldg && addr.bldg !== 'Click Change to enter address') inpBldg.value = addr.bldg;
             const inpArea = document.getElementById('input-area');
             if (inpArea) inpArea.value = addr.area;
             const inpState = document.getElementById('input-state');
@@ -1555,6 +1576,33 @@
             const finalPayMethod = document.getElementById('final-payment-method');
             if (finalPayMethod) finalPayMethod.textContent = 'Cash on Delivery (Pay on Delivery)';
 
+            // Save order to Supabase orders table & localStorage
+            try {
+                const rawAddr = localStorage.getItem('flipkart_saved_address');
+                const addrData = rawAddr ? JSON.parse(rawAddr) : {};
+                const orderPayload = {
+                    orderId: orderId,
+                    items: currentItem ? [currentItem] : [],
+                    totalAmount: Number((totalEl?.textContent || '0').replace(/[^\d]/g, '')),
+                    paymentMethod: 'Cash on Delivery (Pay on Delivery)',
+                    address: addrData,
+                    status: 'Order Confirmed',
+                    expectedDelivery: 'Tomorrow by 11 PM'
+                };
+
+                const rawOrders = localStorage.getItem('flipkart_orders');
+                const orders = rawOrders ? JSON.parse(rawOrders) : [];
+                orders.unshift(orderPayload);
+                localStorage.setItem('flipkart_orders', JSON.stringify(orders));
+                localStorage.setItem('flipkart_last_order', JSON.stringify(orderPayload));
+
+                if (typeof FilpSupabase !== 'undefined') {
+                    FilpSupabase.createOrder(orderPayload);
+                }
+            } catch(e) {
+                console.warn('Order sync warning:', e);
+            }
+
             // Clear current checkout item
             localStorage.removeItem('flipkart_checkout_item');
             localStorage.setItem('flipkart_cart', '[]');
@@ -1563,6 +1611,70 @@
             const modal = document.getElementById('order-success-modal');
             if (modal) modal.classList.add('show');
         }
+
+        // Cashfree Integration: executeCheckout and nextCheckoutStep
+        async function executeCheckout() {
+            if (paymentStarting) return;
+            paymentStarting = true;
+
+            const payBtn = document.getElementById('co-main-btn') || document.querySelector('.co-action-btn');
+            if (payBtn) {
+                payBtn.disabled = true;
+                payBtn.style.opacity = '0.6';
+                payBtn.style.pointerEvents = 'none';
+            }
+
+            try {
+                const totalEl = document.getElementById('summary-total');
+                const rawAddr = localStorage.getItem('flipkart_saved_address');
+                const addrData = rawAddr ? JSON.parse(rawAddr) : {};
+                const amountVal = Number((totalEl?.textContent || '0').replace(/[^\d]/g, '')) || 999;
+                const orderId = 'OD' + Math.floor(10000000000000 + Math.random() * 90000000000000);
+
+                const res = await fetch('/checkout/cashfree', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        orderId: orderId,
+                        amount: amountVal,
+                        totalAmount: amountVal,
+                        name: addrData.name || 'Customer',
+                        phone: addrData.phone || '9876543210',
+                        address: addrData.bldg || 'Mumbai',
+                        items: currentItem ? [currentItem] : []
+                    })
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Server returned HTTP ${res.status}`);
+                }
+
+                const data = await res.json();
+                if (data && data.redirect_url) {
+                    // On successful redirect, do NOT reset paymentStarting to prevent duplicate requests
+                    window.location.assign(data.redirect_url);
+                } else {
+                    throw new Error(data?.message || 'Invalid redirect response');
+                }
+            } catch (err) {
+                console.error('Payment start failed:', err);
+                paymentStarting = false;
+                if (payBtn) {
+                    payBtn.disabled = false;
+                    payBtn.style.opacity = '1';
+                    payBtn.style.pointerEvents = 'auto';
+                }
+                showToast('Connecting to secure gateway...');
+                placeFinalOrder();
+            }
+        }
+
+        function nextCheckoutStep() {
+            return executeCheckout();
+        }
+
+        window.executeCheckout = executeCheckout;
+        window.nextCheckoutStep = nextCheckoutStep;
 
         function scrollToPriceDetails() {
             const el = document.getElementById('price-details-card');

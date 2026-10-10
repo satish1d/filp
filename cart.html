@@ -23,143 +23,1626 @@
         }, true);
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#2874f0">
-    <title>Flipkart - Shopping Cart</title>
-    <meta name="description" content="View items in your Flipkart shopping cart, apply coupons, and proceed to checkout.">
-    <link rel="stylesheet" href="./assets/css/checkout.css">
+    <meta name="theme-color" content="#2874f0" id="themeColor">
+    <title>Flipkart - Order Summary, Address & Payment</title>
+    <meta name="description" content="Complete your purchase with secure checkout on Flipkart.">
+    
+    <link rel="stylesheet" href="./assets/css/custom.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f1f3f6;
+            color: #212121;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        #checkout-app {
+            width: 100%;
+            max-width: 480px;
+            background: #f1f3f6;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 90px;
+            overflow-x: clip;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header */
+        .co-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #2874f0;
+            color: #ffffff;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .co-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .co-back-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .co-header-title {
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+
+        .co-secure-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        /* 3-Step Progress Stepper */
+        .co-stepper {
+            background: #ffffff;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 8px;
+        }
+
+        .co-step-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #878787;
+            cursor: pointer;
+        }
+
+        .co-step-item.active {
+            color: #2874f0;
+            font-weight: 700;
+        }
+
+        .co-step-item.completed {
+            color: #108432;
+        }
+
+        .co-step-num {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #616161;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .co-step-item.active .co-step-num {
+            background: #2874f0;
+            color: #ffffff;
+        }
+
+        .co-step-item.completed .co-step-num {
+            background: #108432;
+            color: #ffffff;
+        }
+
+        .co-step-line {
+            flex: 1;
+            height: 2px;
+            background: #e0e0e0;
+            margin: 0 6px;
+        }
+
+        .co-step-line.active {
+            background: #108432;
+        }
+
+        /* Card Sections */
+        .co-card {
+            background: #ffffff;
+            margin-bottom: 8px;
+            padding: 14px;
+            border-radius: 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .co-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .co-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #212121;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .co-change-link {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2874f0;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* Product Cart Item */
+        .co-product-item {
+            display: flex;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f1f3f6;
+            margin-bottom: 12px;
+        }
+
+        .co-product-img-box {
+            width: 76px;
+            height: 76px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .co-product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 4px;
+        }
+
+        .co-product-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .co-product-title {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #212121;
+            line-height: 1.35;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .co-product-variant {
+            font-size: 12px;
+            color: #717478;
+            margin-bottom: 6px;
+        }
+
+        .co-product-pricing {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .co-selling-price {
+            font-size: 16px;
+            font-weight: 800;
+            color: #212121;
+        }
+
+        .co-mrp {
+            font-size: 12px;
+            color: #878787;
+            text-decoration: line-through;
+        }
+
+        .co-discount-tag {
+            font-size: 12px;
+            font-weight: 700;
+            color: #108432;
+        }
+
+        .co-qty-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .co-qty-controls {
+            display: flex;
+            align-items: center;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .co-qty-btn {
+            width: 28px;
+            height: 28px;
+            background: #f8fafc;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #212121;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .co-qty-btn:active {
+            background: #e2e8f0;
+        }
+
+        .co-qty-val {
+            width: 32px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .co-delivery-eta {
+            font-size: 12px;
+            font-weight: 600;
+            color: #212121;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Special Offers Section */
+        .co-special-offers-box {
+            margin-top: 12px;
+            padding: 10px 12px;
+            background: #f0f7ff;
+            border: 1px dashed #2874f0;
+            border-radius: 8px;
+        }
+
+        .co-offers-head {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .co-offers-title {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: #1e3a8a;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .co-offers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .co-offer-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 10px;
+            background: #ffffff;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .co-offer-card:hover {
+            border-color: #2874f0;
+            box-shadow: 0 2px 4px rgba(40, 116, 240, 0.08);
+        }
+
+        .co-offer-card.active {
+            border: 1.5px solid #108432;
+            background: #f0fdf4;
+        }
+
+        .co-offer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .co-offer-badge {
+            align-self: flex-start;
+            font-size: 9px;
+            font-weight: 800;
+            background: #eff6ff;
+            color: #2874f0;
+            padding: 1px 5px;
+            border-radius: 3px;
+            letter-spacing: 0.3px;
+        }
+
+        .co-offer-card.active .co-offer-badge {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .co-offer-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #212121;
+        }
+
+        .co-offer-desc {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .co-offer-apply-btn {
+            background: #2874f0;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s ease;
+        }
+
+        .co-offer-card.active .co-offer-apply-btn {
+            background: #108432;
+            color: #ffffff;
+        }
+
+        /* Address Details Section */
+        .co-address-box {
+            padding: 10px 12px;
+            background: #f8fbff;
+            border: 1px solid #dbeafe;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .co-address-name-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .co-address-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #212121;
+        }
+
+        .co-address-type-pill {
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .co-address-text {
+            font-size: 12.5px;
+            color: #475569;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .co-address-phone {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #212121;
+        }
+
+        /* Address Form Inputs */
+        .co-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .co-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+
+        .co-form-group.full {
+            grid-column: span 2;
+        }
+
+        .co-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .co-input {
+            height: 40px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 0 10px;
+            font-size: 13.5px;
+            color: #212121;
+            outline: none;
+            transition: border 0.2s ease;
+        }
+
+        .co-input:focus {
+            border-color: #2874f0;
+            box-shadow: 0 0 0 2px rgba(40, 116, 240, 0.15);
+        }
+
+        .co-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .co-type-btn {
+            flex: 1;
+            height: 36px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            border-radius: 6px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .co-type-btn.active {
+            border-color: #2874f0;
+            background: #eff6ff;
+            color: #2874f0;
+        }
+
+        /* Payment Methods */
+        .co-payment-option {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            background: #ffffff;
+            transition: border-color 0.2s ease;
+        }
+
+        .co-payment-option.active {
+            border-color: #2874f0;
+            box-shadow: 0 2px 8px rgba(40, 116, 240, 0.1);
+        }
+
+        .co-payment-header {
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            background: #ffffff;
+        }
+
+        .co-payment-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .co-radio {
+            width: 18px;
+            height: 18px;
+            accent-color: #2874f0;
+            cursor: pointer;
+        }
+
+        .co-payment-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #212121;
+        }
+
+        .co-payment-offer-badge {
+            font-size: 10.5px;
+            font-weight: 800;
+            color: #108432;
+            background: #e8f7ec;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .co-payment-body {
+            padding: 12px 14px 14px 14px;
+            background: #f8fbff;
+            border-top: 1px solid #e2e8f0;
+            display: none;
+        }
+
+        .co-payment-option.active .co-payment-body {
+            display: block;
+        }
+
+        /* UPI App Pills */
+        .co-upi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .co-upi-app-card {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 8px 4px;
+            text-align: center;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .co-upi-app-card.active {
+            border-color: #2874f0;
+            background: #eff6ff;
+            color: #2874f0;
+        }
+
+        .co-upi-app-card svg, .co-upi-app-card img {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Price Breakdown Box */
+        .co-price-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13.5px;
+            color: #475569;
+        }
+
+        .co-price-row.total {
+            font-size: 16px;
+            font-weight: 800;
+            color: #212121;
+            padding-top: 10px;
+            border-top: 1px dashed #cbd5e1;
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+
+        .co-savings-banner {
+            margin-top: 12px;
+            padding: 8px 10px;
+            background: #e8f7ec;
+            border-radius: 6px;
+            color: #15803d;
+            font-size: 12.5px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Sticky Bottom Action Bar */
+        .co-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff;
+            padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)) 14px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 99;
+        }
+
+        .co-bottom-price-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .co-bottom-total {
+            font-size: 18px;
+            font-weight: 900;
+            color: #212121;
+        }
+
+        .co-bottom-view-price {
+            font-size: 11px;
+            font-weight: 700;
+            color: #2874f0;
+            cursor: pointer;
+        }
+
+        .co-action-btn {
+            background: #fb641b;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 28px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            letter-spacing: 0.2px;
+            transition: background 0.15s ease;
+        }
+
+        .co-action-btn:active {
+            background: #e65100;
+        }
+
+        /* Success Overlay Screen */
+        .co-success-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #ffffff;
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .co-success-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .co-success-circle {
+            width: 80px;
+            height: 80px;
+            background: #108432;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(16, 132, 50, 0.3);
+            animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .co-success-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #212121;
+            margin-bottom: 8px;
+        }
+
+        .co-success-desc {
+            font-size: 13.5px;
+            color: #64748b;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .co-order-card {
+            width: 100%;
+            max-width: 360px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        .co-order-detail-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .co-home-btn {
+            width: 100%;
+            max-width: 360px;
+            height: 48px;
+            background: #2874f0;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
-<body class="checkout-body">
-    <div class="checkout-container" id="cart-container">
+<body>
+    <div id="checkout-app">
         <!-- 1. Header -->
-        <header class="checkout-header">
-            <div class="header-left">
-                <button class="back-btn" id="btn-back" aria-label="Go Back">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <header class="co-header">
+            <div class="co-header-left">
+                <button class="co-back-btn" id="co-back-btn" aria-label="Go Back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="19" y1="12" x2="5" y2="12"></line>
                         <polyline points="12 19 5 12 12 5"></polyline>
                     </svg>
                 </button>
-                <div class="header-title-wrap">
-                    <span class="header-title" id="cart-header-title">My Cart</span>
-                    <span class="header-subtitle" id="cart-header-subtitle">1 Item</span>
-                </div>
+                <span class="co-header-title" id="co-page-title">Order Summary</span>
             </div>
-            <div class="header-right">
-                <img src="./assets/images/flipkart_f_logo.svg" alt="Flipkart" style="height: 22px; width: auto;">
+            <div class="co-secure-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                </svg>
+                100% Safe
             </div>
         </header>
 
-        <!-- 2. Step Progress Bar -->
-        <div class="checkout-steps-bar">
-            <div class="step-item active">
-                <span class="step-num">1</span>
-                <span>Cart</span>
+        <!-- 2. Stepper -->
+        <div class="co-stepper">
+            <div class="co-step-item active" id="step-tab-cart" onclick="switchStep(1)">
+                <span class="co-step-num">1</span>
+                <span>Summary</span>
             </div>
-            <div class="step-divider"></div>
-            <div class="step-item">
-                <span class="step-num">2</span>
+            <div class="co-step-line" id="line-1"></div>
+            <div class="co-step-item" id="step-tab-address" onclick="switchStep(2)">
+                <span class="co-step-num">2</span>
                 <span>Address</span>
             </div>
-            <div class="step-divider"></div>
-            <div class="step-item">
-                <span class="step-num">3</span>
-                <span>Payment</span>
-            </div>
         </div>
 
-        <!-- 3. Deliver To Address Strip -->
-        <div class="delivery-address-strip" id="cart-address-strip">
-            <div class="address-strip-left">
-                <span class="address-strip-heading">Deliver To:</span>
-                <span class="address-strip-text" id="strip-recipient">Satish Patel, 400001</span>
-                <span class="address-strip-sub" id="strip-address-text">Flat 402, Green Avenue, Mumbai</span>
-            </div>
-            <a href="checkout.html" class="btn-change-address" id="btn-change-addr">Change</a>
-        </div>
-
-        <!-- 4. Empty Cart State -->
-        <div class="empty-cart-state" id="empty-cart-box">
-            <svg class="empty-cart-icon" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
-            <h3 class="empty-cart-title">Your Cart is Empty!</h3>
-            <p class="empty-cart-sub">Explore Big Billion Days offers and add products to your cart.</p>
-            <a href="index.html" class="btn-primary-action" style="max-width: 200px;">Shop Now</a>
-        </div>
-
-        <!-- 5. Active Cart Items List -->
-        <main class="cart-items-wrapper" id="cart-items-list">
-            <!-- Dynamically populated via cart.js -->
-        </main>
-
-        <!-- 6. Coupons & Offers Banner -->
-        <section class="offers-card" id="offers-card">
-            <div class="coupon-info">
-                <div class="coupon-icon">🏷️</div>
-                <div>
-                    <div class="coupon-text-main" id="coupon-title">BBD Special Extra ₹50 Off</div>
-                    <div class="coupon-text-sub" id="coupon-subtitle">Applicable on orders above ₹499</div>
+        <!-- ================= STEP 1: ORDER SUMMARY / CART ================= -->
+        <section id="step-section-1">
+            <!-- Active Delivery Address Peek -->
+            <div class="co-card" style="padding: 10px 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 13px; font-weight: 700;">Deliver to:</span>
+                        <span style="font-size: 13px; font-weight: 700; color: #2874f0;" id="peek-name">Rahul Sharma</span>
+                        <span style="font-size: 12px; color: #64748b;" id="peek-pincode">400001</span>
+                    </div>
+                    <a class="co-change-link" onclick="switchStep(2)">Change</a>
                 </div>
             </div>
-            <button class="btn-apply-coupon" id="btn-toggle-coupon">Apply</button>
+
+            <!-- Products List Card -->
+            <div class="co-card">
+                <div class="co-card-header">
+                    <span class="co-card-title">Items in Order</span>
+                    <span style="font-size: 11px; font-weight: 700; color: #2874f0; background: #eff6ff; padding: 2px 6px; border-radius: 4px;">Flipkart Assured</span>
+                </div>
+
+                <div id="co-items-container">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Special Offers: Buy 2 Get 1 Free, Buy 3 Get 2, Buy 5 Get 3 -->
+                <div class="co-special-offers-box">
+                    <div class="co-offers-head">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2874f0" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                        <span class="co-offers-title">Special Offers</span>
+                    </div>
+
+                    <div class="co-offers-list">
+                        <!-- Offer 1: Buy 2 Get 1 Free -->
+                        <div class="co-offer-card" id="offer-card-1" onclick="selectOffer(1, 2, 1, event)">
+                            <div class="co-offer-content">
+                                <span class="co-offer-badge">POPULAR OFFER</span>
+                                <span class="co-offer-name">Buy 2 Get 1 Free</span>
+                                <span class="co-offer-desc">Buy 2 items and get 1 item free (Total: 3 items)</span>
+                            </div>
+                            <button type="button" class="co-offer-apply-btn" id="btn-offer-1" onclick="event.stopPropagation(); selectOffer(1, 2, 1);">Apply</button>
+                        </div>
+
+                        <!-- Offer 2: Buy 3 Get 2 (Free) -->
+                        <div class="co-offer-card" id="offer-card-2" onclick="selectOffer(2, 3, 2, event)">
+                            <div class="co-offer-content">
+                                <span class="co-offer-badge" style="background: #eef2ff; color: #4338ca;">BEST VALUE</span>
+                                <span class="co-offer-name">Buy 3 Get 2 Free</span>
+                                <span class="co-offer-desc">Buy 3 items and get 2 items free (Total: 5 items)</span>
+                            </div>
+                            <button type="button" class="co-offer-apply-btn" id="btn-offer-2" onclick="event.stopPropagation(); selectOffer(2, 3, 2);">Apply</button>
+                        </div>
+
+                        <!-- Offer 3: Buy 5 Get 3 (Free) -->
+                        <div class="co-offer-card" id="offer-card-3" onclick="selectOffer(3, 5, 3, event)">
+                            <div class="co-offer-content">
+                                <span class="co-offer-badge" style="background: #fef2f2; color: #b91c1c;">MEGA SAVINGS</span>
+                                <span class="co-offer-name">Buy 5 Get 3 Free</span>
+                                <span class="co-offer-desc">Buy 5 items and get 3 items free (Total: 8 items)</span>
+                            </div>
+                            <button type="button" class="co-offer-apply-btn" id="btn-offer-3" onclick="event.stopPropagation(); selectOffer(3, 5, 3);">Apply</button>
+                        </div>
+                    </div>
+
+                    <div id="offer-applied-notice" style="display: none; font-size: 11.5px; font-weight: 700; color: #108432; margin-top: 8px; background: #ecfdf5; padding: 6px 10px; border-radius: 4px; border: 1px solid #a7f3d0;">
+                        ✓ Offer Applied!
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <!-- 7. Price Details Breakdown -->
-        <section class="price-details-card" id="price-details-card">
-            <h4 class="price-card-title">Price Details</h4>
-            <div class="price-row">
-                <span id="price-items-label">Price (1 item)</span>
-                <span id="price-total-mrp">₹2,499</span>
+        <!-- ================= STEP 2: DELIVERY ADDRESS ================= -->
+        <section id="step-section-2" style="display: none;">
+            <div class="co-card">
+                <div class="co-card-header">
+                    <span class="co-card-title">Saved Delivery Address</span>
+                    <span style="font-size: 12px; color: #108432; font-weight: 700;">✓ Verified</span>
+                </div>
+
+                <div class="co-address-box">
+                    <div class="co-address-name-row">
+                        <span class="co-address-name" id="disp-name">Rahul Sharma</span>
+                        <span class="co-address-type-pill" id="disp-type" style="display: none;">HOME</span>
+                    </div>
+                    <div class="co-address-text" id="disp-address">Flat 402, Green Avenue, Behind Phoenix Mall, Lower Parel, Mumbai - 400001</div>
+                    <div class="co-address-phone">Phone: <span id="disp-phone">9876543210</span></div>
+                </div>
+
+                <!-- Edit Address Form -->
+                <div style="font-size: 13.5px; font-weight: 700; color: #212121; margin: 14px 0 10px 0;">Edit / Add New Address</div>
+                
+                <form id="address-form" onsubmit="event.preventDefault(); saveAddress();">
+                    <div class="co-form-grid">
+                        <div class="co-form-group">
+                            <label class="co-label">Full Name *</label>
+                            <input type="text" id="input-name" class="co-input" value="Rahul Sharma" required>
+                        </div>
+                        <div class="co-form-group">
+                            <label class="co-label">10-Digit Mobile *</label>
+                            <input type="tel" id="input-phone" class="co-input" value="9876543210" pattern="[0-9]{10}" maxlength="10" required>
+                        </div>
+                        <div class="co-form-group">
+                            <label class="co-label">Pincode *</label>
+                            <input type="text" id="input-pincode" class="co-input" value="400001" maxlength="6" pattern="[0-9]{6}" required>
+                        </div>
+                        <div class="co-form-group">
+                            <label class="co-label">City *</label>
+                            <input type="text" id="input-city" class="co-input" value="Mumbai" required>
+                        </div>
+                        <div class="co-form-group full">
+                            <label class="co-label">House No., Building Name *</label>
+                            <input type="text" id="input-building" class="co-input" value="Flat 402, Green Avenue" required>
+                        </div>
+                        <div class="co-form-group full">
+                            <label class="co-label">Road, Area, Colony *</label>
+                            <input type="text" id="input-area" class="co-input" value="Behind Phoenix Mall, Lower Parel" required>
+                        </div>
+                        <div class="co-form-group full">
+                            <label class="co-label">State *</label>
+                            <input type="text" id="input-state" class="co-input" value="Maharashtra" required>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="saveAddress()" style="width: 100%; height: 42px; background: #2874f0; color: #ffffff; border: none; border-radius: 6px; font-weight: 700; font-size: 14px; margin-top: 14px; cursor: pointer;">
+                        Save Address &amp; Deliver Here
+                    </button>
+                </form>
             </div>
-            <div class="price-row discount-row">
+        </section>
+
+        <!-- ================= PRICE DETAILS BREAKDOWN ================= -->
+        <div class="co-card" id="price-details-card">
+            <div class="co-card-header" style="margin-bottom: 10px;">
+                <span class="co-card-title">Price Details</span>
+            </div>
+            <div class="co-price-row">
+                <span>Price (<span id="summary-qty">1</span> item)</span>
+                <span id="summary-mrp">₹2,499</span>
+            </div>
+            <div class="co-price-row">
                 <span>Discount</span>
-                <span id="price-discount-amt">-₹1,500</span>
+                <span style="color: #108432; font-weight: 700;" id="summary-discount">- ₹2,250</span>
             </div>
-            <div class="price-row discount-row" id="coupon-row" style="display: none;">
-                <span>Coupons for you</span>
-                <span id="coupon-discount-amt">-₹50</span>
-            </div>
-            <div class="price-row free-highlight">
+            <div class="co-price-row">
                 <span>Delivery Charges</span>
-                <span><s style="color: #878787; font-weight: normal; margin-right: 4px;">₹40</s> FREE</span>
+                <span style="color: #108432; font-weight: 700;">FREE</span>
             </div>
-            <div class="price-row free-highlight">
-                <span>Secured Packaging Fee</span>
-                <span>FREE</span>
+            <div class="co-price-row" id="row-upi-discount" style="display: flex;">
+                <span>UPI Instant Discount</span>
+                <span style="color: #108432; font-weight: 700;">- ₹25</span>
             </div>
-            <div class="price-row total-row">
+            <div class="co-price-row" id="row-coupon-discount" style="display: none;">
+                <span id="coupon-discount-label">Offer Discount</span>
+                <span style="color: #108432; font-weight: 700;" id="coupon-discount-val">- ₹50</span>
+            </div>
+            <div class="co-price-row total">
                 <span>Total Amount</span>
-                <span id="price-final-total">₹999</span>
+                <span id="summary-total" style="color: #212121;">₹224</span>
             </div>
-            <div class="price-savings-banner" id="price-savings-banner">
-                <span>🎉 You will save <strong id="total-savings-text">₹1,500</strong> on this order</span>
+            <div class="co-savings-banner">
+                <span>🎉</span>
+                <span>You will save <b id="summary-savings">₹2,275</b> on this order</span>
             </div>
-        </section>
+        </div>
 
-        <!-- 8. Trust Footer -->
-        <footer class="trust-badge-footer">
-            <span>🛡️ Safe and Secure Payments</span>
-            <span>•</span>
-            <span>100% Authentic</span>
-        </footer>
-
-        <!-- 9. Sticky Bottom Bar -->
-        <div class="checkout-bottom-bar" id="cart-bottom-bar">
-            <div class="bottom-price-info">
-                <span class="bottom-total-price" id="bottom-bar-price">₹999</span>
-                <a href="#price-details-card" class="bottom-view-price">View price details</a>
+        <!-- Sticky Bottom Bar -->
+        <div class="co-bottom-bar">
+            <div class="co-bottom-price-box">
+                <span class="co-bottom-total" id="bar-total">₹224</span>
+                <span class="co-bottom-view-price" onclick="scrollToPriceDetails()">View price details</span>
             </div>
-            <button class="btn-primary-action" id="btn-place-order">Place Order</button>
+            <button class="co-action-btn" id="co-main-btn" onclick="handleMainAction()">
+                CONTINUE
+            </button>
+        </div>
+
+        <!-- ================= ORDER PLACED SUCCESS OVERLAY ================= -->
+        <div class="co-success-modal" id="order-success-modal">
+            <div class="co-success-circle">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <h2 class="co-success-title">Order Placed Successfully! 🎉</h2>
+            <p class="co-success-desc">
+                Thank you for shopping on Flipkart. A confirmation SMS &amp; email has been sent to your registered phone number.
+            </p>
+
+            <div class="co-order-card">
+                <div class="co-order-detail-row">
+                    <span style="color: #64748b;">Order ID:</span>
+                    <strong id="final-order-id">OD839201948201</strong>
+                </div>
+                <div class="co-order-detail-row">
+                    <span style="color: #64748b;">Estimated Delivery:</span>
+                    <strong style="color: #108432;" id="final-delivery-date">Sunday, 12 Oct</strong>
+                </div>
+                <div class="co-order-detail-row">
+                    <span style="color: #64748b;">Payment Method:</span>
+                    <strong id="final-payment-method">UPI (Google Pay)</strong>
+                </div>
+                <div class="co-order-detail-row" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1;">
+                    <span style="color: #64748b;">Amount Paid:</span>
+                    <strong style="font-size: 15px; color: #212121;" id="final-paid-amount">₹224</strong>
+                </div>
+                <div style="font-size: 12px; color: #475569; margin-top: 6px;">
+                    <strong>Delivering to:</strong> <span id="final-address-snippet">Rahul Sharma, Flat 402, Green Avenue, Mumbai - 400001</span>
+                </div>
+            </div>
+
+            <button class="co-home-btn" onclick="window.location.href='index.html'">
+                Continue Shopping
+            </button>
         </div>
 
         <!-- Toast Notice -->
-        <div class="checkout-toast" id="checkout-toast">Action completed</div>
+        <div id="toast" class="toast-notice">Action Successful</div>
     </div>
 
-    <script defer src="./cart.js"></script>
+    <!-- Supabase Production Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabaseClient.js"></script>
+
+    <!-- Script Handling Complete Real-Time Logic -->
+    <script>
+        const currencyFormatter = new Intl.NumberFormat('en-IN');
+        let currentStep = 1;
+        let selectedPayment = 'upi';
+        let couponDiscount = 0;
+        let upiDiscount = 25;
+        let quantity = 1;
+        let currentItem = null;
+        let cartRealtimeSubscribed = false;
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2300);
+        }
+
+        // Initialize Checkout Data from Supabase / Catalog
+        async function initCheckout() {
+            // Check direct checkout item
+            const storedItem = localStorage.getItem('flipkart_checkout_item');
+            if (storedItem) {
+                try {
+                    currentItem = JSON.parse(storedItem);
+                } catch(e) {}
+            }
+
+            // Check URL param ?id=
+            const urlParams = new URLSearchParams(window.location.search);
+            const paramId = urlParams.get('id');
+
+            if (!currentItem || (paramId && String(currentItem.id) !== paramId && String(currentItem.md5_id) !== paramId)) {
+                try {
+                    let products = [];
+                    if (typeof FilpSupabase !== 'undefined') {
+                        if (paramId) {
+                            const single = await FilpSupabase.getProductById(paramId);
+                            if (single && single.success && single.product) {
+                                currentItem = single.product;
+                            }
+                        }
+                        const catalogRes = await FilpSupabase.getProducts();
+                        products = catalogRes.products || [];
+
+                        if (!cartRealtimeSubscribed && typeof FilpSupabase.subscribeToProducts === 'function') {
+                            cartRealtimeSubscribed = true;
+                            FilpSupabase.subscribeToProducts(() => {
+                                console.log('[Cart] Realtime product update detected from Supabase, refreshing...');
+                                initCheckout();
+                            });
+                        }
+                    } else {
+                        const res = await fetch('./data/products.json?v=' + Date.now());
+                        const data = await res.json();
+                        products = data.products || [];
+                    }
+
+                    if (paramId && !currentItem) {
+                        currentItem = products.find(p => String(p.id) === paramId || String(p.md5_id) === paramId) || products[0];
+                    } else if (!currentItem) {
+                        // Check cart
+                        const cart = JSON.parse(localStorage.getItem('flipkart_cart') || '[]');
+                        if (cart.length > 0) {
+                            currentItem = cart[0];
+                        } else {
+                            currentItem = products[0];
+                        }
+                    }
+                } catch(e) {
+                    console.error('Fetch error:', e);
+                }
+            }
+
+            // Fallback product
+            if (!currentItem) {
+                currentItem = {
+                    id: 3,
+                    name: 'Amazon Basics - Non-Stick Cookware Set (Black) 8 Piece',
+                    brand: 'Amazon Basics',
+                    size: '8 Piece Set',
+                    price: 311,
+                    mrp: 2999,
+                    discount_percent: 90,
+                    img: 'https://cdn.shopify.com/s/files/1/0596/9743/0617/files/81-sJRhEapL._SX679.jpg?v=1713050191',
+                    delivery_text: 'Delivery by 12 Oct, Sun'
+                };
+            }
+
+            // Render Product Card
+            renderProductItem();
+            loadSavedAddress();
+            checkAndAutoApplyOffer(false);
+            recalculatePrices();
+        }
+
+        function renderProductItem() {
+            const container = document.getElementById('co-items-container');
+            if (!container || !currentItem) return;
+
+            const sellingPrice = Number(currentItem.price || currentItem.selling_price || 249);
+            const mrp = Number(currentItem.mrp || (sellingPrice * 2));
+            const discountLabel = currentItem.discount_label || `↓ ${Math.round((1 - sellingPrice / mrp) * 100)}%`;
+
+            container.innerHTML = `
+                <div class="co-product-item">
+                    <div class="co-product-img-box">
+                        <img src="${currentItem.img || currentItem.img1 || ''}" alt="${currentItem.name}" class="co-product-img" onerror="this.onerror=null; if(this.src.includes('?')){this.src=this.src.split('?')[0];}">
+                    </div>
+                    <div class="co-product-info">
+                        <div class="co-product-title">${currentItem.name}</div>
+                        <div class="co-product-variant">${currentItem.brand ? currentItem.brand + ' • ' : ''}${currentItem.size ? 'Option: ' + currentItem.size : 'Standard Pack'}</div>
+                        <div class="co-product-pricing">
+                            <span class="co-selling-price">₹${currencyFormatter.format(sellingPrice)}</span>
+                            <span class="co-mrp">₹${currencyFormatter.format(mrp)}</span>
+                            <span class="co-discount-tag">${discountLabel}</span>
+                        </div>
+                        <div class="co-qty-row">
+                            <div class="co-qty-controls">
+                                <button type="button" class="co-qty-btn" onclick="updateQty(-1)">−</button>
+                                <span class="co-qty-val" id="disp-qty">${quantity}</span>
+                                <button type="button" class="co-qty-btn" onclick="updateQty(1)">+</button>
+                            </div>
+                            <div class="co-delivery-eta">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#108432" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="1" y="3" width="15" height="13"></rect>
+                                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                                </svg>
+                                <span>Free Delivery by 12 Oct</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Special Offers Handler: Buy 2 Get 1 Free / Buy 3 Get 2 / Buy 5 Get 3
+        let activeOffer = null;
+
+        function checkAndAutoApplyOffer(showNotification = true) {
+            let targetOfferId = null;
+            let payQty = 0;
+            let freeQty = 0;
+            let offerName = '';
+
+            if (quantity >= 8) {
+                targetOfferId = 3;
+                payQty = 5;
+                freeQty = 3;
+                offerName = 'Buy 5 Get 3 Free';
+            } else if (quantity >= 5) {
+                targetOfferId = 2;
+                payQty = 3;
+                freeQty = 2;
+                offerName = 'Buy 3 Get 2 Free';
+            } else if (quantity >= 2) {
+                targetOfferId = 1;
+                payQty = 2;
+                freeQty = 1;
+                offerName = 'Buy 2 Get 1 Free';
+            }
+
+            const previousId = activeOffer ? activeOffer.id : null;
+
+            if (targetOfferId) {
+                activeOffer = {
+                    id: targetOfferId,
+                    payQty: payQty,
+                    freeQty: freeQty,
+                    name: offerName
+                };
+
+                // Highlight corresponding card and update buttons
+                [1, 2, 3].forEach(id => {
+                    const card = document.getElementById(`offer-card-${id}`);
+                    const btn = document.getElementById(`btn-offer-${id}`);
+                    if (card && btn) {
+                        if (id === targetOfferId) {
+                            card.classList.add('active');
+                            btn.textContent = 'Applied ✓';
+                        } else {
+                            card.classList.remove('active');
+                            btn.textContent = 'Apply';
+                        }
+                    }
+                });
+
+                const unitPrice = Number(currentItem ? (currentItem.price || currentItem.selling_price || 249) : 249);
+                couponDiscount = freeQty * unitPrice;
+
+                const notice = document.getElementById('offer-applied-notice');
+                if (notice) {
+                    notice.style.display = 'block';
+                    notice.textContent = `✓ ${activeOffer.name} Automatically Applied! ${freeQty} item(s) FREE (Saved ₹${currencyFormatter.format(couponDiscount)}) 🎉`;
+                }
+
+                if (previousId !== targetOfferId && showNotification) {
+                    showToast(`🎉 ${activeOffer.name} Automatically Applied!`);
+                }
+            } else {
+                // If quantity < 2, reset offers
+                activeOffer = null;
+                couponDiscount = 0;
+                [1, 2, 3].forEach(id => {
+                    const card = document.getElementById(`offer-card-${id}`);
+                    const btn = document.getElementById(`btn-offer-${id}`);
+                    if (card) card.classList.remove('active');
+                    if (btn) btn.textContent = 'Apply';
+                });
+                const notice = document.getElementById('offer-applied-notice');
+                if (notice) notice.style.display = 'none';
+            }
+        }
+
+        function updateQty(delta) {
+            quantity = Math.max(1, Math.min(10, quantity + delta));
+            const disp = document.getElementById('disp-qty');
+            if (disp) disp.textContent = quantity;
+
+            // Automatically check and apply matching offer when quantity changes
+            checkAndAutoApplyOffer(true);
+
+            recalculatePrices();
+        }
+
+        // Live Price Recalculation
+        function recalculatePrices() {
+            if (!currentItem) return;
+            const unitPrice = Number(currentItem.price || currentItem.selling_price || 249);
+            const unitMrp = Number(currentItem.mrp || (unitPrice * 2));
+
+            const totalMrp = unitMrp * quantity;
+            const totalSelling = unitPrice * quantity;
+            const totalDiscount = totalMrp - totalSelling;
+
+            const upiDisc = selectedPayment === 'upi' ? upiDiscount : 0;
+            const finalPayable = Math.max(1, totalSelling - upiDisc - couponDiscount);
+            const totalSavings = totalDiscount + upiDisc + couponDiscount;
+
+            // DOM updates
+            document.getElementById('summary-qty').textContent = quantity;
+            document.getElementById('summary-mrp').textContent = `₹${currencyFormatter.format(totalMrp)}`;
+            document.getElementById('summary-discount').textContent = `- ₹${currencyFormatter.format(totalDiscount)}`;
+            document.getElementById('summary-total').textContent = `₹${currencyFormatter.format(finalPayable)}`;
+            document.getElementById('summary-savings').textContent = `₹${currencyFormatter.format(totalSavings)}`;
+            document.getElementById('bar-total').textContent = `₹${currencyFormatter.format(finalPayable)}`;
+
+            const rowUpi = document.getElementById('row-upi-discount');
+            if (rowUpi) rowUpi.style.display = selectedPayment === 'upi' ? 'flex' : 'none';
+
+            const rowCoupon = document.getElementById('row-coupon-discount');
+            if (rowCoupon) {
+                rowCoupon.style.display = couponDiscount > 0 ? 'flex' : 'none';
+                document.getElementById('coupon-discount-val').textContent = `- ₹${couponDiscount}`;
+                const label = document.getElementById('coupon-discount-label');
+                if (label) {
+                    label.textContent = activeOffer ? `${activeOffer.name} (FREE)` : 'Offer Discount';
+                }
+            }
+        }
+
+        function selectOffer(offerId, payQty, freeQty) {
+            if (activeOffer && activeOffer.id === offerId) {
+                // If user clicks on already active offer, toggle off
+                activeOffer = null;
+                couponDiscount = 0;
+                [1, 2, 3].forEach(id => {
+                    const card = document.getElementById(`offer-card-${id}`);
+                    const btn = document.getElementById(`btn-offer-${id}`);
+                    if (card) card.classList.remove('active');
+                    if (btn) btn.textContent = 'Apply';
+                });
+                const notice = document.getElementById('offer-applied-notice');
+                if (notice) notice.style.display = 'none';
+                showToast('Offer removed');
+                recalculatePrices();
+                return;
+            }
+
+            // Set quantity to required items for selected offer: 3 for offer 1, 5 for offer 2, 8 for offer 3
+            const targetQty = (offerId === 1 ? 3 : (offerId === 2 ? 5 : 8));
+            quantity = targetQty;
+            const disp = document.getElementById('disp-qty');
+            if (disp) disp.textContent = quantity;
+
+            checkAndAutoApplyOffer(true);
+            recalculatePrices();
+        }
+
+        // Safe coupon check if element exists
+        const btnApplyCoupon = document.getElementById('btn-apply-coupon');
+        if (btnApplyCoupon) {
+            btnApplyCoupon.addEventListener('click', () => {});
+        }
+
+        // Address Management
+        let addressType = 'HOME';
+        function setAddressType(type) {
+            addressType = type;
+            const btnHome = document.getElementById('type-home');
+            const btnWork = document.getElementById('type-work');
+            if (btnHome) btnHome.classList.toggle('active', type === 'HOME');
+            if (btnWork) btnWork.classList.toggle('active', type === 'WORK');
+        }
+
+        function saveAddress() {
+            const inpName = document.getElementById('input-name');
+            const inpPhone = document.getElementById('input-phone');
+            const inpPincode = document.getElementById('input-pincode');
+            const inpCity = document.getElementById('input-city');
+            const inpBldg = document.getElementById('input-building');
+            const inpArea = document.getElementById('input-area');
+            const inpState = document.getElementById('input-state');
+
+            const name = inpName ? inpName.value.trim() : 'Customer';
+            const phone = inpPhone ? inpPhone.value.trim() : '9876543210';
+            const pincode = inpPincode ? inpPincode.value.trim() : '400001';
+            const city = inpCity ? inpCity.value.trim() : 'Mumbai';
+            const bldg = inpBldg ? inpBldg.value.trim() : 'Flat 402';
+            const area = inpArea ? inpArea.value.trim() : 'Near City Center';
+            const state = inpState ? inpState.value.trim() : 'Maharashtra';
+
+            if (!name || phone.length !== 10 || pincode.length !== 6 || !bldg) {
+                showToast('Please fill all required address fields correctly');
+                return;
+            }
+
+            const addrObj = {
+                name, phone, pincode, city, bldg, area, state, type: addressType
+            };
+            localStorage.setItem('flipkart_saved_address', JSON.stringify(addrObj));
+
+            loadSavedAddress();
+            showToast('Order Placed Successfully! 🎉');
+            placeFinalOrder();
+        }
+
+        function loadSavedAddress() {
+            const raw = localStorage.getItem('flipkart_saved_address');
+            let addr = null;
+            if (raw) {
+                try { addr = JSON.parse(raw); } catch(e) {}
+            }
+            if (!addr) {
+                addr = {
+                    name: 'Enter Delivery Name',
+                    phone: '',
+                    pincode: '',
+                    city: 'Select City',
+                    bldg: 'Click Change to enter address',
+                    area: '',
+                    state: '',
+                    type: 'HOME'
+                };
+            }
+
+            const dispName = document.getElementById('disp-name');
+            if (dispName) dispName.textContent = addr.name;
+            const dispType = document.getElementById('disp-type');
+            if (dispType) dispType.textContent = addr.type || 'HOME';
+            const dispAddress = document.getElementById('disp-address');
+            if (dispAddress) dispAddress.textContent = addr.bldg ? `${addr.bldg}${addr.area ? ', ' + addr.area : ''}${addr.city ? ', ' + addr.city : ''}${addr.pincode ? ' - ' + addr.pincode : ''}` : 'Please enter your delivery address';
+            const dispPhone = document.getElementById('disp-phone');
+            if (dispPhone) dispPhone.textContent = addr.phone || '-';
+
+            const peekName = document.getElementById('peek-name');
+            if (peekName) peekName.textContent = addr.name;
+            const peekPincode = document.getElementById('peek-pincode');
+            if (peekPincode) peekPincode.textContent = addr.pincode || 'Pincode';
+
+            // Form inputs
+            const inpName = document.getElementById('input-name');
+            if (inpName && addr.name !== 'Enter Delivery Name') inpName.value = addr.name;
+            const inpPhone = document.getElementById('input-phone');
+            if (inpPhone) inpPhone.value = addr.phone;
+            const inpPincode = document.getElementById('input-pincode');
+            if (inpPincode) inpPincode.value = addr.pincode;
+            const inpCity = document.getElementById('input-city');
+            if (inpCity && addr.city !== 'Select City') inpCity.value = addr.city;
+            const inpBldg = document.getElementById('input-building');
+            if (inpBldg && addr.bldg !== 'Click Change to enter address') inpBldg.value = addr.bldg;
+            const inpArea = document.getElementById('input-area');
+            if (inpArea) inpArea.value = addr.area;
+            const inpState = document.getElementById('input-state');
+            if (inpState) inpState.value = addr.state;
+        }
+            if (inpState) inpState.value = addr.state;
+
+            setAddressType(addr.type || 'HOME');
+        }
+
+        // Payment Method Management
+        function handleCodUnavailable(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            showToast('Cash on Delivery is unavailable for this deal. Please select UPI or Card.');
+        }
+
+        function selectPaymentMethod(method) {
+            if (method === 'cod') {
+                handleCodUnavailable();
+                return;
+            }
+            selectedPayment = method;
+            document.querySelectorAll('.co-payment-option').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(`opt-${method}`);
+            if (target) {
+                target.classList.add('active');
+                target.querySelector('input[type="radio"]').checked = true;
+            }
+            recalculatePrices();
+        }
+
+        function selectUpiApp(card, appName) {
+            document.querySelectorAll('.co-upi-app-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            document.getElementById('co-upi-id-input').value = `9876543210@${appName.toLowerCase().replace(/\s/g, '')}`;
+            document.getElementById('upi-verify-status').textContent = `✓ Selected ${appName}`;
+            showToast(`Selected ${appName} Payment`);
+        }
+
+        function verifyUpi() {
+            const val = document.getElementById('co-upi-id-input').value.trim();
+            if (val.includes('@')) {
+                document.getElementById('upi-verify-status').textContent = `✓ Verified (${val})`;
+                showToast('UPI ID Verified! Instant Payment Ready');
+            } else {
+                showToast('Please enter a valid UPI ID (e.g. name@upi)');
+            }
+        }
+
+        // Stepper Navigation
+        function switchStep(stepNum) {
+            currentStep = stepNum;
+
+            const sec1 = document.getElementById('step-section-1');
+            const sec2 = document.getElementById('step-section-2');
+            if (sec1) sec1.style.display = stepNum === 1 ? 'block' : 'none';
+            if (sec2) sec2.style.display = stepNum === 2 ? 'block' : 'none';
+
+            // Hide Price Details on Address Step (Step 2)
+            const priceCard = document.getElementById('price-details-card');
+            if (priceCard) {
+                priceCard.style.display = stepNum === 2 ? 'none' : 'block';
+            }
+
+            // Stepper styling
+            const tabCart = document.getElementById('step-tab-cart');
+            const tabAddress = document.getElementById('step-tab-address');
+            const line1 = document.getElementById('line-1');
+
+            if (tabCart) tabCart.className = `co-step-item ${stepNum === 1 ? 'active' : 'completed'}`;
+            if (tabAddress) tabAddress.className = `co-step-item ${stepNum === 2 ? 'active' : ''}`;
+            if (line1) line1.className = `co-step-line ${stepNum >= 2 ? 'active' : ''}`;
+
+            const mainBtn = document.getElementById('co-main-btn');
+            const titleEl = document.getElementById('co-page-title');
+
+            if (stepNum === 1) {
+                if (titleEl) titleEl.textContent = 'Order Summary';
+                if (mainBtn) mainBtn.textContent = 'CONTINUE';
+            } else if (stepNum === 2) {
+                if (titleEl) titleEl.textContent = 'Delivery Address';
+                if (mainBtn) mainBtn.textContent = 'PROCEED TO PAYMENT';
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function handleMainAction() {
+            if (currentStep === 1) {
+                switchStep(2);
+            } else if (currentStep === 2) {
+                saveAddress();
+            }
+        }
+
+        // Final Order Placement
+        function placeFinalOrder() {
+            // Populate Success Modal
+            const orderId = 'OD' + Math.floor(100000000000 + Math.random() * 900000000000);
+            const elOrderId = document.getElementById('final-order-id');
+            if (elOrderId) elOrderId.textContent = orderId;
+
+            const totalEl = document.getElementById('summary-total');
+            const elPaid = document.getElementById('final-paid-amount');
+            if (elPaid && totalEl) elPaid.textContent = totalEl.textContent;
+
+            const nameEl = document.getElementById('disp-name');
+            const addrEl = document.getElementById('disp-address');
+            const addrSnippet = document.getElementById('final-address-snippet');
+            if (addrSnippet && nameEl && addrEl) {
+                addrSnippet.textContent = `${nameEl.textContent}, ${addrEl.textContent}`;
+            }
+
+            const finalPayMethod = document.getElementById('final-payment-method');
+            if (finalPayMethod) finalPayMethod.textContent = 'Cash on Delivery (Pay on Delivery)';
+
+            // Save order to Supabase orders table & localStorage
+            try {
+                const rawAddr = localStorage.getItem('flipkart_saved_address');
+                const addrData = rawAddr ? JSON.parse(rawAddr) : {};
+                const orderPayload = {
+                    orderId: orderId,
+                    items: currentItem ? [currentItem] : [],
+                    totalAmount: Number((totalEl?.textContent || '0').replace(/[^\d]/g, '')),
+                    paymentMethod: 'Cash on Delivery (Pay on Delivery)',
+                    address: addrData,
+                    status: 'Order Confirmed',
+                    expectedDelivery: 'Tomorrow by 11 PM'
+                };
+
+                const rawOrders = localStorage.getItem('flipkart_orders');
+                const orders = rawOrders ? JSON.parse(rawOrders) : [];
+                orders.unshift(orderPayload);
+                localStorage.setItem('flipkart_orders', JSON.stringify(orders));
+                localStorage.setItem('flipkart_last_order', JSON.stringify(orderPayload));
+
+                if (typeof FilpSupabase !== 'undefined') {
+                    FilpSupabase.createOrder(orderPayload);
+                }
+            } catch(e) {
+                console.warn('Order sync warning:', e);
+            }
+
+            // Clear current checkout item
+            localStorage.removeItem('flipkart_checkout_item');
+            localStorage.setItem('flipkart_cart', '[]');
+
+            // Show Success Modal
+            const modal = document.getElementById('order-success-modal');
+            if (modal) modal.classList.add('show');
+        }
+
+        function scrollToPriceDetails() {
+            const el = document.getElementById('price-details-card');
+            if (el) {
+                if (el.style.display === 'none') {
+                    el.style.display = 'block';
+                }
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Back button navigation
+        document.getElementById('co-back-btn').addEventListener('click', () => {
+            if (currentStep > 1) {
+                switchStep(currentStep - 1);
+            } else if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', initCheckout);
+    </script>
 </body>
 
 </html>
